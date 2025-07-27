@@ -1,0 +1,10 @@
+include README.md
+include LICENSE
+include requirements.txt
+recursive-include ormax *.py
+recursive-exclude ormax __pycache__
+recursive-exclude ormax *.pyc
+global-exclude *.pyc
+global-exclude *.pyo
+global-exclude *~
+global-exclude .DS_Store

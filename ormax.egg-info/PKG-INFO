@@ -1,3 +1,38 @@
+Metadata-Version: 2.1
+Name: ormax
+Version: 1.0.0
+Summary: High-performance async ORM for MariaDB, MySQL, PostgreSQL, and SQLite3
+Home-page: https://github.com/shayanheidari01/ormax
+Author: Shayan Heidari
+Author-email: shayanheidari01@gmail.com
+License: MIT
+Project-URL: Bug Tracker, https://github.com/shayanheidari01/ormax/issues
+Project-URL: Documentation, https://github.com/shayanheidari01/ormax#readme
+Project-URL: Source Code, https://github.com/shayanheidari01/ormax
+Keywords: orm,async,asyncio,database,sql,mysql,postgresql,sqlite,mariadb,database-orm
+Classifier: Development Status :: 5 - Production/Stable
+Classifier: Intended Audience :: Developers
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Operating System :: OS Independent
+Classifier: Programming Language :: Python :: 3
+Classifier: Programming Language :: Python :: 3.7
+Classifier: Programming Language :: Python :: 3.8
+Classifier: Programming Language :: Python :: 3.9
+Classifier: Programming Language :: Python :: 3.10
+Classifier: Programming Language :: Python :: 3.11
+Classifier: Programming Language :: Python :: 3 :: Only
+Classifier: Topic :: Database
+Classifier: Topic :: Software Development :: Libraries :: Python Modules
+Classifier: Framework :: AsyncIO
+Requires-Python: >=3.7
+Description-Content-Type: text/markdown
+Provides-Extra: mysql
+Provides-Extra: postgresql
+Provides-Extra: sqlite
+Provides-Extra: dev
+Provides-Extra: all
+License-File: LICENSE
+
 
 # Ormax ORM
 
