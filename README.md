@@ -336,4 +336,3 @@ For support, please open an issue on GitHub or contact the maintainers.
 ---
 
 **Made with ❤️ using Python asyncio**
-```
