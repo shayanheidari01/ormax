@@ -26,7 +26,7 @@ pip install ormax
 
 Or install from source:
 ```bash
-git clone https://github.com/yourusername/ormax.git
+git clone https://github.com/shayanheidari01/ormax.git
 cd ormax
 pip install -e .
 ```
