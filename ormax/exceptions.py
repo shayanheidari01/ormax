@@ -1,4 +1,4 @@
-# database_orm/exceptions.py
+# ormax/exceptions.py
 class DatabaseError(Exception):
     """Base exception for database errors"""
     pass

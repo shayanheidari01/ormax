@@ -6,10 +6,10 @@ with open("README.md", "r", encoding="utf-8") as fh:
 
 setup(
     name="ormax",
-    version="1.0.0",
+    version="1.2.0",
     author="Shayan Heidari",
     author_email="shayanheidari01@gmail.com",
-    description="High-performance async ORM for MariaDB, MySQL, PostgreSQL, and SQLite3",
+    description="High-performance async ORM for all major databases",
     long_description=long_description,
     long_description_content_type="text/markdown",
     url="https://github.com/shayanheidari01/ormax",
@@ -36,13 +36,13 @@ setup(
     ],
     packages=find_packages(exclude=["tests*", "examples*"]),
     python_requires=">=3.7",
-    install_requires=[
-        # Core dependencies - installed based on database usage
-    ],
+    install_requires=[],
     extras_require={
         "mysql": ["aiomysql>=0.1.14"],
         "postgresql": ["asyncpg>=0.27.0"],
         "sqlite": ["aiosqlite>=0.19.0"],
+        "mssql": ["aioodbc>=0.17.0"],
+        "oracle": ["async-oracledb>=1.0.0"],
         "dev": [
             "pytest>=7.0.0",
             "pytest-asyncio>=0.20.0",
@@ -54,11 +54,14 @@ setup(
             "aiomysql>=0.1.14",
             "asyncpg>=0.27.0", 
             "aiosqlite>=0.19.0",
+            "aioodbc>=0.17.0",
+            "async-oracledb>=1.0.0",
         ]
     },
     keywords=[
         "orm", "async", "asyncio", "database", "sql", "mysql", 
-        "postgresql", "sqlite", "mariadb", "database-orm"
+        "postgresql", "sqlite", "mariadb", "database-orm",
+        "mssql", "sqlserver", "oracle", "aurora"
     ],
     license="MIT",
     zip_safe=False,
