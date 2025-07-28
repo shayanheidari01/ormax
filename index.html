@@ -1,589 +1,214 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ormax ORM - High-Performance Async ORM</title>
-    <style>
-        :root {
-            --primary: #10b981; /* Emerald Green */
-            --primary-dark: #059669;
-            --dark: #1e293b;
-            --light: #f8fafc;
-            --gray: #64748b;
-            --light-gray: #e2e8f0;
-            --white: #ffffff;
-            --shadow: rgba(0, 0, 0, 0.1);
-        }
-
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
-            line-height: 1.6;
-            color: var(--dark);
-            background-color: var(--light);
-        }
-
-        .container {
-            width: 90%;
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 0 20px;
-        }
-
-        /* Header */
-        header {
-            background-color: var(--white);
-            box-shadow: 0 2px 10px var(--shadow);
-            position: sticky;
-            top: 0;
-            z-index: 100;
-        }
-
-        .header-content {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 1rem 0;
-        }
-
-        .logo {
-            font-size: 1.8rem;
-            font-weight: 700;
-            color: var(--primary);
-            text-decoration: none;
-            display: flex;
-            align-items: center;
-        }
-
-        .logo-dot {
-            color: var(--primary-dark);
-        }
-
-        nav ul {
-            display: flex;
-            list-style: none;
-        }
-
-        nav ul li {
-            margin-left: 2rem;
-        }
-
-        nav ul li a {
-            color: var(--dark);
-            text-decoration: none;
-            font-weight: 500;
-            transition: color 0.3s;
-        }
-
-        nav ul li a:hover {
-            color: var(--primary);
-        }
-
-        /* Hero */
-        .hero {
-            padding: 5rem 0;
-            text-align: center;
-            background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%);
-        }
-
-        .hero h1 {
-            font-size: 3rem;
-            margin-bottom: 1rem;
-            color: var(--dark);
-        }
-
-        .hero p {
-            font-size: 1.25rem;
-            color: var(--gray);
-            max-width: 700px;
-            margin: 0 auto 2rem;
-        }
-
-        .cta-button {
-            display: inline-block;
-            background-color: var(--primary);
-            color: var(--white);
-            padding: 0.8rem 2rem;
-            border-radius: 50px;
-            text-decoration: none;
-            font-weight: 600;
-            transition: background-color 0.3s;
-            border: none;
-            cursor: pointer;
-            font-size: 1rem;
-        }
-
-        .cta-button:hover {
-            background-color: var(--primary-dark);
-        }
-
-        /* Sections */
-        section {
-            padding: 4rem 0;
-        }
-
-        .section-title {
-            text-align: center;
-            margin-bottom: 3rem;
-        }
-
-        .section-title h2 {
-            font-size: 2rem;
-            color: var(--dark);
-            margin-bottom: 1rem;
-        }
-
-        .section-title p {
-            color: var(--gray);
-            max-width: 600px;
-            margin: 0 auto;
-        }
-
-        /* Features */
-        .features-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 2rem;
-        }
-
-        .feature-card {
-            background: var(--white);
-            border-radius: 10px;
-            padding: 2rem;
-            box-shadow: 0 5px 15px var(--shadow);
-            transition: transform 0.3s ease;
-            border-top: 4px solid var(--primary);
-        }
-
-        .feature-card:hover {
-            transform: translateY(-5px);
-        }
-
-        .feature-icon {
-            font-size: 2rem;
-            margin-bottom: 1rem;
-            color: var(--primary);
-        }
-
-        .feature-card h3 {
-            font-size: 1.5rem;
-            margin-bottom: 1rem;
-            color: var(--dark);
-        }
-
-        .feature-card p {
-            color: var(--gray);
-        }
-
-        /* Stats */
-        .stats {
-            background-color: var(--dark);
-            color: var(--white);
-            text-align: center;
-        }
-
-        .stats-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 2rem;
-            margin-top: 2rem;
-        }
-
-        .stat-item h3 {
-            font-size: 2.5rem;
-            margin-bottom: 0.5rem;
-            color: var(--primary);
-        }
-
-        /* Code Example */
-        .code-example {
-            background-color: var(--dark);
-            color: var(--white);
-            border-radius: 10px;
-            padding: 2rem;
-            overflow-x: auto;
-            margin: 2rem 0;
-        }
-
-        .code-block {
-            font-family: 'Courier New', monospace;
-            font-size: 0.9rem;
-            line-height: 1.5;
-        }
-
-        .comment { color: #94a3b8; }
-        .keyword { color: #818cf8; }
-        .string { color: #34d399; }
-        .class { color: #fbbf24; }
-        .function { color: #60a5fa; }
-
-        /* Documentation */
-        .docs-content {
-            background: var(--white);
-            border-radius: 10px;
-            padding: 2rem;
-            box-shadow: 0 5px 15px var(--shadow);
-        }
-
-        .docs-content h3 {
-            color: var(--primary);
-            margin: 1.5rem 0 1rem;
-        }
-
-        .docs-content ul {
-            padding-left: 1.5rem;
-            margin-bottom: 1rem;
-        }
-
-        .docs-content li {
-            margin-bottom: 0.5rem;
-        }
-
-        .docs-content code {
-            background-color: var(--light-gray);
-            padding: 0.2rem 0.4rem;
-            border-radius: 4px;
-            font-family: 'Courier New', monospace;
-        }
-
-        .docs-content pre {
-            background-color: var(--dark);
-            color: var(--white);
-            padding: 1rem;
-            border-radius: 8px;
-            overflow-x: auto;
-            margin: 1rem 0;
-        }
-
-        /* Footer */
-        footer {
-            background: var(--dark);
-            color: var(--white);
-            padding: 3rem 0 1.5rem;
-            text-align: center;
-        }
-
-        .footer-content {
-            margin-bottom: 2rem;
-        }
-
-        .copyright {
-            color: #94a3b8;
-            font-size: 0.9rem;
-            padding-top: 1.5rem;
-            border-top: 1px solid #334155;
-        }
-
-        /* Responsive */
-        @media (max-width: 768px) {
-            .header-content {
-                flex-direction: column;
-            }
-            
-            nav ul {
-                margin-top: 1rem;
-            }
-            
-            nav ul li {
-                margin: 0 0.5rem;
-            }
-            
-            .hero h1 {
-                font-size: 2rem;
-            }
-            
-            .hero p {
-                font-size: 1rem;
-            }
-        }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Ormax ORM – A high-performance, secure, async ORM for Python supporting multiple databases.">
+  <title>Ormax ORM • High-Performance Async ORM</title>
+  <!-- Google Font -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --primary: #10b981;
+      --primary-dark: #059669;
+      --dark: #1e293b;
+      --light: #f8fafc;
+      --gray: #64748b;
+      --light-gray: #e2e8f0;
+      --white: #ffffff;
+      --shadow: rgba(0, 0, 0, 0.1);
+      --transition: 0.3s ease;
+    }
+    *, *::before, *::after { box-sizing: border-box; margin:0; padding:0; }
+    body { font-family: 'Inter', sans-serif; color: var(--dark); background: var(--light); line-height: 1.6; }
+    a { text-decoration: none; color: inherit; }
+    img { max-width: 100%; display: block; }
+    .container { max-width: 1200px; width: 90%; margin: 0 auto; padding: 0 1rem; }
+    header { position: sticky; top:0; background:var(--white); box-shadow:0 2px 10px var(--shadow); z-index:1000; }
+    .header-inner { display:flex; justify-content:space-between; align-items:center; padding:1rem 0; }
+    .logo { font-size:1.8rem; font-weight:700; color:var(--primary); }
+    .logo .dot { color:var(--primary-dark); }
+    .nav-toggle { display:none; }
+    .menu-btn { display:none; font-size:1.5rem; background:none; border:none; cursor:pointer; }
+    .nav-menu { display:flex; gap:2rem; }
+    .nav-menu a { font-weight:500; transition:color var(--transition); }
+    .nav-menu a:hover { color:var(--primary); }
+    .hero { text-align:center; padding:5rem 1rem; background:linear-gradient(135deg,#f0fdf4 0%,#dcfce7 100%); }
+    .hero h1 { font-size:3rem; margin-bottom:1rem; }
+    .badges { margin-bottom:1.5rem; display:flex; justify-content:center; gap:0.5rem; flex-wrap:wrap; }
+    .badges img { height:24px; }
+    .hero p { max-width:700px; margin:0 auto 2rem; color:var(--gray); font-size:1.2rem; }
+    .btn { display:inline-block; background:var(--primary); color:var(--white); padding:0.8rem 2rem; border-radius:50px; font-weight:600; transition:background var(--transition); }
+    .btn:hover { background:var(--primary-dark); }
+    section { padding:4rem 0; }
+    .section-title { text-align:center; margin-bottom:3rem; }
+    .section-title h2 { font-size:2.25rem; margin-bottom:0.5rem; }
+    .section-title p { color:var(--gray); max-width:600px; margin:0 auto; }
+    .features { display:grid; grid-template-columns:repeat(auto-fit,minmax(260px,1fr)); gap:2rem; }
+    .feature { background:var(--white); padding:1.5rem; border-radius:1rem; box-shadow:0 5px 15px var(--shadow); border-top:4px solid var(--primary); transition:transform var(--transition); }
+    .feature:hover { transform:translateY(-5px); }
+    .feature .icon { font-size:1.75rem; margin-bottom:1rem; color:var(--primary); }
+    .feature h3 { font-size:1.25rem; margin-bottom:0.75rem; }
+    .feature p { color:var(--gray); font-size:0.95rem; }
+    .stats { background:var(--dark); color:var(--white); }
+    .stats-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(180px,1fr)); gap:2rem; text-align:center; }
+    .stat { padding:1.5rem; }
+    .stat h3 { font-size:2.25rem; color:var(--primary); margin-bottom:0.5rem; }
+    .stat p { color:var(--light-gray); }
+    .code-section .code-block { background:var(--dark); color:var(--white); padding:1.5rem; border-radius:0.75rem; overflow-x:auto; font-family:'Courier New', monospace; font-size:0.9rem; }
+    .docs-content { background:var(--white); padding:2rem; box-shadow:0 5px 15px var(--shadow); border-radius:0.75rem; }
+    .docs-content pre, .docs-content code { background:var(--light-gray); padding:0.5rem; border-radius:0.3rem; overflow-x:auto; }
+    .docs-content ul { padding-left:1.5rem; margin-bottom:1rem; }
+    .table-responsive { overflow-x:auto; }
+    table { width:100%; border-collapse:collapse; margin-bottom:1.5rem; }
+    th, td { padding:0.75rem; text-align:left; border-bottom:1px solid var(--light-gray); }
+    th { background:var(--light); }
+    @media(max-width:768px){ .menu-btn{ display:block;} .nav-menu{ position:absolute; top:100%; left:0; right:0; background:var(--white); flex-direction:column; align-items:center; max-height:0; overflow:hidden; transition:max-height var(--transition);} .nav-toggle:checked + .menu-btn + .nav-menu{ max-height:300px;} }
+  </style>
 </head>
 <body>
-    <!-- Header -->
-    <header>
-        <div class="container header-content">
-            <a href="#" class="logo">Ormax<span class="logo-dot">.</span></a>
-            <nav>
-                <ul>
-                    <li><a href="#features">Features</a></li>
-                    <li><a href="#performance">Performance</a></li>
-                    <li><a href="#docs">Documentation</a></li>
-                    <li><a href="#install">Install</a></li>
-                </ul>
-            </nav>
-        </div>
-    </header>
+  <header>
+    <div class="container header-inner">
+      <a href="#" class="logo">Ormax<span class="dot">.</span></a>
+      <input type="checkbox" id="nav-toggle" class="nav-toggle">
+      <label for="nav-toggle" class="menu-btn">☰</label>
+      <nav class="nav-menu">
+        <a href="#features">Features</a>
+        <a href="#performance">Performance</a>
+        <a href="#quickstart">Quick Start</a>
+        <a href="#docs">Documentation</a>
+        <a href="#install">Install</a>
+      </nav>
+    </div>
+  </header>
 
-    <!-- Hero -->
-    <section class="hero">
-        <div class="container">
-            <h1>Ormax ORM</h1>
-            <p>The High-Performance Async ORM for Python with Multi-Database Support</p>
-            <a href="#install" class="cta-button">Get Started</a>
-        </div>
-    </section>
+  <section class="hero">
+    <div class="container">
+      <h1>Ormax ORM</h1>
+      <div class="badges">
+        <a href="https://www.python.org/downloads/" target="_blank"><img src="https://img.shields.io/badge/python-3.7%2B-blue" alt="Python Version"></a>
+        <a href="LICENSE" target="_blank"><img src="https://img.shields.io/badge/license-MIT-green" alt="License"></a>
+        <a href="https://docs.python.org/3/library/asyncio.html" target="_blank"><img src="https://img.shields.io/badge/async-await-brightgreen" alt="Async"></a>
+      </div>
+      <p><strong>Ormax</strong> is a high-performance, secure, and advanced asynchronous ORM for Python supporting MariaDB, MySQL, PostgreSQL, SQLite3, Microsoft SQL Server, Oracle Database, and Amazon Aurora.</p>
+      <a href="#install" class="btn">Get Started</a>
+    </div>
+  </section>
 
-    <!-- Features -->
-    <section id="features">
-        <div class="container">
-            <div class="section-title">
-                <h2>Powerful Features</h2>
-                <p>Built for developers who demand speed, security, and simplicity</p>
-            </div>
-            <div class="features-grid">
-                <div class="feature-card">
-                    <div class="feature-icon">⚡</div>
-                    <h3>Lightning Fast</h3>
-                    <p>Optimized for performance with async/await support. Up to 8x faster than traditional ORMs.</p>
-                </div>
-                <div class="feature-card">
-                    <div class="feature-icon">🔒</div>
-                    <h3>Secure by Default</h3>
-                    <p>Built-in SQL injection protection, input validation, and data sanitization.</p>
-                </div>
-                <div class="feature-card">
-                    <div class="feature-icon">🔌</div>
-                    <h3>Multi-Database</h3>
-                    <p>Supports SQLite, MySQL, PostgreSQL, MariaDB, MSSQL, Oracle, and Aurora.</p>
-                </div>
-            </div>
-        </div>
-    </section>
+  <section id="features">
+    <div class="container">
+      <div class="section-title"><h2>🚀 Features</h2><p>Built for developers who demand speed, security, and simplicity</p></div>
+      <div class="features">
+        <div class="feature"><div class="icon">🗄️</div><h3>Multi-Database Support</h3><p>MariaDB, MySQL, PostgreSQL, SQLite3, MSSQL, Oracle, Aurora</p></div>
+        <div class="feature"><div class="icon">⚡</div><h3>Fully Async</h3><p>Built with asyncio for maximum performance</p></div>
+        <div class="feature"><div class="icon">🔒</div><h3>Security First</h3><p>SQL injection protection and input validation</p></div>
+        <div class="feature"><div class="icon">🔗</div><h3>Connection Pooling</h3><p>Optimized database connections</p></div>
+        <div class="feature"><div class="icon">🔄</div><h3>Transaction Support</h3><p>ACID compliant transactions</p></div>
+        <div class="feature"><div class="icon">📋</div><h3>Advanced QuerySet</h3><p>Powerful query capabilities</p></div>
+        <div class="feature"><div class="icon">📦</div><h3>Rich Field Types</h3><p>Comprehensive field validation</p></div>
+        <div class="feature"><div class="icon">🛠️</div><h3>Bulk Operations</h3><p>Efficient bulk create, update, delete</p></div>
+        <div class="feature"><div class="icon">⚙️</div><h3>Easy Configuration</h3><p>Simple setup and usage</p></div>
+      </div>
+    </div>
+  </section>
 
-    <!-- Performance -->
-    <section id="performance" class="stats">
-        <div class="container">
-            <div class="section-title">
-                <h2>Performance Benchmarks</h2>
-                <p>See how Ormax ORM compares to other popular ORMs</p>
-            </div>
-            <div class="stats-grid">
-                <div class="stat-item">
-                    <h3>8x</h3>
-                    <p>Faster than SQLAlchemy</p>
-                </div>
-                <div class="stat-item">
-                    <h3>4x</h3>
-                    <p>Faster than Peewee</p>
-                </div>
-                <div class="stat-item">
-                    <h3>1000+</h3>
-                    <p>Records/sec</p>
-                </div>
-                <div class="stat-item">
-                    <h3>99.9%</h3>
-                    <p>Test Coverage</p>
-                </div>
-            </div>
-        </div>
-    </section>
+  <section id="performance" class="stats">
+    <div class="container">
+      <div class="section-title"><h2>⚡ Performance Benchmarks</h2><p>See how Ormax ORM compares to other popular ORMs</p></div>
+      <div class="stats-grid">
+        <div class="stat"><h3>8x</h3><p>Faster than SQLAlchemy</p></div>
+        <div class="stat"><h3>4x</h3><p>Faster than Peewee</p></div>
+        <div class="stat"><h3>1000+</h3><p>Records/sec</p></div>
+        <div class="stat"><h3>99.9%</h3><p>Test Coverage</p></div>
+      </div>
+    </div>
+  </section>
 
-    <!-- Code Example -->
-    <section>
-        <div class="container">
-            <div class="section-title">
-                <h2>Simple & Elegant</h2>
-                <p>Experience the power of async ORM with clean, readable code</p>
-            </div>
-            <div class="code-example">
-                <pre class="code-block"><code><span class="keyword">import</span> asyncio
-<span class="keyword">from</span> ormax <span class="keyword">import</span> Database, Model
-<span class="keyword">from</span> ormax.fields <span class="keyword">import</span> *
+  <section id="quickstart" class="code-section">
+    <div class="container">
+      <div class="section-title"><h2>🚀 Quick Start</h2><p>Define models and perform CRUD in minutes</p></div>
+      <pre class="code-block"><code><span class="comment"># Define Models</span>
+from ormax import Database, Model
+from ormax.fields import *
 
-<span class="keyword">class</span> <span class="class">User</span>(Model):
-    table_name = <span class="string">"users"</span>
+class User(Model):
+    table_name = "users"
     id = AutoField()
-    username = CharField(max_length=<span class="number">50</span>, unique=<span class="keyword">True</span>)
-    email = EmailField(unique=<span class="keyword">True</span>)
-    is_active = BooleanField(default=<span class="keyword">True</span>)
-    created_at = DateTimeField(auto_now_add=<span class="keyword">True</span>)
+    username = CharField(max_length=50, unique=True)
+    email = EmailField(unique=True)
 
-<span class="keyword">async def</span> <span class="function">main</span>():
-    <span class="comment"># Initialize database</span>
-    db = Database(<span class="string">"sqlite:///example.db"</span>)
-    <span class="keyword">await</span> db.connect()
-    
-    <span class="comment"># Register model and create tables</span>
+class Post(Model):
+    _meta = {'table_name': 'posts'}
+    id = AutoField()
+    title = CharField(max_length=200)
+    content = TextField()
+    author_id = IntegerField(foreign_key='users.id')
+
+<span class="comment"># Setup & CRUD</span>
+import asyncio
+
+async def main():
+    db = Database("sqlite:///example.db")
+    await db.connect()
     db.register_model(User)
-    <span class="keyword">await</span> db.create_tables()
+    db.register_model(Post)
+    await db.create_tables()
+
+    # Create
+    user = await User.create(username="john_doe", email="john@example.com")
+    # Read
+    users = await User.objects().filter(is_active=True).all()
+    # Update
+    user.email = "new@example.com"
+    await user.save()
+    # Delete
+    await user.delete()
     
-    <span class="comment"># Create users</span>
-    user = <span class="keyword">await</span> User.create(
-        username=<span class="string">"john_doe"</span>,
-        email=<span class="string">"john@example.com"</span>
-    )
-    
-    <span class="comment"># Query users</span>
-    active_users = <span class="keyword">await</span> User.objects().filter(is_active=<span class="keyword">True</span>).all()
-    
-    <span class="keyword">await</span> db.disconnect()
+    await db.disconnect()
 
 asyncio.run(main())</code></pre>
-            </div>
+    </div>
+  </section>
+
+  <section id="docs" class="docs">
+    <div class="container">
+      <div class="section-title"><h2>📦 Installation & Dependencies</h2><p>Install core and DB-specific packages</p></div>
+      <div class="docs-content">
+        <h3>Install Ormax</h3>
+        <pre><code>pip install ormax</code></pre>
+        <h3>DB Dependencies</h3>
+        <pre><code>pip install aiomysql asyncpg aiosqlite aioodbc async-oracledb</code></pre>
+        <h3>Supported Databases</h3>
+        <div class="table-responsive">
+        <table>
+          <thead><tr><th>Database</th><th>Connection String</th><th>Package</th></tr></thead>
+          <tbody>
+            <tr><td>SQLite</td><td><code>sqlite:///path/to/db.sqlite</code></td><td><code>aiosqlite</code></td></tr>
+            <tr><td>MySQL</td><td><code>mysql://user:pass@host:port/db</code></td><td><code>aiomysql</code></td></tr>
+            <tr><td>PostgreSQL</td><td><code>postgresql://user:pass@host:port/db</code></td><td><code>asyncpg</code></td></tr>
+            <tr><td>MariaDB</td><td><code>mariadb://user:pass@host:port/db</code></td><td><code>aiomysql</code></td></tr>
+            <tr><td>MSSQL</td><td><code>mssql://user:pass@host:port/db</code></td><td><code>aioodbc</code></td></tr>
+            <tr><td>Oracle</td><td><code>oracle://user:pass@host:port/service</code></td><td><code>async-oracledb</code></td></tr>
+            <tr><td>Aurora</td><td><code>aurora://user:pass@cluster/db</code></td><td><code>aiomysql</code></td></tr>
+          </tbody>
+        </table>
         </div>
-    </section>
+      </div>
+    </div>
+  </section>
 
-    <!-- Documentation -->
-    <section id="docs">
-        <div class="container">
-            <div class="section-title">
-                <h2>Documentation</h2>
-                <p>Complete guide to using Ormax ORM</p>
-            </div>
-            <div class="docs-content">
-                <h3>Installation</h3>
-                <p>Install Ormax ORM using pip:</p>
-                <pre><code>pip install ormax</code></pre>
-                
-                <p>Install database-specific dependencies:</p>
-                <pre><code># For MySQL/MariaDB
-pip install aiomysql
+  <section id="install" class="hero" style="padding:3rem 1rem;background:#dcfce7;">
+    <div class="container">
+      <div class="section-title"><h2>Start Using Ormax Today</h2><p>Fast, secure, and async ORM at your fingertips</p></div>
+      <a href="https://pypi.org/project/ormax/" class="btn">Install from PyPI</a>
+    </div>
+  </section>
 
-# For PostgreSQL  
-pip install asyncpg
-
-# For SQLite
-pip install aiosqlite
-
-# For Microsoft SQL Server
-pip install aioodbc
-
-# For Oracle Database
-pip install async-oracledb
-
-# Install all dependencies
-pip install ormax[all]</code></pre>
-
-                <h3>Defining Models</h3>
-                <p>Create models by inheriting from the Model class:</p>
-                <pre><code><span class="keyword">class</span> <span class="class">User</span>(Model):
-    table_name = <span class="string">"users"</span>  <span class="comment"># Simple table name setup</span>
-    
-    id = AutoField()
-    username = CharField(max_length=<span class="number">50</span>, unique=<span class="keyword">True</span>)
-    email = EmailField(unique=<span class="keyword">True</span>)
-    is_active = BooleanField(default=<span class="keyword">True</span>)
-    created_at = DateTimeField(auto_now_add=<span class="keyword">True</span>)</code></pre>
-
-                <h3>Database Setup</h3>
-                <pre><code><span class="keyword">import</span> asyncio
-
-<span class="keyword">async def</span> <span class="function">main</span>():
-    <span class="comment"># Initialize database</span>
-    db = Database(<span class="string">"sqlite:///example.db"</span>)  <span class="comment"># SQLite</span>
-    <span class="comment"># db = Database("mysql://user:password@localhost/dbname")  # MySQL</span>
-    <span class="comment"># db = Database("postgresql://user:password@localhost/dbname")  # PostgreSQL</span>
-    <span class="comment"># db = Database("mariadb://user:password@localhost/dbname")  # MariaDB</span>
-    
-    <span class="keyword">await</span> db.connect()
-    
-    <span class="comment"># Register models</span>
-    db.register_model(User)
-    
-    <span class="comment"># Create tables</span>
-    <span class="keyword">await</span> db.create_tables()</code></pre>
-
-                <h3>CRUD Operations</h3>
-                <h4>Create</h4>
-                <pre><code><span class="comment"># Create single instance</span>
-user = <span class="keyword">await</span> User.create(
-    username=<span class="string">"john_doe"</span>,
-    email=<span class="string">"john@example.com"</span>
-)
-
-<span class="comment"># Or create and save manually</span>
-user = User(username=<span class="string">"jane_smith"</span>, email=<span class="string">"jane@example.com"</span>)
-<span class="keyword">await</span> user.save()</code></pre>
-
-                <h4>Read</h4>
-                <pre><code><span class="comment"># Get all records</span>
-all_users = <span class="keyword">await</span> User.objects().all()
-
-<span class="comment"># Filter records</span>
-active_users = <span class="keyword">await</span> User.objects().filter(is_active=<span class="keyword">True</span>)
-
-<span class="comment"># Get single record</span>
-user = <span class="keyword">await</span> User.objects().get(username=<span class="string">"john_doe"</span>)</code></pre>
-
-                <h4>Update</h4>
-                <pre><code><span class="comment"># Update single instance</span>
-user.email = <span class="string">"newemail@example.com"</span>
-<span class="keyword">await</span> user.save()
-
-<span class="comment"># Bulk update</span>
-updated_count = <span class="keyword">await</span> User.objects().filter(is_active=<span class="keyword">False</span>).update(is_active=<span class="keyword">True</span>)</code></pre>
-
-                <h4>Delete</h4>
-                <pre><code><span class="comment"># Delete single instance</span>
-<span class="keyword">await</span> user.delete()
-
-<span class="comment"># Bulk delete</span>
-deleted_count = <span class="keyword">await</span> User.objects().filter(is_active=<span class="keyword">False</span>).delete()</code></pre>
-
-                <h3>Advanced Features</h3>
-                <h4>Transactions</h4>
-                <pre><code><span class="keyword">async with</span> db.transaction():
-    user = <span class="keyword">await</span> User.create(username=<span class="string">"test"</span>, email=<span class="string">"test@example.com"</span>)
-    post = <span class="keyword">await</span> Post.create(title=<span class="string">"Test Post"</span>, content=<span class="string">"Content"</span>, author_id=user.id)</code></pre>
-
-                <h4>Complex Queries</h4>
-                <pre><code><span class="comment"># Chaining filters</span>
-users = <span class="keyword">await</span> User.objects().filter(is_active=<span class="keyword">True</span>).exclude(username=<span class="string">"admin"</span>)
-
-<span class="comment"># Ordering</span>
-posts = <span class="keyword">await</span> Post.objects().order_by(<span class="string">'-created_at'</span>, <span class="string">'title'</span>)
-
-<span class="comment"># Pagination</span>
-page_1_posts = <span class="keyword">await</span> Post.objects().limit(<span class="number">10</span>).offset(<span class="number">0</span>)</code></pre>
-
-                <h3>Field Types</h3>
-                <ul>
-                    <li><code>CharField</code> - String with max length</li>
-                    <li><code>TextField</code> - Long text</li>
-                    <li><code>IntegerField</code> - Integer</li>
-                    <li><code>BigIntegerField</code> - Big integer</li>
-                    <li><code>FloatField</code> - Floating point</li>
-                    <li><code>DecimalField</code> - Decimal with precision</li>
-                    <li><code>BooleanField</code> - Boolean</li>
-                    <li><code>DateTimeField</code> - DateTime</li>
-                    <li><code>DateField</code> - Date</li>
-                    <li><code>EmailField</code> - Validated email</li>
-                    <li><code>URLField</code> - Validated URL</li>
-                    <li><code>JSONField</code> - JSON data</li>
-                    <li><code>UUIDField</code> - UUID</li>
-                </ul>
-            </div>
-        </div>
-    </section>
-
-    <!-- Install -->
-    <section id="install" style="background-color: #f0fdf4; text-align: center;">
-        <div class="container">
-            <div class="section-title">
-                <h2>Get Started Today</h2>
-                <p>Install Ormax ORM and start building faster applications</p>
-            </div>
-            <a href="https://pypi.org/project/ormax/" class="cta-button">Install from PyPI</a>
-        </div>
-    </section>
-
-    <!-- Footer -->
-    <footer>
-        <div class="container">
-            <div class="footer-content">
-                <p>Ormax ORM - The high-performance async ORM for modern Python applications.</p>
-                <p>Built with ❤️ for the Python community</p>
-            </div>
-            <div class="copyright">
-                <p>&copy; 2023 Ormax ORM. MIT License.</p>
-            </div>
-        </div>
-    </footer>
+  <footer>
+    <div class="container" style="text-align:center;padding:2rem 0;">
+      <p>Ormax ORM – Built with ❤️ for the Python community.</p>
+      <p>&copy; 2025 Ormax ORM. MIT License.</p>
+    </div>
+  </footer>
 </body>
 </html>
