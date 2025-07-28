@@ -1,347 +1,289 @@
 <!DOCTYPE html>
-<html lang="en" dir="ltr">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Ormax ORM - High-Performance Async ORM</title>
     <style>
         :root {
-            --primary: #2563eb;
-            --primary-dark: #1d4ed8;
-            --secondary: #7c3aed;
+            --primary: #10b981; /* Emerald Green */
+            --primary-dark: #059669;
             --dark: #1e293b;
             --light: #f8fafc;
             --gray: #64748b;
-            --success: #10b981;
-            --warning: #f59e0b;
-            --danger: #ef4444;
+            --light-gray: #e2e8f0;
+            --white: #ffffff;
+            --shadow: rgba(0, 0, 0, 0.1);
         }
-        
+
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
         }
-        
+
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
             line-height: 1.6;
             color: var(--dark);
             background-color: var(--light);
         }
-        
+
         .container {
             width: 90%;
             max-width: 1200px;
             margin: 0 auto;
             padding: 0 20px;
         }
-        
-        /* Header Styles */
+
+        /* Header */
         header {
-            background: linear-gradient(135deg, var(--primary), var(--secondary));
-            color: white;
-            padding: 1rem 0;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            background-color: var(--white);
+            box-shadow: 0 2px 10px var(--shadow);
+            position: sticky;
+            top: 0;
+            z-index: 100;
         }
-        
+
         .header-content {
             display: flex;
             justify-content: space-between;
             align-items: center;
+            padding: 1rem 0;
         }
-        
+
         .logo {
-            font-size: 2rem;
+            font-size: 1.8rem;
             font-weight: 700;
+            color: var(--primary);
+            text-decoration: none;
             display: flex;
             align-items: center;
         }
-        
-        .logo span {
-            color: #ffd700;
+
+        .logo-dot {
+            color: var(--primary-dark);
         }
-        
+
         nav ul {
             display: flex;
             list-style: none;
         }
-        
+
         nav ul li {
             margin-left: 2rem;
         }
-        
+
         nav ul li a {
-            color: white;
+            color: var(--dark);
             text-decoration: none;
             font-weight: 500;
-            transition: opacity 0.3s;
+            transition: color 0.3s;
         }
-        
+
         nav ul li a:hover {
-            opacity: 0.8;
+            color: var(--primary);
         }
-        
-        /* Hero Section */
+
+        /* Hero */
         .hero {
             padding: 5rem 0;
             text-align: center;
-            background: linear-gradient(rgba(37, 99, 235, 0.1), rgba(124, 58, 237, 0.1));
+            background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%);
         }
-        
+
         .hero h1 {
-            font-size: 3.5rem;
+            font-size: 3rem;
             margin-bottom: 1rem;
-            background: linear-gradient(90deg, var(--primary), var(--secondary));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
+            color: var(--dark);
         }
-        
+
         .hero p {
-            font-size: 1.2rem;
+            font-size: 1.25rem;
             color: var(--gray);
             max-width: 700px;
             margin: 0 auto 2rem;
         }
-        
-        .cta-buttons {
-            display: flex;
-            justify-content: center;
-            gap: 1rem;
-            margin-top: 2rem;
-        }
-        
-        .btn {
+
+        .cta-button {
+            display: inline-block;
+            background-color: var(--primary);
+            color: var(--white);
             padding: 0.8rem 2rem;
             border-radius: 50px;
             text-decoration: none;
             font-weight: 600;
-            transition: all 0.3s ease;
+            transition: background-color 0.3s;
             border: none;
             cursor: pointer;
             font-size: 1rem;
         }
-        
-        .btn-primary {
-            background-color: var(--primary);
-            color: white;
-        }
-        
-        .btn-primary:hover {
+
+        .cta-button:hover {
             background-color: var(--primary-dark);
-            transform: translateY(-2px);
-            box-shadow: 0 4px 15px rgba(37, 99, 235, 0.3);
         }
-        
-        .btn-secondary {
-            background-color: transparent;
-            color: var(--primary);
-            border: 2px solid var(--primary);
+
+        /* Sections */
+        section {
+            padding: 4rem 0;
         }
-        
-        .btn-secondary:hover {
-            background-color: var(--primary);
-            color: white;
-        }
-        
-        /* Features Section */
-        .features {
-            padding: 5rem 0;
-            background-color: white;
-        }
-        
+
         .section-title {
             text-align: center;
             margin-bottom: 3rem;
         }
-        
+
         .section-title h2 {
-            font-size: 2.5rem;
+            font-size: 2rem;
             color: var(--dark);
             margin-bottom: 1rem;
         }
-        
+
         .section-title p {
             color: var(--gray);
             max-width: 600px;
             margin: 0 auto;
         }
-        
+
+        /* Features */
         .features-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
             gap: 2rem;
         }
-        
+
         .feature-card {
-            background: white;
+            background: var(--white);
             border-radius: 10px;
             padding: 2rem;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
-            border: 1px solid #e2e8f0;
+            box-shadow: 0 5px 15px var(--shadow);
+            transition: transform 0.3s ease;
+            border-top: 4px solid var(--primary);
         }
-        
+
         .feature-card:hover {
             transform: translateY(-5px);
-            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
         }
-        
+
         .feature-icon {
-            font-size: 2.5rem;
+            font-size: 2rem;
             margin-bottom: 1rem;
             color: var(--primary);
         }
-        
+
         .feature-card h3 {
             font-size: 1.5rem;
             margin-bottom: 1rem;
             color: var(--dark);
         }
-        
+
         .feature-card p {
             color: var(--gray);
         }
-        
-        /* Stats Section */
+
+        /* Stats */
         .stats {
-            padding: 5rem 0;
-            background: linear-gradient(135deg, var(--primary), var(--secondary));
-            color: white;
+            background-color: var(--dark);
+            color: var(--white);
             text-align: center;
         }
-        
+
         .stats-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
             gap: 2rem;
-            margin-top: 3rem;
+            margin-top: 2rem;
         }
-        
+
         .stat-item h3 {
-            font-size: 3rem;
+            font-size: 2.5rem;
             margin-bottom: 0.5rem;
+            color: var(--primary);
         }
-        
-        .stat-item p {
-            font-size: 1.1rem;
-            opacity: 0.9;
-        }
-        
+
         /* Code Example */
         .code-example {
-            padding: 5rem 0;
-            background-color: #0f172a;
-            color: white;
-        }
-        
-        .code-container {
-            background: #1e293b;
+            background-color: var(--dark);
+            color: var(--white);
             border-radius: 10px;
             padding: 2rem;
             overflow-x: auto;
-            margin-top: 2rem;
+            margin: 2rem 0;
         }
-        
+
         .code-block {
             font-family: 'Courier New', monospace;
-            font-size: 1rem;
+            font-size: 0.9rem;
             line-height: 1.5;
         }
-        
-        .comment { color: #64748b; }
+
+        .comment { color: #94a3b8; }
         .keyword { color: #818cf8; }
         .string { color: #34d399; }
         .class { color: #fbbf24; }
         .function { color: #60a5fa; }
-        
-        /* Languages */
-        .languages {
-            padding: 5rem 0;
-            background-color: white;
+
+        /* Documentation */
+        .docs-content {
+            background: var(--white);
+            border-radius: 10px;
+            padding: 2rem;
+            box-shadow: 0 5px 15px var(--shadow);
         }
-        
-        .language-tabs {
-            display: flex;
-            justify-content: center;
-            margin-bottom: 2rem;
-            flex-wrap: wrap;
+
+        .docs-content h3 {
+            color: var(--primary);
+            margin: 1.5rem 0 1rem;
         }
-        
-        .lang-btn {
-            padding: 0.5rem 1.5rem;
-            background: #e2e8f0;
-            border: none;
-            margin: 0.25rem;
-            border-radius: 50px;
-            cursor: pointer;
-            transition: all 0.3s ease;
+
+        .docs-content ul {
+            padding-left: 1.5rem;
+            margin-bottom: 1rem;
         }
-        
-        .lang-btn.active, .lang-btn:hover {
-            background: var(--primary);
-            color: white;
+
+        .docs-content li {
+            margin-bottom: 0.5rem;
         }
-        
-        .language-content {
-            display: none;
+
+        .docs-content code {
+            background-color: var(--light-gray);
+            padding: 0.2rem 0.4rem;
+            border-radius: 4px;
+            font-family: 'Courier New', monospace;
         }
-        
-        .language-content.active {
-            display: block;
+
+        .docs-content pre {
+            background-color: var(--dark);
+            color: var(--white);
+            padding: 1rem;
+            border-radius: 8px;
+            overflow-x: auto;
+            margin: 1rem 0;
         }
-        
+
         /* Footer */
         footer {
             background: var(--dark);
-            color: white;
+            color: var(--white);
             padding: 3rem 0 1.5rem;
+            text-align: center;
         }
-        
+
         .footer-content {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 2rem;
             margin-bottom: 2rem;
         }
-        
-        .footer-section h3 {
-            margin-bottom: 1rem;
-            font-size: 1.3rem;
-        }
-        
-        .footer-section ul {
-            list-style: none;
-        }
-        
-        .footer-section ul li {
-            margin-bottom: 0.5rem;
-        }
-        
-        .footer-section ul li a {
-            color: #cbd5e1;
-            text-decoration: none;
-            transition: color 0.3s;
-        }
-        
-        .footer-section ul li a:hover {
-            color: white;
-        }
-        
+
         .copyright {
-            text-align: center;
-            padding-top: 1.5rem;
-            border-top: 1px solid #334155;
             color: #94a3b8;
             font-size: 0.9rem;
+            padding-top: 1.5rem;
+            border-top: 1px solid #334155;
         }
-        
-        /* Responsive Design */
+
+        /* Responsive */
         @media (max-width: 768px) {
             .header-content {
                 flex-direction: column;
-                text-align: center;
             }
             
             nav ul {
@@ -353,47 +295,11 @@
             }
             
             .hero h1 {
-                font-size: 2.5rem;
+                font-size: 2rem;
             }
             
-            .cta-buttons {
-                flex-direction: column;
-                align-items: center;
-            }
-            
-            .btn {
-                width: 80%;
-                margin-bottom: 1rem;
-            }
-        }
-        
-        /* RTL Support for Arabic and Persian */
-        [dir="rtl"] {
-            font-family: 'Tahoma', 'Arial', sans-serif;
-        }
-        
-        [dir="rtl"] .header-content,
-        [dir="rtl"] .cta-buttons,
-        [dir="rtl"] .features-grid,
-        [dir="rtl"] .stats-grid,
-        [dir="rtl"] .language-tabs,
-        [dir="rtl"] .footer-content {
-            direction: rtl;
-        }
-        
-        [dir="rtl"] nav ul {
-            padding-right: 0;
-        }
-        
-        [dir="rtl"] nav ul li {
-            margin-left: 0;
-            margin-right: 2rem;
-        }
-        
-        @media (max-width: 768px) {
-            [dir="rtl"] nav ul li {
-                margin-left: 0.5rem;
-                margin-right: 0.5rem;
+            .hero p {
+                font-size: 1rem;
             }
         }
     </style>
@@ -402,32 +308,29 @@
     <!-- Header -->
     <header>
         <div class="container header-content">
-            <div class="logo">Ormax<span>ORM</span></div>
+            <a href="#" class="logo">Ormax<span class="logo-dot">.</span></a>
             <nav>
                 <ul>
                     <li><a href="#features">Features</a></li>
                     <li><a href="#performance">Performance</a></li>
-                    <li><a href="#languages">Languages</a></li>
                     <li><a href="#docs">Documentation</a></li>
+                    <li><a href="#install">Install</a></li>
                 </ul>
             </nav>
         </div>
     </header>
 
-    <!-- Hero Section -->
+    <!-- Hero -->
     <section class="hero">
         <div class="container">
             <h1>Ormax ORM</h1>
             <p>The High-Performance Async ORM for Python with Multi-Database Support</p>
-            <div class="cta-buttons">
-                <a href="#docs" class="btn btn-primary">Get Started</a>
-                <a href="#performance" class="btn btn-secondary">View Benchmarks</a>
-            </div>
+            <a href="#install" class="cta-button">Get Started</a>
         </div>
     </section>
 
-    <!-- Features Section -->
-    <section id="features" class="features">
+    <!-- Features -->
+    <section id="features">
         <div class="container">
             <div class="section-title">
                 <h2>Powerful Features</h2>
@@ -449,26 +352,11 @@
                     <h3>Multi-Database</h3>
                     <p>Supports SQLite, MySQL, PostgreSQL, MariaDB, MSSQL, Oracle, and Aurora.</p>
                 </div>
-                <div class="feature-card">
-                    <div class="feature-icon">🔄</div>
-                    <h3>Connection Pooling</h3>
-                    <p>Efficient connection management with built-in pooling for optimal resource usage.</p>
-                </div>
-                <div class="feature-card">
-                    <div class="feature-icon">🧩</div>
-                    <h3>Rich Field Types</h3>
-                    <p>Comprehensive field validation with Email, URL, JSON, UUID, and custom fields.</p>
-                </div>
-                <div class="feature-card">
-                    <div class="feature-icon">🛠️</div>
-                    <h3>Advanced QuerySet</h3>
-                    <p>Powerful querying capabilities with filtering, ordering, pagination, and aggregation.</p>
-                </div>
             </div>
         </div>
     </section>
 
-    <!-- Stats Section -->
+    <!-- Performance -->
     <section id="performance" class="stats">
         <div class="container">
             <div class="section-title">
@@ -497,13 +385,13 @@
     </section>
 
     <!-- Code Example -->
-    <section class="code-example">
+    <section>
         <div class="container">
             <div class="section-title">
                 <h2>Simple & Elegant</h2>
                 <p>Experience the power of async ORM with clean, readable code</p>
             </div>
-            <div class="code-container">
+            <div class="code-example">
                 <pre class="code-block"><code><span class="keyword">import</span> asyncio
 <span class="keyword">from</span> ormax <span class="keyword">import</span> Database, Model
 <span class="keyword">from</span> ormax.fields <span class="keyword">import</span> *
@@ -541,80 +429,147 @@ asyncio.run(main())</code></pre>
         </div>
     </section>
 
-    <!-- Languages Section -->
-    <section id="languages" class="languages">
+    <!-- Documentation -->
+    <section id="docs">
         <div class="container">
             <div class="section-title">
-                <h2>Multi-Language Support</h2>
-                <p>Ormax ORM documentation and community in your language</p>
+                <h2>Documentation</h2>
+                <p>Complete guide to using Ormax ORM</p>
             </div>
-            <div class="language-tabs">
-                <button class="lang-btn active" onclick="switchLanguage('en')">English</button>
-                <button class="lang-btn" onclick="switchLanguage('fa')">فارسی</button>
-                <button class="lang-btn" onclick="switchLanguage('ar')">العربية</button>
-                <button class="lang-btn" onclick="switchLanguage('zh')">中文</button>
-                <button class="lang-btn" onclick="switchLanguage('ru')">Русский</button>
-            </div>
-            
-            <!-- English Content -->
-            <div id="lang-en" class="language-content active">
-                <h3>Global Community</h3>
-                <p>Ormax ORM is designed for developers worldwide with comprehensive documentation in multiple languages. Join our growing community of Python developers who are building faster, more secure applications.</p>
+            <div class="docs-content">
+                <h3>Installation</h3>
+                <p>Install Ormax ORM using pip:</p>
+                <pre><code>pip install ormax</code></pre>
+                
+                <p>Install database-specific dependencies:</p>
+                <pre><code># For MySQL/MariaDB
+pip install aiomysql
+
+# For PostgreSQL  
+pip install asyncpg
+
+# For SQLite
+pip install aiosqlite
+
+# For Microsoft SQL Server
+pip install aioodbc
+
+# For Oracle Database
+pip install async-oracledb
+
+# Install all dependencies
+pip install ormax[all]</code></pre>
+
+                <h3>Defining Models</h3>
+                <p>Create models by inheriting from the Model class:</p>
+                <pre><code><span class="keyword">class</span> <span class="class">User</span>(Model):
+    table_name = <span class="string">"users"</span>  <span class="comment"># Simple table name setup</span>
+    
+    id = AutoField()
+    username = CharField(max_length=<span class="number">50</span>, unique=<span class="keyword">True</span>)
+    email = EmailField(unique=<span class="keyword">True</span>)
+    is_active = BooleanField(default=<span class="keyword">True</span>)
+    created_at = DateTimeField(auto_now_add=<span class="keyword">True</span>)</code></pre>
+
+                <h3>Database Setup</h3>
+                <pre><code><span class="keyword">import</span> asyncio
+
+<span class="keyword">async def</span> <span class="function">main</span>():
+    <span class="comment"># Initialize database</span>
+    db = Database(<span class="string">"sqlite:///example.db"</span>)  <span class="comment"># SQLite</span>
+    <span class="comment"># db = Database("mysql://user:password@localhost/dbname")  # MySQL</span>
+    <span class="comment"># db = Database("postgresql://user:password@localhost/dbname")  # PostgreSQL</span>
+    <span class="comment"># db = Database("mariadb://user:password@localhost/dbname")  # MariaDB</span>
+    
+    <span class="keyword">await</span> db.connect()
+    
+    <span class="comment"># Register models</span>
+    db.register_model(User)
+    
+    <span class="comment"># Create tables</span>
+    <span class="keyword">await</span> db.create_tables()</code></pre>
+
+                <h3>CRUD Operations</h3>
+                <h4>Create</h4>
+                <pre><code><span class="comment"># Create single instance</span>
+user = <span class="keyword">await</span> User.create(
+    username=<span class="string">"john_doe"</span>,
+    email=<span class="string">"john@example.com"</span>
+)
+
+<span class="comment"># Or create and save manually</span>
+user = User(username=<span class="string">"jane_smith"</span>, email=<span class="string">"jane@example.com"</span>)
+<span class="keyword">await</span> user.save()</code></pre>
+
+                <h4>Read</h4>
+                <pre><code><span class="comment"># Get all records</span>
+all_users = <span class="keyword">await</span> User.objects().all()
+
+<span class="comment"># Filter records</span>
+active_users = <span class="keyword">await</span> User.objects().filter(is_active=<span class="keyword">True</span>)
+
+<span class="comment"># Get single record</span>
+user = <span class="keyword">await</span> User.objects().get(username=<span class="string">"john_doe"</span>)</code></pre>
+
+                <h4>Update</h4>
+                <pre><code><span class="comment"># Update single instance</span>
+user.email = <span class="string">"newemail@example.com"</span>
+<span class="keyword">await</span> user.save()
+
+<span class="comment"># Bulk update</span>
+updated_count = <span class="keyword">await</span> User.objects().filter(is_active=<span class="keyword">False</span>).update(is_active=<span class="keyword">True</span>)</code></pre>
+
+                <h4>Delete</h4>
+                <pre><code><span class="comment"># Delete single instance</span>
+<span class="keyword">await</span> user.delete()
+
+<span class="comment"># Bulk delete</span>
+deleted_count = <span class="keyword">await</span> User.objects().filter(is_active=<span class="keyword">False</span>).delete()</code></pre>
+
+                <h3>Advanced Features</h3>
+                <h4>Transactions</h4>
+                <pre><code><span class="keyword">async with</span> db.transaction():
+    user = <span class="keyword">await</span> User.create(username=<span class="string">"test"</span>, email=<span class="string">"test@example.com"</span>)
+    post = <span class="keyword">await</span> Post.create(title=<span class="string">"Test Post"</span>, content=<span class="string">"Content"</span>, author_id=user.id)</code></pre>
+
+                <h4>Complex Queries</h4>
+                <pre><code><span class="comment"># Chaining filters</span>
+users = <span class="keyword">await</span> User.objects().filter(is_active=<span class="keyword">True</span>).exclude(username=<span class="string">"admin"</span>)
+
+<span class="comment"># Ordering</span>
+posts = <span class="keyword">await</span> Post.objects().order_by(<span class="string">'-created_at'</span>, <span class="string">'title'</span>)
+
+<span class="comment"># Pagination</span>
+page_1_posts = <span class="keyword">await</span> Post.objects().limit(<span class="number">10</span>).offset(<span class="number">0</span>)</code></pre>
+
+                <h3>Field Types</h3>
                 <ul>
-                    <li>Complete API documentation in English</li>
-                    <li>Community tutorials and guides</li>
-                    <li>Active support forums</li>
-                    <li>Regular updates and improvements</li>
+                    <li><code>CharField</code> - String with max length</li>
+                    <li><code>TextField</code> - Long text</li>
+                    <li><code>IntegerField</code> - Integer</li>
+                    <li><code>BigIntegerField</code> - Big integer</li>
+                    <li><code>FloatField</code> - Floating point</li>
+                    <li><code>DecimalField</code> - Decimal with precision</li>
+                    <li><code>BooleanField</code> - Boolean</li>
+                    <li><code>DateTimeField</code> - DateTime</li>
+                    <li><code>DateField</code> - Date</li>
+                    <li><code>EmailField</code> - Validated email</li>
+                    <li><code>URLField</code> - Validated URL</li>
+                    <li><code>JSONField</code> - JSON data</li>
+                    <li><code>UUIDField</code> - UUID</li>
                 </ul>
             </div>
-            
-            <!-- Persian Content -->
-            <div id="lang-fa" class="language-content">
-                <h3 style="font-family: 'Tahoma', 'Arial', sans-serif;">جامعه جهانی</h3>
-                <p style="font-family: 'Tahoma', 'Arial', sans-serif; direction: rtl; text-align: right;">ORM Ormax برای توسعه‌دهندگان سراسر جهان طراحی شده است با مستندات کامل به چندین زبان. به جامعه در حال رشد ما از توسعه‌دهندگان پایتون بپیوندید که برنامه‌هایی سریع‌تر و ایمن‌تر می‌سازند.</p>
-                <ul style="font-family: 'Tahoma', 'Arial', sans-serif; direction: rtl; text-align: right;">
-                    <li>مستندات API کامل به زبان انگلیسی</li>
-                    <li>آموزش‌ها و راهنماهای جامعه</li>
-                    <li>انجمن‌های پشتیبانی فعال</li>
-                    <li>به‌روزرسانی‌ها و بهبودهای منظم</li>
-                </ul>
+        </div>
+    </section>
+
+    <!-- Install -->
+    <section id="install" style="background-color: #f0fdf4; text-align: center;">
+        <div class="container">
+            <div class="section-title">
+                <h2>Get Started Today</h2>
+                <p>Install Ormax ORM and start building faster applications</p>
             </div>
-            
-            <!-- Arabic Content -->
-            <div id="lang-ar" class="language-content">
-                <h3 style="font-family: 'Tahoma', 'Arial', sans-serif;">المجتمع العالمي</h3>
-                <p style="font-family: 'Tahoma', 'Arial', sans-serif; direction: rtl; text-align: right;">تم تصميم ORM Ormax للمطورين في جميع أنحاء العالم مع وثائق شاملة بلغات متعددة. انضم إلى مجتمعنا المتنامي من مطوري Python الذين يبنون تطبيقات أسرع وأكثر أماناً.</p>
-                <ul style="font-family: 'Tahoma', 'Arial', sans-serif; direction: rtl; text-align: right;">
-                    <li>وثائق API كاملة باللغة الإنجليزية</li>
-                    <li>دروس وإرشادات مجتمعية</li>
-                    <li>منتديات دعم نشطة</li>
-                    <li>تحديثات وتحسينات منتظمة</li>
-                </ul>
-            </div>
-            
-            <!-- Chinese Content -->
-            <div id="lang-zh" class="language-content">
-                <h3>全球社区</h3>
-                <p>Ormax ORM专为全球开发者设计，提供多种语言的全面文档。加入我们不断壮大的Python开发者社区，共同构建更快、更安全的应用程序。</p>
-                <ul>
-                    <li>完整的英文API文档</li>
-                    <li>社区教程和指南</li>
-                    <li>活跃的支持论坛</li>
-                    <li>定期更新和改进</li>
-                </ul>
-            </div>
-            
-            <!-- Russian Content -->
-            <div id="lang-ru" class="language-content">
-                <h3>Глобальное сообщество</h3>
-                <p>ORM Ormax разработан для разработчиков по всему миру с полной документацией на нескольких языках. Присоединяйтесь к нашему растущему сообществу разработчиков Python, которые создают более быстрые и безопасные приложения.</p>
-                <ul>
-                    <li>Полная документация API на английском языке</li>
-                    <li>Обучающие материалы и руководства сообщества</li>
-                    <li>Активные форумы поддержки</li>
-                    <li>Регулярные обновления и улучшения</li>
-                </ul>
-            </div>
+            <a href="https://pypi.org/project/ormax/" class="cta-button">Install from PyPI</a>
         </div>
     </section>
 
@@ -622,75 +577,13 @@ asyncio.run(main())</code></pre>
     <footer>
         <div class="container">
             <div class="footer-content">
-                <div class="footer-section">
-                    <h3>Ormax ORM</h3>
-                    <p>The high-performance async ORM for modern Python applications.</p>
-                </div>
-                <div class="footer-section">
-                    <h3>Resources</h3>
-                    <ul>
-                        <li><a href="#">Documentation</a></li>
-                        <li><a href="#">API Reference</a></li>
-                        <li><a href="#">Tutorials</a></li>
-                        <li><a href="#">Examples</a></li>
-                    </ul>
-                </div>
-                <div class="footer-section">
-                    <h3>Community</h3>
-                    <ul>
-                        <li><a href="#">GitHub</a></li>
-                        <li><a href="#">Discord</a></li>
-                        <li><a href="#">Stack Overflow</a></li>
-                        <li><a href="#">Twitter</a></li>
-                    </ul>
-                </div>
-                <div class="footer-section">
-                    <h3>Support</h3>
-                    <ul>
-                        <li><a href="#">Issues</a></li>
-                        <li><a href="#">Contributing</a></li>
-                        <li><a href="#">License</a></li>
-                        <li><a href="#">Contact</a></li>
-                    </ul>
-                </div>
+                <p>Ormax ORM - The high-performance async ORM for modern Python applications.</p>
+                <p>Built with ❤️ for the Python community</p>
             </div>
             <div class="copyright">
-                <p>&copy; 2023 Ormax ORM. MIT License. Built with ❤️ for the Python community.</p>
+                <p>&copy; 2023 Ormax ORM. MIT License.</p>
             </div>
         </div>
     </footer>
-
-    <script>
-        // Language switching functionality
-        function switchLanguage(lang) {
-            // Hide all language content
-            const contents = document.querySelectorAll('.language-content');
-            contents.forEach(content => content.classList.remove('active'));
-            
-            // Remove active class from all buttons
-            const buttons = document.querySelectorAll('.lang-btn');
-            buttons.forEach(button => button.classList.remove('active'));
-            
-            // Show selected language content
-            document.getElementById(`lang-${lang}`).classList.add('active');
-            
-            // Add active class to selected button
-            event.target.classList.add('active');
-        }
-        
-        // Smooth scrolling for navigation links
-        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-            anchor.addEventListener('click', function (e) {
-                e.preventDefault();
-                const target = document.querySelector(this.getAttribute('href'));
-                if (target) {
-                    target.scrollIntoView({
-                        behavior: 'smooth',
-                        block: 'start'
-                    });
-                }
-            });
-        });
-    </script>
 </body>
 </html>
