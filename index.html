@@ -18,13 +18,11 @@
             --shadow: rgba(0, 0, 0, 0.1);
             --shadow-lg: rgba(0, 0, 0, 0.15);
         }
-
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
         }
-
         body {
             font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
             line-height: 1.6;
@@ -32,14 +30,12 @@
             background-color: var(--light);
             overflow-x: hidden;
         }
-
         .container {
             width: 90%;
             max-width: 1200px;
             margin: 0 auto;
             padding: 0 20px;
         }
-
         /* Header */
         header {
             background-color: var(--white);
@@ -49,13 +45,11 @@
             z-index: 100;
             padding: 1rem 0;
         }
-
         .header-content {
             display: flex;
             justify-content: space-between;
             align-items: center;
         }
-
         .logo {
             font-size: 1.8rem;
             font-weight: 800;
@@ -64,20 +58,16 @@
             display: flex;
             align-items: center;
         }
-
         .logo-dot {
             color: var(--secondary);
         }
-
         nav ul {
             display: flex;
             list-style: none;
         }
-
         nav ul li {
             margin-left: 2rem;
         }
-
         nav ul li a {
             color: var(--dark);
             text-decoration: none;
@@ -85,11 +75,9 @@
             transition: color 0.3s;
             position: relative;
         }
-
         nav ul li a:hover {
             color: var(--primary);
         }
-
         nav ul li a::after {
             content: '';
             position: absolute;
@@ -100,11 +88,9 @@
             background-color: var(--primary);
             transition: width 0.3s ease;
         }
-
         nav ul li a:hover::after {
             width: 100%;
         }
-
         .mobile-menu-btn {
             display: none;
             background: none;
@@ -113,7 +99,6 @@
             cursor: pointer;
             color: var(--dark);
         }
-
         /* Hero */
         .hero {
             padding: 6rem 0;
@@ -122,7 +107,6 @@
             position: relative;
             overflow: hidden;
         }
-
         .hero::before {
             content: '';
             position: absolute;
@@ -133,26 +117,22 @@
             background: radial-gradient(circle, rgba(16, 185, 129, 0.1) 0%, transparent 70%);
             z-index: 0;
         }
-
         .hero-content {
             position: relative;
             z-index: 1;
         }
-
         .hero h1 {
             font-size: 3.5rem;
             margin-bottom: 1.5rem;
             color: var(--dark);
             line-height: 1.2;
         }
-
         .hero p {
             font-size: 1.25rem;
             color: var(--gray);
             max-width: 700px;
             margin: 0 auto 2rem;
         }
-
         .cta-button {
             display: inline-block;
             background-color: var(--primary);
@@ -167,55 +147,46 @@
             font-size: 1.1rem;
             box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3);
         }
-
         .cta-button:hover {
             background-color: var(--primary-dark);
             transform: translateY(-3px);
             box-shadow: 0 6px 20px rgba(16, 185, 129, 0.4);
         }
-
         .cta-button.secondary {
             background-color: transparent;
             color: var(--primary);
             border: 2px solid var(--primary);
             margin-left: 1rem;
         }
-
         .cta-button.secondary:hover {
             background-color: var(--primary);
             color: var(--white);
         }
-
         /* Sections */
         section {
             padding: 5rem 0;
         }
-
         .section-title {
             text-align: center;
             margin-bottom: 3rem;
         }
-
         .section-title h2 {
             font-size: 2.5rem;
             color: var(--dark);
             margin-bottom: 1rem;
         }
-
         .section-title p {
             color: var(--gray);
             max-width: 600px;
             margin: 0 auto;
             font-size: 1.1rem;
         }
-
         /* Features */
         .features-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
             gap: 2rem;
         }
-
         .feature-card {
             background: var(--white);
             border-radius: 15px;
@@ -225,12 +196,10 @@
             border-top: 4px solid var(--primary);
             text-align: center;
         }
-
         .feature-card:hover {
             transform: translateY(-10px);
             box-shadow: 0 15px 30px var(--shadow-lg);
         }
-
         .feature-icon {
             font-size: 3rem;
             margin-bottom: 1.5rem;
@@ -244,42 +213,35 @@
             background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%);
             border-radius: 50%;
         }
-
         .feature-card h3 {
             font-size: 1.5rem;
             margin-bottom: 1rem;
             color: var(--dark);
         }
-
         .feature-card p {
             color: var(--gray);
         }
-
         /* Stats */
         .stats {
             background: linear-gradient(135deg, var(--dark) 0%, #0f172a 100%);
             color: var(--white);
             text-align: center;
         }
-
         .stats-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
             gap: 2rem;
             margin-top: 2rem;
         }
-
         .stat-item h3 {
             font-size: 3rem;
             margin-bottom: 0.5rem;
             color: var(--primary);
         }
-
         .stat-item p {
             font-size: 1.1rem;
             opacity: 0.9;
         }
-
         /* Code Example */
         .code-section {
             background-color: var(--dark);
@@ -288,7 +250,6 @@
             overflow: hidden;
             margin: 3rem 0;
         }
-
         .code-header {
             background-color: #0f172a;
             padding: 1rem 1.5rem;
@@ -296,16 +257,13 @@
             justify-content: space-between;
             align-items: center;
         }
-
         .code-header h3 {
             font-size: 1.2rem;
             font-weight: 600;
         }
-
         .code-tabs {
             display: flex;
         }
-
         .code-tab {
             padding: 0.5rem 1rem;
             background: transparent;
@@ -314,37 +272,32 @@
             cursor: pointer;
             transition: color 0.3s;
         }
-
         .code-tab.active {
             color: var(--primary);
             border-bottom: 2px solid var(--primary);
         }
-
         .code-content {
             padding: 2rem;
             overflow-x: auto;
         }
-
         .code-block {
             font-family: 'Fira Code', 'Courier New', monospace;
             font-size: 0.95rem;
             line-height: 1.5;
         }
-
+        .hidden { display: none; }
         .comment { color: #94a3b8; }
         .keyword { color: #818cf8; }
         .string { color: #34d399; }
         .class { color: #fbbf24; }
         .function { color: #60a5fa; }
         .number { color: #f87171; }
-
         /* Documentation */
         .docs-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
             gap: 2rem;
         }
-
         .doc-card {
             background: var(--white);
             border-radius: 15px;
@@ -352,49 +305,40 @@
             box-shadow: 0 5px 15px var(--shadow);
             transition: transform 0.3s ease;
         }
-
         .doc-card:hover {
             transform: translateY(-5px);
         }
-
         .doc-card h3 {
             color: var(--primary);
             margin-bottom: 1rem;
             display: flex;
             align-items: center;
         }
-
         .doc-card h3 i {
             margin-right: 0.5rem;
         }
-
         .doc-card ul {
             list-style: none;
         }
-
         .doc-card li {
             margin-bottom: 0.75rem;
             padding-left: 1.5rem;
             position: relative;
         }
-
         .doc-card li::before {
             content: '→';
             position: absolute;
             left: 0;
             color: var(--primary);
         }
-
         .doc-card a {
             color: var(--dark);
             text-decoration: none;
             transition: color 0.3s;
         }
-
         .doc-card a:hover {
             color: var(--primary);
         }
-
         /* Install */
         .install-section {
             background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%);
@@ -402,7 +346,6 @@
             border-radius: 15px;
             padding: 4rem 2rem;
         }
-
         .install-code {
             background: var(--dark);
             color: var(--white);
@@ -413,52 +356,44 @@
             text-align: left;
             font-family: 'Fira Code', monospace;
             font-size: 1.1rem;
+            white-space: pre-wrap;
         }
-
         /* Footer */
         footer {
             background: var(--dark);
             color: var(--white);
             padding: 4rem 0 2rem;
         }
-
         .footer-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
             gap: 2rem;
             margin-bottom: 3rem;
         }
-
         .footer-column h3 {
             font-size: 1.3rem;
             margin-bottom: 1.5rem;
             color: var(--primary);
         }
-
         .footer-column ul {
             list-style: none;
         }
-
         .footer-column ul li {
             margin-bottom: 0.75rem;
         }
-
         .footer-column ul li a {
             color: #94a3b8;
             text-decoration: none;
             transition: color 0.3s;
         }
-
         .footer-column ul li a:hover {
             color: var(--primary);
         }
-
         .social-links {
             display: flex;
             gap: 1rem;
             margin-top: 1rem;
         }
-
         .social-links a {
             display: flex;
             align-items: center;
@@ -470,12 +405,10 @@
             color: var(--white);
             transition: all 0.3s ease;
         }
-
         .social-links a:hover {
             background: var(--primary);
             transform: translateY(-3px);
         }
-
         .copyright {
             text-align: center;
             padding-top: 2rem;
@@ -483,26 +416,22 @@
             color: #94a3b8;
             font-size: 0.9rem;
         }
-
         /* Responsive Design */
         @media (max-width: 992px) {
             .hero h1 {
                 font-size: 2.8rem;
             }
-            
             .features-grid,
             .stats-grid,
             .docs-grid {
                 grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
             }
         }
-
         @media (max-width: 768px) {
             .header-content {
                 flex-direction: column;
                 position: relative;
             }
-            
             .mobile-menu-btn {
                 display: block;
                 position: absolute;
@@ -510,74 +439,58 @@
                 top: 50%;
                 transform: translateY(-50%);
             }
-            
             nav {
                 margin-top: 1rem;
                 width: 100%;
             }
-            
             nav ul {
                 flex-direction: column;
                 align-items: center;
                 width: 100%;
             }
-            
             nav ul li {
                 margin: 0.5rem 0;
             }
-            
             .hero {
                 padding: 4rem 0;
             }
-            
             .hero h1 {
                 font-size: 2.3rem;
             }
-            
             .hero p {
                 font-size: 1.1rem;
             }
-            
             .cta-buttons {
                 flex-direction: column;
                 gap: 1rem;
             }
-            
             .cta-button.secondary {
                 margin-left: 0;
             }
-            
             .section-title h2 {
                 font-size: 2rem;
             }
-            
             section {
                 padding: 3rem 0;
             }
         }
-
         @media (max-width: 576px) {
             .container {
                 width: 95%;
             }
-            
             .hero h1 {
                 font-size: 2rem;
             }
-            
             .feature-card {
                 padding: 1.5rem;
             }
-            
             .code-content {
                 padding: 1rem;
             }
-            
             .install-section {
                 padding: 2rem 1rem;
             }
         }
-
         /* Animation */
         @keyframes fadeIn {
             from {
@@ -589,32 +502,26 @@
                 transform: translateY(0);
             }
         }
-
         .animate-on-scroll {
             opacity: 0;
             transform: translateY(20px);
             transition: opacity 0.6s ease, transform 0.6s ease;
         }
-
         .animate-on-scroll.visible {
             opacity: 1;
             transform: translateY(0);
         }
-
         /* Custom Scrollbar */
         ::-webkit-scrollbar {
             width: 10px;
         }
-
         ::-webkit-scrollbar-track {
             background: #f1f1f1;
         }
-
         ::-webkit-scrollbar-thumb {
             background: var(--primary);
             border-radius: 5px;
         }
-
         ::-webkit-scrollbar-thumb:hover {
             background: var(--primary-dark);
         }
@@ -638,7 +545,6 @@
             </nav>
         </div>
     </header>
-
     <!-- Hero -->
     <section class="hero">
         <div class="container hero-content">
@@ -650,7 +556,6 @@
             </div>
         </div>
     </section>
-
     <!-- Features -->
     <section id="features">
         <div class="container">
@@ -701,10 +606,30 @@
                     <h3>Advanced QuerySet</h3>
                     <p>Powerful querying capabilities with filtering, ordering, pagination, and aggregation.</p>
                 </div>
+                <div class="feature-card animate-on-scroll">
+                    <div class="feature-icon">
+                        <i class="fas fa-bullhorn"></i>
+                    </div>
+                    <h3>Bulk Operations</h3>
+                    <p>Efficiently create, update, and delete large numbers of records.</p>
+                </div>
+                 <div class="feature-card animate-on-scroll">
+                    <div class="feature-icon">
+                        <i class="fas fa-layer-group"></i>
+                    </div>
+                    <h3>Rich Field Types</h3>
+                    <p>Comprehensive set of field types with built-in validation (Email, URL, UUID, etc.).</p>
+                </div>
+                 <div class="feature-card animate-on-scroll">
+                    <div class="feature-icon">
+                        <i class="fas fa-exchange-alt"></i>
+                    </div>
+                    <h3>ACID Transactions</h3>
+                    <p>Ensure data integrity with full support for database transactions.</p>
+                </div>
             </div>
         </div>
     </section>
-
     <!-- Performance -->
     <section id="performance" class="stats">
         <div class="container">
@@ -730,9 +655,11 @@
                     <p>Test Coverage</p>
                 </div>
             </div>
+            <div class="section-title animate-on-scroll" style="margin-top: 3rem;">
+                <p>Optimized with connection pooling, lazy loading, and batch operations.</p>
+            </div>
         </div>
     </section>
-
     <!-- Code Example -->
     <section>
         <div class="container">
@@ -742,13 +669,14 @@
             </div>
             <div class="code-section animate-on-scroll">
                 <div class="code-header">
-                    <h3>Basic Usage Example</h3>
+                    <h3>Code Examples</h3>
                     <div class="code-tabs">
-                        <button class="code-tab active">Python</button>
+                        <button class="code-tab active" data-example="basic">Basic Usage</button>
+                        <button class="code-tab" data-example="advanced">Advanced Features</button>
                     </div>
                 </div>
                 <div class="code-content">
-                    <pre class="code-block"><code><span class="keyword">import</span> asyncio
+                     <pre class="code-block" id="code-basic"><code><span class="keyword">import</span> asyncio
 <span class="keyword">from</span> ormax <span class="keyword">import</span> Database, Model
 <span class="keyword">from</span> ormax.fields <span class="keyword">import</span> *
 
@@ -764,28 +692,70 @@
     <span class="comment"># Initialize database</span>
     db = Database(<span class="string">"sqlite:///example.db"</span>)
     <span class="keyword">await</span> db.connect()
-    
+
     <span class="comment"># Register model and create tables</span>
     db.register_model(User)
     <span class="keyword">await</span> db.create_tables()
-    
+
     <span class="comment"># Create users</span>
     user = <span class="keyword">await</span> User.create(
         username=<span class="string">"john_doe"</span>,
         email=<span class="string">"john@example.com"</span>
     )
-    
+
     <span class="comment"># Query users</span>
     active_users = <span class="keyword">await</span> User.objects().filter(is_active=<span class="keyword">True</span>).all()
-    
+
     <span class="keyword">await</span> db.disconnect()
 
 asyncio.run(main())</code></pre>
+                    <pre class="code-block hidden" id="code-advanced"><code><span class="keyword">import</span> asyncio
+<span class="keyword">from</span> ormax <span class="keyword">import</span> Database, Model
+<span class="keyword">from</span> ormax.fields <span class="keyword">import</span> *
+
+<span class="keyword">class</span> <span class="class">User</span>(Model):
+    table_name = <span class="string">"users"</span>
+    id = AutoField()
+    username = CharField(max_length=<span class="number">50</span>, unique=<span class="keyword">True</span>)
+    email = EmailField(unique=<span class="keyword">True</span>)
+
+<span class="keyword">class</span> <span class="class">Post</span>(Model):
+    table_name = <span class="string">"posts"</span>
+    id = AutoField()
+    title = CharField(max_length=<span class="number">200</span>)
+    content = TextField()
+    author_id = IntegerField(foreign_key=<span class="string">'users.id'</span>)
+    published = BooleanField(default=<span class="keyword">False</span>)
+
+<span class="keyword">async def</span> <span class="function">advanced_example</span>():
+    db = Database(<span class="string">"sqlite:///example.db"</span>)
+    <span class="keyword">await</span> db.connect()
+    db.register_model(User)
+    db.register_model(Post)
+    <span class="keyword">await</span> db.create_tables()
+
+    <span class="comment"># Transactions</span>
+    <span class="keyword">async with</span> db.transaction():
+        user = <span class="keyword">await</span> User.create(username=<span class="string">"test"</span>, email=<span class="string">"test@example.com"</span>)
+        post = <span class="keyword">await</span> Post.create(title=<span class="string">"Test Post"</span>, content=<span class="string">"Content"</span>, author_id=user.id)
+
+    <span class="comment"># Complex Queries</span>
+    published_posts = <span class="keyword">await</span> Post.objects().filter(published=<span class="keyword">True</span>).order_by(<span class="string">'-created_at'</span>).limit(<span class="number">10</span>)
+
+    <span class="comment"># Bulk Create</span>
+    users_data = [
+        {<span class="string">'username'</span>: <span class="string">'user1'</span>, <span class="string">'email'</span>: <span class="string">'user1@example.com'</span>},
+        {<span class="string">'username'</span>: <span class="string">'user2'</span>, <span class="string">'email'</span>: <span class="string">'user2@example.com'</span>}
+    ]
+    <span class="keyword">await</span> User.bulk_create(users_data)
+
+    <span class="keyword">await</span> db.disconnect()
+
+asyncio.run(advanced_example())</code></pre>
                 </div>
             </div>
         </div>
     </section>
-
     <!-- Documentation -->
     <section id="docs">
         <div class="container">
@@ -795,45 +765,62 @@ asyncio.run(main())</code></pre>
             </div>
             <div class="docs-grid">
                 <div class="doc-card animate-on-scroll">
-                    <h3><i class="fas fa-download"></i> Installation</h3>
+                    <h3><i class="fas fa-download"></i> Getting Started</h3>
                     <ul>
-                        <li><a href="#">Quick Start Guide</a></li>
-                        <li><a href="#">Database Dependencies</a></li>
-                        <li><a href="#">Configuration Options</a></li>
-                        <li><a href="#">Migration Guide</a></li>
+                        <li><a href="#">Installation</a></li>
+                        <li><a href="#">Quick Start</a></li>
+                        <li><a href="#">Dependencies</a></li>
+                        <li><a href="#">Supported Databases</a></li>
                     </ul>
                 </div>
                 <div class="doc-card animate-on-scroll">
                     <h3><i class="fas fa-table"></i> Models</h3>
                     <ul>
                         <li><a href="#">Defining Models</a></li>
+                        <li><a href="#">Model Configuration</a></li>
                         <li><a href="#">Field Types</a></li>
-                        <li><a href="#">Relationships</a></li>
-                        <li><a href="#">Model Methods</a></li>
+                        <li><a href="#">Meta Options</a></li>
+                    </ul>
+                </div>
+                 <div class="doc-card animate-on-scroll">
+                    <h3><i class="fas fa-database"></i> Database</h3>
+                    <ul>
+                        <li><a href="#">Connecting</a></li>
+                        <li><a href="#">Transactions</a></li>
+                        <li><a href="#">Connection Pooling</a></li>
+                        <li><a href="#">Raw SQL</a></li>
                     </ul>
                 </div>
                 <div class="doc-card animate-on-scroll">
                     <h3><i class="fas fa-search"></i> Queries</h3>
                     <ul>
-                        <li><a href="#">Basic Queries</a></li>
+                        <li><a href="#">QuerySet API</a></li>
                         <li><a href="#">Filtering & Ordering</a></li>
                         <li><a href="#">Aggregations</a></li>
-                        <li><a href="#">Raw Queries</a></li>
+                        <li><a href="#">Pagination</a></li>
                     </ul>
                 </div>
                 <div class="doc-card animate-on-scroll">
                     <h3><i class="fas fa-cogs"></i> Advanced</h3>
                     <ul>
-                        <li><a href="#">Transactions</a></li>
                         <li><a href="#">Bulk Operations</a></li>
-                        <li><a href="#">Connection Pooling</a></li>
+                        <li><a href="#">Relationships (Future)</a></li>
+                        <li><a href="#">Security Features</a></li>
                         <li><a href="#">Performance Tips</a></li>
+                    </ul>
+                </div>
+                 <div class="doc-card animate-on-scroll">
+                    <h3><i class="fas fa-book"></i> API Reference</h3>
+                    <ul>
+                        <li><a href="#">Database Class</a></li>
+                        <li><a href="#">Model Class</a></li>
+                        <li><a href="#">QuerySet Class</a></li>
+                        <li><a href="#">Field Types</a></li>
                     </ul>
                 </div>
             </div>
         </div>
     </section>
-
     <!-- Install -->
     <section id="install">
         <div class="container">
@@ -845,11 +832,29 @@ asyncio.run(main())</code></pre>
                 <div class="install-code">
                     pip install ormax
                 </div>
+                <div class="section-title" style="margin-top: 1rem; margin-bottom: 1rem;">
+                    <p>Install database-specific dependencies:</p>
+                </div>
+                <div class="install-code">
+# For MySQL/MariaDB
+pip install aiomysql
+
+# For PostgreSQL
+pip install asyncpg
+
+# For SQLite (usually included)
+pip install aiosqlite
+
+# For Microsoft SQL Server
+pip install aioodbc
+
+# For Oracle Database
+pip install async-oracledb
+                </div>
                 <a href="https://pypi.org/project/ormax/" class="cta-button">View on PyPI</a>
             </div>
         </div>
     </section>
-
     <!-- Footer -->
     <footer>
         <div class="container">
@@ -858,52 +863,50 @@ asyncio.run(main())</code></pre>
                     <h3>Ormax ORM</h3>
                     <p>The high-performance async ORM for modern Python applications.</p>
                     <div class="social-links">
-                        <a href="#"><i class="fab fa-github"></i></a>
-                        <a href="#"><i class="fab fa-twitter"></i></a>
-                        <a href="#"><i class="fab fa-discord"></i></a>
+                        <a href="https://github.com/shayanheidari01/ormax" target="_blank"><i class="fab fa-github"></i></a>
+                        <!-- <a href="#" target="_blank"><i class="fab fa-twitter"></i></a> -->
+                        <!-- <a href="#" target="_blank"><i class="fab fa-discord"></i></a> -->
                     </div>
                 </div>
                 <div class="footer-column">
                     <h3>Resources</h3>
                     <ul>
                         <li><a href="#">Documentation</a></li>
-                        <li><a href="#">API Reference</a></li>
-                        <li><a href="#">Tutorials</a></li>
-                        <li><a href="#">Examples</a></li>
+                        <li><a href="#docs">API Reference</a></li>
+                        <li><a href="https://github.com/shayanheidari01/ormax/issues" target="_blank">Issues</a></li>
+                         <li><a href="https://github.com/shayanheidari01/ormax/blob/main/README.md" target="_blank">README</a></li>
                     </ul>
                 </div>
                 <div class="footer-column">
                     <h3>Community</h3>
                     <ul>
-                        <li><a href="#">GitHub</a></li>
-                        <li><a href="#">Discord</a></li>
-                        <li><a href="#">Stack Overflow</a></li>
-                        <li><a href="#">Twitter</a></li>
+                        <li><a href="https://github.com/shayanheidari01/ormax" target="_blank">GitHub</a></li>
+                        <!-- <li><a href="#" target="_blank">Discord</a></li> -->
+                        <li><a href="https://stackoverflow.com/questions/tagged/ormax" target="_blank">Stack Overflow</a></li>
+                        <!-- <li><a href="#" target="_blank">Twitter</a></li> -->
                     </ul>
                 </div>
                 <div class="footer-column">
                     <h3>Support</h3>
                     <ul>
-                        <li><a href="#">Issues</a></li>
-                        <li><a href="#">Contributing</a></li>
-                        <li><a href="#">License</a></li>
-                        <li><a href="#">Contact</a></li>
+                        <li><a href="https://github.com/shayanheidari01/ormax/issues" target="_blank">Report an Issue</a></li>
+                        <li><a href="https://github.com/shayanheidari01/ormax/blob/main/CONTRIBUTING.md" target="_blank">Contributing</a></li>
+                        <li><a href="https://github.com/shayanheidari01/ormax/blob/main/LICENSE" target="_blank">License</a></li>
+                        <li><a href="mailto:shayanheidari01@outlook.com">Contact Maintainer</a></li>
                     </ul>
                 </div>
             </div>
             <div class="copyright">
-                <p>&copy; 2023 Ormax ORM. MIT License. Built with ❤️ for the Python community.</p>
+                <p>&copy; 2024 Ormax ORM. MIT License. Built with ❤️ for the Python community.</p>
             </div>
         </div>
     </footer>
-
     <script>
         // Mobile menu toggle
         document.querySelector('.mobile-menu-btn').addEventListener('click', function() {
             const nav = document.querySelector('nav ul');
             nav.style.display = nav.style.display === 'flex' ? 'none' : 'flex';
         });
-
         // Smooth scrolling for navigation links
         document.querySelectorAll('a[href^="#"]').forEach(anchor => {
             anchor.addEventListener('click', function (e) {
@@ -917,29 +920,36 @@ asyncio.run(main())</code></pre>
                 }
             });
         });
-
         // Animation on scroll
         function animateOnScroll() {
             const elements = document.querySelectorAll('.animate-on-scroll');
             elements.forEach(element => {
                 const elementTop = element.getBoundingClientRect().top;
                 const elementVisible = 150;
-                
                 if (elementTop < window.innerHeight - elementVisible) {
                     element.classList.add('visible');
                 }
             });
         }
-
         // Initial check
         window.addEventListener('scroll', animateOnScroll);
         window.addEventListener('load', animateOnScroll);
-
-        // Code tab switching
+        // Code tab switching - Updated
         document.querySelectorAll('.code-tab').forEach(tab => {
             tab.addEventListener('click', function() {
+                // Remove active class from all tabs and code blocks
                 document.querySelectorAll('.code-tab').forEach(t => t.classList.remove('active'));
+                document.querySelectorAll('.code-block').forEach(cb => cb.classList.add('hidden'));
+
+                // Add active class to clicked tab
                 this.classList.add('active');
+
+                // Show the corresponding code block
+                const exampleId = this.getAttribute('data-example');
+                const targetBlock = document.getElementById(`code-${exampleId}`);
+                if (targetBlock) {
+                    targetBlock.classList.remove('hidden');
+                }
             });
         });
     </script>
