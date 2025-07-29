@@ -353,7 +353,62 @@ class ORMBenchmark:
         
         peewee_db.close()
         return result
-    
+	
+    async def benchmark_tortoise(self) -> BenchmarkResult:
+        """Benchmark Tortoise ORM"""
+        if not TORTOISE_AVAILABLE:
+            print("Tortoise not available, skipping benchmark")
+            return None
+        
+        from tortoise import Tortoise
+        
+        result = BenchmarkResult("Tortoise")
+        
+        await Tortoise.init(
+            db_url="sqlite://tortoise_benchmark.db",
+            modules={"models": ["__main__"]}  # مطمئن شو مدل‌ها در __main__ هستن
+        )
+        await Tortoise.generate_schemas()
+        
+        # Create
+        create_times = []
+        for i in range(self.iterations):
+            start_time = time.time()
+            await TortoiseUser.create(
+                username=f"user_{i}",
+                email=f"user_{i}@example.com",
+                is_active=True
+            )
+            create_times.append(time.time() - start_time)
+        result.add_result("Create", create_times)
+
+        # Read
+        read_times = []
+        for i in range(100):
+            start_time = time.time()
+            users = await TortoiseUser.all()
+            read_times.append(time.time() - start_time)
+        result.add_result("Read", read_times)
+
+        # Update
+        update_times = []
+        for i in range(100):
+            start_time = time.time()
+            await TortoiseUser.filter(username=f"user_{i}").update(is_active=False)
+            update_times.append(time.time() - start_time)
+        result.add_result("Update", update_times)
+
+        # Delete
+        delete_times = []
+        for i in range(100):
+            start_time = time.time()
+            await TortoiseUser.filter(username=f"user_{i}").delete()
+            delete_times.append(time.time() - start_time)
+        result.add_result("Delete", delete_times)
+
+        await Tortoise.close_connections()
+        return result
+
     async def run_all_benchmarks(self):
         """Run all available benchmarks"""
         print("🚀 Starting ORM Benchmark Suite")
@@ -398,7 +453,20 @@ class ORMBenchmark:
                 print(f"Peewee benchmark failed: {e}")
                 import traceback
                 traceback.print_exc()
-        
+
+        # Run Tortoise benchmark
+        if TORTOISE_AVAILABLE:
+            try:
+                print("\nTesting Tortoise ORM...")
+                tortoise_result = await self.benchmark_tortoise()
+                if tortoise_result:
+                    self.results.append(tortoise_result)
+                    print(tortoise_result)
+            except Exception as e:
+                print(f"Tortoise benchmark failed: {e}")
+                import traceback
+                traceback.print_exc()
+
         # Print summary
         self.print_summary()
     
@@ -432,7 +500,10 @@ class ORMBenchmark:
 async def main():
     """Main benchmark function"""
     # Clean up any existing benchmark databases
-    for db_file in ['ormax_benchmark.db', 'sqlalchemy_benchmark.db', 'peewee_benchmark.db']:
+    for db_file in ['ormax_benchmark.db',
+'sqlalchemy_benchmark.db',
+'peewee_benchmark.db',
+'tortoise_benchmark.db']:
         if os.path.exists(db_file):
             try:
                 os.remove(db_file)
