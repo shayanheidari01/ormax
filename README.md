@@ -1,6 +1,5 @@
 
 # Ormax ORM
-
 [![Python Version](https://img.shields.io/badge/python-3.7%2B-blue)](https://www.python.org/downloads/)
 [![License](https://img.shields.io/badge/license-MIT-green)](LICENSE)
 [![Async](https://img.shields.io/badge/async-await-brightgreen)](https://docs.python.org/3/library/asyncio.html)
@@ -8,23 +7,21 @@
 **Ormax** is a high-performance, secure, and advanced asynchronous ORM for Python supporting MariaDB, MySQL, PostgreSQL, SQLite3, Microsoft SQL Server, Oracle Database, and Amazon Aurora.
 
 ## 🚀 Features
-
 - **Multi-Database Support**: MariaDB, MySQL, PostgreSQL, SQLite3, MSSQL, Oracle, Aurora
+- **Relationship Support**: Define and navigate ForeignKey relationships efficiently.
 - **Fully Async**: Built with asyncio for maximum performance
 - **Security First**: SQL injection protection and input validation
 - **Connection Pooling**: Optimized database connections
 - **Transaction Support**: ACID compliant transactions
-- **Advanced QuerySet**: Powerful query capabilities
+- **Advanced QuerySet**: Powerful query capabilities including `select_related` and `prefetch_related`
 - **Rich Field Types**: Comprehensive field validation
 - **Bulk Operations**: Efficient bulk create, update, delete
 - **Easy Configuration**: Simple setup and usage
 
 ## 📦 Installation
-
 ```bash
 pip install ormax
 ```
-
 Or install from source:
 ```bash
 git clone https://github.com/shayanheidari01/ormax.git
@@ -33,12 +30,11 @@ pip install -e .
 ```
 
 ## 🛠️ Dependencies
-
 ```bash
 # For MySQL/MariaDB
 pip install aiomysql
 
-# For PostgreSQL  
+# For PostgreSQL
 pip install asyncpg
 
 # For SQLite
@@ -54,53 +50,39 @@ pip install async-oracledb
 ## 🚀 Quick Start
 
 ### 1. Define Models
-
 ```python
 from ormax import Database, Model
 from ormax.fields import *
 
-class User(Model):
-    table_name = "users"  # Simple table name setup
-    
+class Author(Model):
     id = AutoField()
-    username = CharField(max_length=50, unique=True)
-    email = EmailField(unique=True)
-    is_active = BooleanField(default=True)
-    created_at = DateTimeField(auto_now_add=True)
+    name = CharField(max_length=100)
 
-class Post(Model):
-    _meta = {'table_name': 'posts'}  # Alternative setup
-    
+class Book(Model):
     id = AutoField()
     title = CharField(max_length=200)
-    content = TextField()
-    author_id = IntegerField(foreign_key='users.id')
-    published = BooleanField(default=False)
+    author = ForeignKeyField('Author', related_name='books') # Define relationship
 ```
 
-### 2. Database Setup
-
+### 2. Connect to Database
 ```python
-import asyncio
+# Initialize database connection
+db = Database("sqlite:///example.db") # SQLite
+# db = Database("mysql://user:password@localhost/dbname") # MySQL
+# db = Database("postgresql://user:password@localhost/dbname") # PostgreSQL
+# db = Database("mariadb://user:password@localhost/dbname") # MariaDB
+# db = Database("mssql://user:password@localhost/dbname") # Microsoft SQL Server
+# db = Database("oracle://user:password@localhost:1521/XE") # Oracle
+# db = Database("aurora://user:password@cluster-endpoint/dbname") # Amazon Aurora
 
-async def main():
-    # Initialize database
-    db = Database("sqlite:///example.db")  # SQLite
-    # db = Database("mysql://user:password@localhost/dbname")  # MySQL
-    # db = Database("postgresql://user:password@localhost/dbname")  # PostgreSQL
-    # db = Database("mariadb://user:password@localhost/dbname")  # MariaDB
-    # db = Database("mssql://user:password@localhost/dbname")  # Microsoft SQL Server
-    # db = Database("oracle://user:password@localhost:1521/XE")  # Oracle
-    # db = Database("aurora://user:password@cluster-endpoint/dbname")  # Amazon Aurora
-    
-    await db.connect()
-    
-    # Register models
-    db.register_model(User)
-    db.register_model(Post)
-    
-    # Create tables
-    await db.create_tables()
+await db.connect()
+
+# Register models
+db.register_model(Author)
+db.register_model(Book)
+
+# Create tables (including relationship constraints)
+await db.create_tables()
 ```
 
 ### 3. CRUD Operations
@@ -108,51 +90,62 @@ async def main():
 #### Create
 ```python
 # Create single instance
-user = await User.create(
-    username="john_doe",
-    email="john@example.com"
-)
+author = await Author.create(name="J.K. Rowling")
+
+# Create with relationship
+book = await Book.create(title="Harry Potter", author=author) # Assign related object
 
 # Bulk create
 users_data = [
-    {'username': 'user1', 'email': 'user1@example.com'},
-    {'username': 'user2', 'email': 'user2@example.com'}
+    {'name': 'Author 1'},
+    {'name': 'Author 2'},
 ]
-created_users = await User.bulk_create(users_data)
+authors = await Author.objects().bulk_create(users_data)
 ```
 
 #### Read
 ```python
-# Get all records
-all_users = await User.objects().all()
+# Fetch all
+all_authors = await Author.objects().all()
 
-# Filter records
-active_users = await User.objects().filter(is_active=True)
+# Filter
+specific_author = await Author.objects().filter(name="J.K. Rowling").first()
 
-# Get single record
-user = await User.objects().get(username="john_doe")
+# Navigate relationships (Forward)
+book = await Book.objects().first()
+# Access related author (requires async call in current simplified implementation)
+# author_of_book = await book.get_author()
 
-# Complex queries
-published_posts = await Post.objects().filter(published=True).order_by('-created_at').limit(10)
+# Navigate relationships (Reverse)
+author = await Author.objects().first()
+# Access related books using the 'related_name'
+# books_by_author = await author.get_books() # Gets a QuerySet
+
+# Efficiently fetch related objects
+# Select related (JOIN - forward relationships)
+books_with_authors = await Book.objects().select_related('author').all()
+
+# Prefetch related (separate query - forward & reverse relationships)
+authors_with_books = await Author.objects().prefetch_related('books').all()
 ```
 
 #### Update
 ```python
 # Update single instance
-user.email = "newemail@example.com"
-await user.save()
+author.name = "Updated Name"
+await author.save()
 
 # Bulk update
-updated_count = await Post.objects().filter(published=False).update(published=True)
+updated_count = await Book.objects().filter(title__startswith="Draft").update(title="Untitled")
 ```
 
 #### Delete
 ```python
 # Delete single instance
-await user.delete()
+await book.delete()
 
 # Bulk delete
-deleted_count = await Post.objects().filter(published=False).delete()
+deleted_count = await Book.objects().filter(title="Unwanted").delete()
 ```
 
 ## 🔧 Advanced Features
@@ -160,23 +153,23 @@ deleted_count = await Post.objects().filter(published=False).delete()
 ### Transactions
 ```python
 async with db.transaction():
-    user = await User.create(username="test", email="test@example.com")
-    post = await Post.create(title="Test Post", content="Content", author_id=user.id)
+    author = await Author.create(name="New Author")
+    post = await Book.create(title="New Book", author_id=author.id)
 ```
 
 ### Complex Queries
 ```python
 # Chaining filters
-users = await User.objects().filter(is_active=True).exclude(username="admin")
+active_authors = await Author.objects().filter(name__icontains="John")
 
 # Ordering
-posts = await Post.objects().order_by('-created_at', 'title')
+recent_books = await Book.objects().order_by('-id', 'title')
 
 # Pagination
-page_1_posts = await Post.objects().limit(10).offset(0)
+page_1_books = await Book.objects().limit(10).offset(0)
 
 # Distinct values
-distinct_authors = await Post.objects().distinct().values_list('author_id', flat=True)
+distinct_author_ids = await Book.objects().distinct().values_list('author_id', flat=True)
 ```
 
 ### Field Types
@@ -189,108 +182,14 @@ class Product(Model):
     in_stock = BooleanField(default=True)
     created_at = DateTimeField(auto_now_add=True)
     updated_at = DateTimeField(auto_now=True)
-    category_id = IntegerField(foreign_key='categories.id')
-    tags = JSONField()  # Store JSON data
-    website = URLField()
-    uuid = UUIDField()
-    ip_address = IPAddressField()
+    # category = ForeignKeyField('Category') # Example of another relationship
 ```
 
-## 🏗️ Model Configuration
-
-### Simple Table Name
-```python
-class User(Model):
-    table_name = "app_users"  # Simple setup
-    # ... fields
-```
-
-### Meta Configuration
-```python
-class Post(Model):
-    _meta = {'table_name': 'blog_posts'}  # Traditional setup
-    # ... fields
-```
-
-### Automatic Table Name
-```python
-class Category(Model):
-    # Table name automatically becomes 'category'
-    # ... fields
-```
-
-## 🔒 Security Features
-
-- **SQL Injection Protection**: All queries use parameterized statements
-- **Input Validation**: Built-in field validation
-- **Data Sanitization**: Automatic data cleaning
-- **Connection Security**: Secure connection handling
-- **Password Hashing**: Built-in secure password hashing
-
-## ⚡ Performance Features
-
-- **Connection Pooling**: Reuse database connections efficiently
-- **Lazy Loading**: Queries execute only when needed
-- **Batch Operations**: Efficient bulk operations
-- **Memory Management**: Optimized memory usage
-- **Query Caching**: Cache frequently used queries
-- **Fast Model Instantiation**: Optimized object creation
-
-## 📊 Supported Databases
-
-| Database | Connection String | Package Required |
-|----------|-------------------|------------------|
-| SQLite | `sqlite:///path/to/db.sqlite` | `aiosqlite` |
-| MySQL | `mysql://user:pass@host:port/db` | `aiomysql` |
-| PostgreSQL | `postgresql://user:pass@host:port/db` | `asyncpg` |
-| MariaDB | `mariadb://user:pass@host:port/db` | `aiomysql` |
-| MSSQL | `mssql://user:pass@host:port/db` | `aioodbc` |
-| Oracle | `oracle://user:pass@host:port/service` | `async-oracledb` |
-| Aurora | `aurora://user:pass@cluster/db` | `aiomysql` |
-
-## 🧪 Example Usage
-
-```python
-import asyncio
-from ormax import Database, Model
-from ormax.fields import *
-
-class User(Model):
-    table_name = "users"
-    id = AutoField()
-    username = CharField(max_length=50, unique=True)
-    email = EmailField(unique=True)
-    is_active = BooleanField(default=True)
-
-async def example():
-    # Setup
-    db = Database("sqlite:///example.db")
-    await db.connect()
-    db.register_model(User)
-    await db.create_tables()
-    
-    # Create users
-    user1 = await User.create(username="alice", email="alice@example.com")
-    user2 = await User.create(username="bob", email="bob@example.com")
-    
-    # Bulk create
-    users_data = [{'username': f'user{i}', 'email': f'user{i}@example.com'} for i in range(3, 10)]
-    await User.bulk_create(users_data)
-    
-    # Query users
-    all_users = await User.objects().all()
-    active_users = await User.objects().filter(is_active=True)
-    
-    # Update user
-    user1.email = "alice.new@example.com"
-    await user1.save()
-    
-    # Close connection
-    await db.disconnect()
-
-if __name__ == "__main__":
-    asyncio.run(example())
-```
+### Relationship Management
+- **Forward Relationship (ForeignKey)**: Access the related object using the field name (e.g., `book.author`).
+- **Reverse Relationship**: Access related objects using the `related_name` (e.g., `author.books` gives a QuerySet of related books).
+- **`select_related(*relations)`**: Fetches the main object and specified related objects in a single database query (JOIN).
+- **`prefetch_related(*relations)`**: Fetches the main objects and then fetches related objects in separate queries, efficiently handling multiple relationships.
 
 ## 📚 API Reference
 
@@ -300,78 +199,37 @@ if __name__ == "__main__":
 - `disconnect()` - Disconnect from database
 - `transaction()` - Context manager for transactions
 - `register_model(model)` - Register model with database
-- `create_tables()` - Create all registered tables
+- `create_tables()` - Create all registered tables (including relationship constraints)
 - `drop_tables()` - Drop all registered tables
 
 ### Model Class
-- `objects()` - Get QuerySet for model
-- `create(**kwargs)` - Create and save instance
-- `bulk_create(objects, batch_size=1000)` - Bulk create instances
-- `save()` - Save instance to database
-- `delete()` - Delete instance from database
-- `to_dict()` - Convert to dictionary
+- `objects()` - Get QuerySet for the model
+- `create(**kwargs)` - Create and save a new instance
+- `save()` - Save the instance
+- `delete()` - Delete the instance
+- `to_dict()` - Convert instance to dictionary
+- `bulk_create(objects, batch_size)` - Efficiently create multiple instances
 
 ### QuerySet Class
-- `filter(**kwargs)` - Filter records
-- `exclude(**kwargs)` - Exclude records
-- `order_by(*fields)` - Order records
-- `limit(count)` - Limit results
-- `offset(count)` - Offset results
-- `distinct()` - Get distinct records
-- `all()` - Get all records
-- `first()` - Get first record
-- `get(**kwargs)` - Get single record
-- `count()` - Count records
-- `exists()` - Check if records exist
-- `delete()` - Delete matching records
-- `update(**kwargs)` - Update matching records
-- `bulk_create(objects, batch_size=1000)` - Bulk create records
-- `values(*fields)` - Get values as dictionaries
-- `values_list(*fields, flat=False)` - Get values as lists
-
-## 🛡️ Field Types
-
-| Field | Description | Example |
-|-------|-------------|---------|
-| `CharField` | String with max length | `CharField(max_length=100)` |
-| `TextField` | Long text | `TextField()` |
-| `IntegerField` | Integer | `IntegerField()` |
-| `BigIntegerField` | Big integer | `BigIntegerField()` |
-| `FloatField` | Floating point | `FloatField()` |
-| `DecimalField` | Decimal with precision | `DecimalField(max_digits=10, decimal_places=2)` |
-| `BooleanField` | Boolean | `BooleanField()` |
-| `DateTimeField` | DateTime | `DateTimeField(auto_now_add=True)` |
-| `DateField` | Date | `DateField()` |
-| `EmailField` | Validated email | `EmailField()` |
-| `URLField` | Validated URL | `URLField()` |
-| `JSONField` | JSON data | `JSONField()` |
-| `UUIDField` | UUID | `UUIDField()` |
-| `IPAddressField` | IP Address | `IPAddressField()` |
-| `SlugField` | URL-friendly slug | `SlugField()` |
-| `AutoField` | Auto-incrementing ID | `AutoField()` |
-
-## 🤝 Contributing
-
-1. Fork the repository
-2. Create your feature branch (`git checkout -b feature/AmazingFeature`)
-3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
-4. Push to the branch (`git push origin feature/AmazingFeature`)
-5. Open a Pull Request
-
-## 📄 License
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-
-## 🙏 Acknowledgments
-
-- Built with ❤️ for the Python community
-- Inspired by Django ORM and SQLAlchemy
-- Thanks to all contributors and users
-
-## 🆘 Support
+- `filter(**kwargs)` - Filter objects
+- `exclude(**kwargs)` - Exclude objects
+- `get(**kwargs)` - Get a single object
+- `all()` - Get all objects
+- `first()` - Get the first object
+- `last()` - Get the last object
+- `count()` - Count objects
+- `exists()` - Check if any objects exist
+- `order_by(*fields)` - Order objects
+- `limit(limit)` - Limit results
+- `offset(offset)` - Offset results
+- `distinct()` - Get distinct objects
+- `select_related(*relations)` - Fetch related objects in the same query (JOIN)
+- `prefetch_related(*relations)` - Fetch related objects in separate queries
+- `update(**kwargs)` - Bulk update objects
+- `delete()` - Bulk delete objects
+- `values(*fields)` - Return values as dictionaries
+- `values_list(*fields, flat=False)` - Return values as lists/tuples
 
 For support, please open an issue on GitHub or contact the maintainers.
-
----
 
 **Made with ❤️ using Python asyncio**
