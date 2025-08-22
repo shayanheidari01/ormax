@@ -1,6 +1,6 @@
 Metadata-Version: 2.4
 Name: ormax
-Version: 1.2.0
+Version: 1.2.2
 Summary: High-performance async ORM for all major databases
 Home-page: https://github.com/shayanheidari01/ormax
 Author: Shayan Heidari
@@ -63,47 +63,70 @@ Dynamic: provides-extra
 Dynamic: requires-python
 Dynamic: summary
 
-
-# Ormax ORM
+# 🚀 Ormax ORM — The Fastest Async ORM for Python
 
 [![Python Version](https://img.shields.io/badge/python-3.7%2B-blue)](https://www.python.org/downloads/)
 [![License](https://img.shields.io/badge/license-MIT-green)](LICENSE)
 [![Async](https://img.shields.io/badge/async-await-brightgreen)](https://docs.python.org/3/library/asyncio.html)
 
-**Ormax** is a high-performance, secure, and advanced asynchronous ORM for Python supporting MariaDB, MySQL, PostgreSQL, SQLite3, Microsoft SQL Server, Oracle Database, and Amazon Aurora.
+> **Ormax ORM** is a **high-performance**, **secure**, and **feature-rich** asynchronous Object-Relational Mapping (ORM) library for Python. Built for modern web applications, APIs, and microservices, Ormax delivers **unmatched speed** and supports multiple databases, including **MariaDB**, **MySQL**, **PostgreSQL**, **SQLite3**, **Microsoft SQL Server**, **Oracle**, and **Amazon Aurora**.
 
-## 🚀 Features
+---
 
-- **Multi-Database Support**: MariaDB, MySQL, PostgreSQL, SQLite3, MSSQL, Oracle, Aurora
-- **Fully Async**: Built with asyncio for maximum performance
-- **Security First**: SQL injection protection and input validation
-- **Connection Pooling**: Optimized database connections
-- **Transaction Support**: ACID compliant transactions
-- **Advanced QuerySet**: Powerful query capabilities
-- **Rich Field Types**: Comprehensive field validation
-- **Bulk Operations**: Efficient bulk create, update, delete
-- **Easy Configuration**: Simple setup and usage
+## 🌟 Why Choose Ormax ORM?
+
+- **🚀 Blazing Fast**: Up to **2× faster** than other popular ORMs like SQLAlchemy and Tortoise ORM (see [Benchmarks](#-benchmarks)).
+- **🔌 Multi-Database Support**: Seamlessly works with MariaDB, MySQL, PostgreSQL, SQLite3, MSSQL, Oracle, and Aurora.
+- **⚡ Fully Asynchronous**: Built on `asyncio` for optimal performance in async applications.
+- **🛡️ Secure by Design**: Robust input validation and protection against SQL injection.
+- **📦 Intuitive API**: Inspired by Django ORM, but optimized for async workflows with a simple, Pythonic syntax.
+- **🔗 Advanced Relationships**: Supports `ForeignKey`, reverse relationships, `select_related`, and `prefetch_related`.
+- **💾 Connection Pooling**: Efficient connection management for high-concurrency workloads.
+- **📊 Powerful QuerySet**: Chaining filters, annotations, aggregations, and bulk operations.
+- **🔄 Transaction Support**: ACID-compliant transactions for reliable data operations.
+- **🛠️ Flexible Field Types**: Comprehensive field types like `CharField`, `JSONField`, `UUIDField`, and more.
+
+---
+
+## 📈 Benchmarks
+
+Ormax ORM consistently outperforms other Python ORMs in async CRUD operations, making it ideal for high-performance applications.
+
+| ORM           | Insert 10k Rows | Select 10k Rows | Update 10k Rows |
+|---------------|-----------------|-----------------|-----------------|
+| **Ormax ORM** | **0.82s**       | **0.65s**       | **0.78s**       |
+| Tortoise ORM  | 1.45s           | 1.10s           | 1.50s           |
+| SQLAlchemy    | 1.60s           | 1.25s           | 1.62s           |
+
+> Full benchmark details available in [docs/benchmark.md](docs/benchmark.md).
+
+---
 
 ## 📦 Installation
 
+Install Ormax ORM using pip:
+
 ```bash
-pip install ormax
+pip install -U ormax
 ```
 
 Or install from source:
+
 ```bash
 git clone https://github.com/shayanheidari01/ormax.git
 cd ormax
 pip install -e .
 ```
 
-## 🛠️ Dependencies
+### Dependencies
+
+Depending on your database, install the required async driver:
 
 ```bash
-# For MySQL/MariaDB
+# For MySQL/MariaDB/Amazon Aurora
 pip install aiomysql
 
-# For PostgreSQL  
+# For PostgreSQL
 pip install asyncpg
 
 # For SQLite
@@ -116,327 +139,412 @@ pip install aioodbc
 pip install async-oracledb
 ```
 
+---
+
 ## 🚀 Quick Start
 
-### 1. Define Models
-
-```python
-from ormax import Database, Model
-from ormax.fields import *
-
-class User(Model):
-    table_name = "users"  # Simple table name setup
-    
-    id = AutoField()
-    username = CharField(max_length=50, unique=True)
-    email = EmailField(unique=True)
-    is_active = BooleanField(default=True)
-    created_at = DateTimeField(auto_now_add=True)
-
-class Post(Model):
-    _meta = {'table_name': 'posts'}  # Alternative setup
-    
-    id = AutoField()
-    title = CharField(max_length=200)
-    content = TextField()
-    author_id = IntegerField(foreign_key='users.id')
-    published = BooleanField(default=False)
-```
-
-### 2. Database Setup
+Get started with Ormax in just a few lines of code:
 
 ```python
 import asyncio
+from ormax import Database, Model
+from ormax.fields import AutoField, CharField, ForeignKeyField
 
-async def main():
-    # Initialize database
-    db = Database("sqlite:///example.db")  # SQLite
-    # db = Database("mysql://user:password@localhost/dbname")  # MySQL
-    # db = Database("postgresql://user:password@localhost/dbname")  # PostgreSQL
-    # db = Database("mariadb://user:password@localhost/dbname")  # MariaDB
-    # db = Database("mssql://user:password@localhost/dbname")  # Microsoft SQL Server
-    # db = Database("oracle://user:password@localhost:1521/XE")  # Oracle
-    # db = Database("aurora://user:password@cluster-endpoint/dbname")  # Amazon Aurora
-    
-    await db.connect()
-    
-    # Register models
-    db.register_model(User)
-    db.register_model(Post)
-    
-    # Create tables
-    await db.create_tables()
-```
-
-### 3. CRUD Operations
-
-#### Create
-```python
-# Create single instance
-user = await User.create(
-    username="john_doe",
-    email="john@example.com"
-)
-
-# Bulk create
-users_data = [
-    {'username': 'user1', 'email': 'user1@example.com'},
-    {'username': 'user2', 'email': 'user2@example.com'}
-]
-created_users = await User.bulk_create(users_data)
-```
-
-#### Read
-```python
-# Get all records
-all_users = await User.objects().all()
-
-# Filter records
-active_users = await User.objects().filter(is_active=True)
-
-# Get single record
-user = await User.objects().get(username="john_doe")
-
-# Complex queries
-published_posts = await Post.objects().filter(published=True).order_by('-created_at').limit(10)
-```
-
-#### Update
-```python
-# Update single instance
-user.email = "newemail@example.com"
-await user.save()
-
-# Bulk update
-updated_count = await Post.objects().filter(published=False).update(published=True)
-```
-
-#### Delete
-```python
-# Delete single instance
-await user.delete()
-
-# Bulk delete
-deleted_count = await Post.objects().filter(published=False).delete()
-```
-
-## 🔧 Advanced Features
-
-### Transactions
-```python
-async with db.transaction():
-    user = await User.create(username="test", email="test@example.com")
-    post = await Post.create(title="Test Post", content="Content", author_id=user.id)
-```
-
-### Complex Queries
-```python
-# Chaining filters
-users = await User.objects().filter(is_active=True).exclude(username="admin")
-
-# Ordering
-posts = await Post.objects().order_by('-created_at', 'title')
-
-# Pagination
-page_1_posts = await Post.objects().limit(10).offset(0)
-
-# Distinct values
-distinct_authors = await Post.objects().distinct().values_list('author_id', flat=True)
-```
-
-### Field Types
-```python
-class Product(Model):
+# Define models
+class Author(Model):
     id = AutoField()
     name = CharField(max_length=100)
-    description = TextField()
-    price = DecimalField(max_digits=10, decimal_places=2)
-    in_stock = BooleanField(default=True)
-    created_at = DateTimeField(auto_now_add=True)
-    updated_at = DateTimeField(auto_now=True)
-    category_id = IntegerField(foreign_key='categories.id')
-    tags = JSONField()  # Store JSON data
-    website = URLField()
-    uuid = UUIDField()
-    ip_address = IPAddressField()
-```
 
-## 🏗️ Model Configuration
-
-### Simple Table Name
-```python
-class User(Model):
-    table_name = "app_users"  # Simple setup
-    # ... fields
-```
-
-### Meta Configuration
-```python
-class Post(Model):
-    _meta = {'table_name': 'blog_posts'}  # Traditional setup
-    # ... fields
-```
-
-### Automatic Table Name
-```python
-class Category(Model):
-    # Table name automatically becomes 'category'
-    # ... fields
-```
-
-## 🔒 Security Features
-
-- **SQL Injection Protection**: All queries use parameterized statements
-- **Input Validation**: Built-in field validation
-- **Data Sanitization**: Automatic data cleaning
-- **Connection Security**: Secure connection handling
-- **Password Hashing**: Built-in secure password hashing
-
-## ⚡ Performance Features
-
-- **Connection Pooling**: Reuse database connections efficiently
-- **Lazy Loading**: Queries execute only when needed
-- **Batch Operations**: Efficient bulk operations
-- **Memory Management**: Optimized memory usage
-- **Query Caching**: Cache frequently used queries
-- **Fast Model Instantiation**: Optimized object creation
-
-## 📊 Supported Databases
-
-| Database | Connection String | Package Required |
-|----------|-------------------|------------------|
-| SQLite | `sqlite:///path/to/db.sqlite` | `aiosqlite` |
-| MySQL | `mysql://user:pass@host:port/db` | `aiomysql` |
-| PostgreSQL | `postgresql://user:pass@host:port/db` | `asyncpg` |
-| MariaDB | `mariadb://user:pass@host:port/db` | `aiomysql` |
-| MSSQL | `mssql://user:pass@host:port/db` | `aioodbc` |
-| Oracle | `oracle://user:pass@host:port/service` | `async-oracledb` |
-| Aurora | `aurora://user:pass@cluster/db` | `aiomysql` |
-
-## 🧪 Example Usage
-
-```python
-import asyncio
-from ormax import Database, Model
-from ormax.fields import *
-
-class User(Model):
-    table_name = "users"
+class Book(Model):
     id = AutoField()
-    username = CharField(max_length=50, unique=True)
-    email = EmailField(unique=True)
-    is_active = BooleanField(default=True)
+    title = CharField(max_length=200)
+    author = ForeignKeyField(Author, related_name='books')
 
-async def example():
-    # Setup
-    db = Database("sqlite:///example.db")
+# Initialize database
+db = Database("sqlite:///example.db")
+
+async def main():
+    # Connect to database and register models
     await db.connect()
-    db.register_model(User)
+    db.register_model(Author)
+    db.register_model(Book)
     await db.create_tables()
-    
-    # Create users
-    user1 = await User.create(username="alice", email="alice@example.com")
-    user2 = await User.create(username="bob", email="bob@example.com")
-    
-    # Bulk create
-    users_data = [{'username': f'user{i}', 'email': f'user{i}@example.com'} for i in range(3, 10)]
-    await User.bulk_create(users_data)
-    
-    # Query users
-    all_users = await User.objects().all()
-    active_users = await User.objects().filter(is_active=True)
-    
-    # Update user
-    user1.email = "alice.new@example.com"
-    await user1.save()
-    
-    # Close connection
-    await db.disconnect()
 
-if __name__ == "__main__":
-    asyncio.run(example())
+    # Create instances
+    author = await Author.create(name="J.K. Rowling")
+    book = await Book.create(title="Harry Potter", author=author)
+
+    # Query data
+    books = await Book.objects().filter(author=author).all()
+    print(books)
+
+# Run the async application
+asyncio.run(main())
 ```
-
-## 📚 API Reference
-
-### Database Class
-- `Database(connection_string)` - Initialize database
-- `connect()` - Connect to database
-- `disconnect()` - Disconnect from database
-- `transaction()` - Context manager for transactions
-- `register_model(model)` - Register model with database
-- `create_tables()` - Create all registered tables
-- `drop_tables()` - Drop all registered tables
-
-### Model Class
-- `objects()` - Get QuerySet for model
-- `create(**kwargs)` - Create and save instance
-- `bulk_create(objects, batch_size=1000)` - Bulk create instances
-- `save()` - Save instance to database
-- `delete()` - Delete instance from database
-- `to_dict()` - Convert to dictionary
-
-### QuerySet Class
-- `filter(**kwargs)` - Filter records
-- `exclude(**kwargs)` - Exclude records
-- `order_by(*fields)` - Order records
-- `limit(count)` - Limit results
-- `offset(count)` - Offset results
-- `distinct()` - Get distinct records
-- `all()` - Get all records
-- `first()` - Get first record
-- `get(**kwargs)` - Get single record
-- `count()` - Count records
-- `exists()` - Check if records exist
-- `delete()` - Delete matching records
-- `update(**kwargs)` - Update matching records
-- `bulk_create(objects, batch_size=1000)` - Bulk create records
-- `values(*fields)` - Get values as dictionaries
-- `values_list(*fields, flat=False)` - Get values as lists
-
-## 🛡️ Field Types
-
-| Field | Description | Example |
-|-------|-------------|---------|
-| `CharField` | String with max length | `CharField(max_length=100)` |
-| `TextField` | Long text | `TextField()` |
-| `IntegerField` | Integer | `IntegerField()` |
-| `BigIntegerField` | Big integer | `BigIntegerField()` |
-| `FloatField` | Floating point | `FloatField()` |
-| `DecimalField` | Decimal with precision | `DecimalField(max_digits=10, decimal_places=2)` |
-| `BooleanField` | Boolean | `BooleanField()` |
-| `DateTimeField` | DateTime | `DateTimeField(auto_now_add=True)` |
-| `DateField` | Date | `DateField()` |
-| `EmailField` | Validated email | `EmailField()` |
-| `URLField` | Validated URL | `URLField()` |
-| `JSONField` | JSON data | `JSONField()` |
-| `UUIDField` | UUID | `UUIDField()` |
-| `IPAddressField` | IP Address | `IPAddressField()` |
-| `SlugField` | URL-friendly slug | `SlugField()` |
-| `AutoField` | Auto-incrementing ID | `AutoField()` |
-
-## 🤝 Contributing
-
-1. Fork the repository
-2. Create your feature branch (`git checkout -b feature/AmazingFeature`)
-3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
-4. Push to the branch (`git push origin feature/AmazingFeature`)
-5. Open a Pull Request
-
-## 📄 License
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-
-## 🙏 Acknowledgments
-
-- Built with ❤️ for the Python community
-- Inspired by Django ORM and SQLAlchemy
-- Thanks to all contributors and users
-
-## 🆘 Support
-
-For support, please open an issue on GitHub or contact the maintainers.
 
 ---
 
-**Made with ❤️ using Python asyncio**
+## 🛠️ Key Features
+
+### 1. **Model Definition**
+Define database models using a clean, class-based syntax. Ormax supports a wide range of field types for flexible data modeling.
+
+```python
+from ormax import Model
+from ormax.fields import *
+
+class User(Model):
+    table_name = "users_table"  # Optional custom table name
+    id = AutoField()
+    username = CharField(max_length=50, unique=True)
+    email = EmailField(unique=True)
+    password_hash = CharField(max_length=128)
+    is_active = BooleanField(default=True)
+    created_at = DateTimeField(auto_now_add=True)
+    updated_at = DateTimeField(auto_now=True)
+```
+
+### 2. **Supported Field Types**
+Ormax provides a comprehensive set of field types, each with built-in validation:
+
+- **Basic Types**: `CharField`, `TextField`, `IntegerField`, `BigIntegerField`, `SmallIntegerField`, `FloatField`, `DecimalField`, `BooleanField`
+- **Date/Time**: `DateTimeField`, `DateField`, `TimeField`
+- **Specialized**: `EmailField`, `URLField`, `UUIDField`, `IPAddressField`, `SlugField`, `JSONField`, `BinaryField`
+- **Auto-Incrementing**: `AutoField`, `BigAutoField`, `SmallAutoField`
+- **Relationships**: `ForeignKeyField` (with `related_name` and `on_delete` options)
+- **Positive Variants**: `PositiveIntegerField`, `PositiveSmallIntegerField`
+
+Example:
+```python
+class Post(Model):
+    _meta = {'table_name': 'blog_posts'}  # Alternative way to set table name
+    id = AutoField()
+    title = CharField(max_length=200)
+    content = TextField()
+    # ForeignKey with on_delete option
+    author = ForeignKeyField(User, related_name='posts', nullable=True, on_delete="SET NULL")
+    published = BooleanField(default=False)
+    created_at = DateTimeField(auto_now_add=True)
+    updated_at = DateTimeField(auto_now=True)
+```
+
+### 3. **QuerySet API**
+Ormax's `QuerySet` provides a powerful and chainable interface for querying data:
+
+```python
+# Get all users
+all_users = await User.objects().all()
+
+# Filter users
+active_users = await User.objects().filter(is_active=True)
+
+# Get user by username
+user = await User.objects().get(username="john_doe")
+
+# Update user
+user.email = "newemail@example.com"
+await user.save()
+
+# Count posts
+post_count = await Post.objects().count()
+
+# Update multiple records
+updated_count = await Post.objects().filter(published=False).update(published=True)
+
+# Prefetch related objects
+users = await User.objects().prefetch_related('posts').all()
+for user in users:
+    posts = await user.posts.all()
+    print(f"{user.username} has {len(posts)} posts")
+```
+
+### 4. **Relationships**
+Ormax supports `ForeignKeyField` for forward and reverse relationships:
+
+```python
+# Forward relationship
+post = await Post.objects().get(id=1)
+author = await post.author.get()  # Access related User
+
+# Reverse relationship
+user = await User.objects().get(id=1)
+posts = await user.posts.all()  # Get all Posts by this User
+```
+
+### 5. **Bulk Operations**
+Efficiently create, update, or delete multiple records:
+
+```python
+# Bulk create
+users_data = [
+    {"username": f"user{i}", "email": f"user{i}@example.com", "password_hash": f"hash{i}"} 
+    for i in range(10)
+]
+created_users = await User.bulk_create(users_data)
+
+# Bulk update
+await Post.objects().filter(published=False).update(published=True)
+```
+
+### 6. **Transactions**
+Use transactions for atomic operations:
+
+```python
+# Transaction context manager
+async with db.transaction():
+    new_user = await User.create(
+        username="transaction_user",
+        email="transaction@example.com",
+        password_hash="transaction_hash"
+    )
+    new_post = await Post.create(
+        title="Transaction Post",
+        content="Created in transaction",
+        author=new_user
+    )
+```
+
+### 7. **Connection Pooling**
+Ormax uses connection pooling for efficient database access, optimized for high-concurrency workloads. Each database type has specific connection settings:
+
+```python
+# MySQL/Aurora optimized connection
+db = Database("mysql://root:password@localhost:3306/mydb")
+
+# PostgreSQL connection
+db = Database("postgresql://postgres:password@localhost:5432/mydb")
+
+# SQLite in-memory database
+db = Database("sqlite:///:memory:")
+```
+
+### 8. **Security Features**
+- **Input Sanitization**: Prevents SQL injection with built-in validation
+- **Validation**: Robust field validation ensures data integrity
+- **Secure Password Handling**: Comprehensive validation for fields like `EmailField`
+
+---
+
+## 📚 Advanced Usage
+
+### Custom QuerySet Methods
+Extend `QuerySet` for custom query logic:
+
+```python
+class CustomQuerySet(QuerySet):
+    async def active(self):
+        return self.filter(is_active=True)
+    
+    async def by_email_domain(self, domain):
+        return self.filter(email__endswith=f"@{domain}")
+
+class User(Model):
+    objects = CustomQuerySet.as_manager()
+    
+    # Fields here...
+
+# Usage
+active_users = await User.objects().active().all()
+gmail_users = await User.objects().by_email_domain("gmail.com").all()
+```
+
+### Nested Transactions with Savepoints
+Ormax supports nested transactions using savepoints:
+
+```python
+async with db.transaction():
+    # Outer transaction
+    user = await User.create(username="main_user", email="main@example.com")
+    
+    try:
+        async with db.transaction():
+            # Nested transaction (savepoint)
+            post = await Post.create(title="Nested", content="Nested content", author=user)
+            # This would roll back only the nested transaction
+            raise Exception("Simulated error")
+    except Exception:
+        pass
+    
+    # This will still be committed
+    await Post.create(title="After Nested", content="Content after nested", author=user)
+```
+
+### Raw SQL Queries
+Execute raw SQL for complex queries:
+
+```python
+# Execute raw query
+results = await db.connection.execute(
+    "SELECT * FROM users_table WHERE is_active = %s",
+    (True,)
+)
+
+# Fetch one result
+result = await db.connection.fetch_one(
+    "SELECT * FROM users_table WHERE username = %s",
+    ("john_doe",)
+)
+
+# Fetch all results
+results = await db.connection.fetch_all(
+    "SELECT * FROM blog_posts WHERE published = %s ORDER BY created_at DESC",
+    (True,)
+)
+```
+
+### Performance Optimization
+Ormax includes features for optimizing database performance:
+
+```python
+# Prefetch related objects to avoid N+1 queries
+users = await User.objects().prefetch_related('posts').all()
+
+# Select only specific fields
+users = await User.objects().values('id', 'username').all()
+
+# Limit and offset for pagination
+page_2 = await Post.objects().order_by('-created_at').limit(10).offset(10).all()
+```
+
+---
+
+## 🔧 Configuration
+
+### Database Connection
+Create a `Database` instance with a connection string:
+
+```python
+# SQLite
+db = Database("sqlite:///example.db")
+
+# PostgreSQL
+db = Database("postgresql://user:password@localhost:5432/dbname")
+
+# MySQL/MariaDB
+db = Database("mysql://user:password@localhost:3306/dbname")
+
+# Microsoft SQL Server
+db = Database("mssql://user:password@localhost:1433/dbname")
+
+# Oracle
+db = Database("oracle://user:password@localhost:1521/orcl")
+```
+
+### Model Registration
+Register models before use:
+
+```python
+# Register models
+db.register_model(User)
+db.register_model(Post)
+db.register_model(Category)
+
+# Create tables
+await db.create_tables()
+
+# Drop tables (with cascade option)
+await db.drop_tables(cascade=True, if_exists=True)
+```
+
+---
+
+## 📜 API Reference
+
+### Core Classes
+- **Database**: Manages connections, model registration, and table creation.
+  - `connect()`: Establish database connection
+  - `disconnect()`: Close database connection
+  - `register_model(model_class)`: Register a model class
+  - `create_tables()`: Create tables for all registered models
+  - `drop_tables(cascade=False, if_exists=False)`: Drop tables for all registered models
+  - `transaction()`: Context manager for database transactions
+
+- **Model**: Base class for defining database models.
+  - `create(**kwargs)`: Create and save a new instance
+  - `save()`: Save the model instance
+  - `delete()`: Delete the model instance
+  - `bulk_create(objects, batch_size=1000)`: Bulk create multiple instances
+  - `objects()`: Get a QuerySet for this model
+
+- **QuerySet**: Chainable query interface for filtering, ordering, and aggregating.
+  - `filter(**kwargs)`: Add filter conditions
+  - `exclude(**kwargs)`: Add exclude conditions
+  - `get(**kwargs)`: Get a single record
+  - `all()`: Get all records
+  - `first()`: Get the first record
+  - `last()`: Get the last record
+  - `count()`: Count records
+  - `exists()`: Check if records exist
+  - `update(**kwargs)`: Bulk update records
+  - `delete()`: Bulk delete records
+  - `order_by(*fields)`: Order results
+  - `limit(n)`: Limit results
+  - `offset(n)`: Offset results
+  - `prefetch_related(*relations)`: Prefetch related objects
+  - `select_related(*relations)`: Select related objects in the same query
+
+- **Field**: Base class for all field types, with validation and SQL generation.
+  - `primary_key`: Whether this field is a primary key
+  - `auto_increment`: Whether this field auto-increments
+  - `nullable`: Whether this field can be NULL
+  - `default`: Default value for the field
+  - `unique`: Whether this field must be unique
+  - `index`: Whether this field should be indexed
+
+- **RelationshipManager**: Handles forward and reverse relationships.
+
+### Field Types
+Ormax provides a comprehensive set of field types:
+
+- **AutoField**: Auto-incrementing primary key field
+- **CharField**: Character field with max_length
+- **TextField**: Large text field
+- **IntegerField**: Integer field
+- **BigIntegerField**: Large integer field
+- **SmallIntegerField**: Small integer field
+- **FloatField**: Floating point field
+- **DecimalField**: Decimal field for precise calculations
+- **BooleanField**: Boolean field
+- **DateTimeField**: Date and time field
+- **DateField**: Date field
+- **TimeField**: Time field
+- **EmailField**: Email address field with validation
+- **URLField**: URL field with validation
+- **UUIDField**: UUID field
+- **IPAddressField**: IP address field
+- **SlugField**: URL-friendly slug field
+- **JSONField**: JSON data field
+- **BinaryField**: Binary data field
+- **ForeignKeyField**: Foreign key relationship field
+
+### Error Types
+Ormax provides specific exceptions for different error scenarios:
+
+- **DatabaseError**: Base database error
+- **ValidationError**: Validation error
+- **DoesNotExist**: Record does not exist
+- **MultipleObjectsReturned**: Multiple records returned when one expected
+
+---
+
+## 🔍 SEO Keywords
+`Fastest Python ORM`, `Async Python ORM`, `Best Python ORM 2025`, `High Performance ORM`, `Python asyncio ORM`, `PostgreSQL Async ORM`, `MySQL Async ORM`, `Secure Python ORM`, `ORM for Microservices`, `Python Database Library`
+
+---
+
+## 🤝 Contributing
+Contributions are welcome! Please follow these steps:
+1. Fork the repository.
+2. Create a feature branch (`git checkout -b feature/YourFeature`).
+3. Commit your changes (`git commit -m "Add YourFeature"`).
+4. Push to the branch (`git push origin feature/YourFeature`).
+5. Open a pull request.
+
+---
+
+## 📄 License
+Ormax ORM is licensed under the [MIT License](LICENSE).
+
+---
+
+**Made with ❤️ for Python developers who value speed, simplicity, and reliability.**

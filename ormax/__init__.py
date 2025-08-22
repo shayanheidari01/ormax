@@ -4,5 +4,5 @@ from .fields import *
 from .query import QuerySet
 from .exceptions import *
 
-__version__ = "1.2.0"
+__version__ = "1.2.2"
 __all__ = ['Database', 'Model', 'Field', 'QuerySet', 'DatabaseError', 'ValidationError']
