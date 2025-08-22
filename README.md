@@ -42,7 +42,7 @@ Ormax ORM consistently outperforms other Python ORMs in async CRUD operations, m
 Install Ormax ORM using pip:
 
 ```bash
-pip install ormax
+pip install -U ormax
 ```
 
 Or install from source:
@@ -474,34 +474,6 @@ Contributions are welcome! Please follow these steps:
 3. Commit your changes (`git commit -m "Add YourFeature"`).
 4. Push to the branch (`git push origin feature/YourFeature`).
 5. Open a pull request.
-
-### Development Setup
-```bash
-# Clone the repository
-git clone https://github.com/shayanheidari01/ormax.git
-cd ormax
-
-# Create virtual environment
-python -m venv venv
-source venv/bin/activate  # Linux/Mac
-venv\Scripts\activate    # Windows
-
-# Install dependencies
-pip install -r requirements-dev.txt
-```
-
-### Testing
-Ormax uses comprehensive tests for all database backends:
-
-```bash
-# Run tests for all databases
-pytest
-
-# Run tests for a specific database
-pytest -k "postgresql"
-pytest -k "mysql"
-pytest -k "sqlite"
-```
 
 ---
 
