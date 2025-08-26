@@ -3,685 +3,766 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ormax ORM - High-Performance Async ORM</title>
+    <title>Ormax - Async ORM for Python</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
         :root {
-            --primary: #10b981;
-            --primary-dark: #059669;
-            --secondary: #8b5cf6;
-            --dark: #1e293b;
-            --light: #f8fafc;
-            --gray: #64748b;
-            --light-gray: #e2e8f0;
-            --white: #ffffff;
-            --shadow: rgba(0, 0, 0, 0.1);
-            --shadow-lg: rgba(0, 0, 0, 0.15);
+            --primary: #6366f1;
+            --primary-light: #818cf8;
+            --primary-dark: #4f46e5;
+            --secondary: #f59e0b;
+            --accent: #10b981;
+            --text-primary: #0f172a;
+            --text-secondary: #64748b;
+            --text-muted: #94a3b8;
+            --bg-primary: #ffffff;
+            --bg-secondary: #f8fafc;
+            --bg-tertiary: #f1f5f9;
+            --border: #e2e8f0;
+            --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+            --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+            --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+            --shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
+            --radius: 8px;
+            --radius-lg: 12px;
+            --radius-xl: 16px;
         }
+
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
         }
+
         body {
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
             line-height: 1.6;
-            color: var(--dark);
-            background-color: var(--light);
-            overflow-x: hidden;
+            color: var(--text-primary);
+            background: var(--bg-primary);
+            font-weight: 400;
         }
+
+        /* Utility Classes */
         .container {
-            width: 90%;
             max-width: 1200px;
             margin: 0 auto;
-            padding: 0 20px;
+            padding: 0 1.5rem;
         }
+
+        .section {
+            padding: 5rem 0;
+        }
+
+        .section-sm {
+            padding: 3rem 0;
+        }
+
+        .text-center { text-align: center; }
+        .text-left { text-align: left; }
+
+        .font-light { font-weight: 300; }
+        .font-normal { font-weight: 400; }
+        .font-medium { font-weight: 500; }
+        .font-semibold { font-weight: 600; }
+        .font-bold { font-weight: 700; }
+
+        .text-sm { font-size: 0.875rem; }
+        .text-base { font-size: 1rem; }
+        .text-lg { font-size: 1.125rem; }
+        .text-xl { font-size: 1.25rem; }
+        .text-2xl { font-size: 1.5rem; }
+        .text-3xl { font-size: 1.875rem; }
+        .text-4xl { font-size: 2.25rem; }
+        .text-5xl { font-size: 3rem; }
+
+        .mb-2 { margin-bottom: 0.5rem; }
+        .mb-4 { margin-bottom: 1rem; }
+        .mb-6 { margin-bottom: 1.5rem; }
+        .mb-8 { margin-bottom: 2rem; }
+        .mb-12 { margin-bottom: 3rem; }
+        .mb-16 { margin-bottom: 4rem; }
+
+        .mt-8 { margin-top: 2rem; }
+        .mt-12 { margin-top: 3rem; }
+
+        .opacity-60 { opacity: 0.6; }
+        .opacity-80 { opacity: 0.8; }
+
         /* Header */
         header {
-            background-color: var(--white);
-            box-shadow: 0 2px 10px var(--shadow);
-            position: sticky;
+            position: fixed;
             top: 0;
-            z-index: 100;
-            padding: 1rem 0;
+            left: 0;
+            right: 0;
+            z-index: 50;
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid var(--border);
+            transition: all 0.3s ease;
         }
+
         .header-content {
             display: flex;
-            justify-content: space-between;
             align-items: center;
+            justify-content: space-between;
+            height: 4rem;
         }
+
         .logo {
-            font-size: 1.8rem;
-            font-weight: 800;
-            color: var(--primary);
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--text-primary);
             text-decoration: none;
             display: flex;
             align-items: center;
+            gap: 0.5rem;
         }
-        .logo-dot {
-            color: var(--secondary);
+
+        .logo-icon {
+            width: 2rem;
+            height: 2rem;
+            background: linear-gradient(135deg, var(--primary), var(--primary-light));
+            border-radius: var(--radius);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.1rem;
         }
-        nav ul {
+
+        nav {
+            display: flex;
+            align-items: center;
+            gap: 2rem;
+        }
+
+        .nav-links {
             display: flex;
             list-style: none;
+            gap: 2rem;
         }
-        nav ul li {
-            margin-left: 2rem;
-        }
-        nav ul li a {
-            color: var(--dark);
+
+        .nav-links a {
+            color: var(--text-secondary);
             text-decoration: none;
             font-weight: 500;
-            transition: color 0.3s;
+            font-size: 0.9rem;
+            transition: color 0.2s ease;
             position: relative;
         }
-        nav ul li a:hover {
+
+        .nav-links a:hover {
+            color: var(--text-primary);
+        }
+
+        .nav-links a.active {
             color: var(--primary);
         }
-        nav ul li a::after {
-            content: '';
-            position: absolute;
-            bottom: -5px;
-            left: 0;
-            width: 0;
-            height: 2px;
-            background-color: var(--primary);
-            transition: width 0.3s ease;
+
+        .nav-cta {
+            background: var(--primary);
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: var(--radius);
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 0.9rem;
+            transition: all 0.2s ease;
         }
-        nav ul li a:hover::after {
-            width: 100%;
+
+        .nav-cta:hover {
+            background: var(--primary-dark);
+            transform: translateY(-1px);
         }
+
+        /* Mobile Menu */
         .mobile-menu-btn {
             display: none;
             background: none;
             border: none;
-            font-size: 1.5rem;
+            color: var(--text-primary);
+            font-size: 1.2rem;
             cursor: pointer;
-            color: var(--dark);
         }
-        /* Hero */
+
+        /* Hero Section */
         .hero {
-            padding: 6rem 0;
-            text-align: center;
-            background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%);
+            padding: 8rem 0 6rem;
+            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
             position: relative;
             overflow: hidden;
         }
+
         .hero::before {
             content: '';
             position: absolute;
-            top: -50%;
-            left: -50%;
-            width: 200%;
-            height: 200%;
-            background: radial-gradient(circle, rgba(16, 185, 129, 0.1) 0%, transparent 70%);
-            z-index: 0;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: radial-gradient(circle at 30% 20%, rgba(99, 102, 241, 0.1) 0%, transparent 50%);
         }
+
         .hero-content {
             position: relative;
             z-index: 1;
+            max-width: 800px;
+            margin: 0 auto;
+            text-align: center;
         }
+
         .hero h1 {
             font-size: 3.5rem;
+            font-weight: 700;
+            line-height: 1.1;
             margin-bottom: 1.5rem;
-            color: var(--dark);
-            line-height: 1.2;
+            background: linear-gradient(135deg, var(--text-primary) 0%, var(--primary) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
         }
+
         .hero p {
             font-size: 1.25rem;
-            color: var(--gray);
-            max-width: 700px;
-            margin: 0 auto 2rem;
+            color: var(--text-secondary);
+            margin-bottom: 3rem;
+            font-weight: 400;
         }
-        .cta-button {
-            display: inline-block;
-            background-color: var(--primary);
-            color: var(--white);
-            padding: 1rem 2.5rem;
-            border-radius: 50px;
+
+        .hero-actions {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        /* Buttons */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.75rem 1.5rem;
+            border-radius: var(--radius);
             text-decoration: none;
-            font-weight: 600;
-            transition: all 0.3s ease;
+            font-weight: 500;
+            font-size: 0.95rem;
+            transition: all 0.2s ease;
             border: none;
             cursor: pointer;
-            font-size: 1.1rem;
-            box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3);
         }
-        .cta-button:hover {
-            background-color: var(--primary-dark);
-            transform: translateY(-3px);
-            box-shadow: 0 6px 20px rgba(16, 185, 129, 0.4);
+
+        .btn-primary {
+            background: var(--primary);
+            color: white;
         }
-        .cta-button.secondary {
-            background-color: transparent;
-            color: var(--primary);
-            border: 2px solid var(--primary);
-            margin-left: 1rem;
+
+        .btn-primary:hover {
+            background: var(--primary-dark);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-lg);
         }
-        .cta-button.secondary:hover {
-            background-color: var(--primary);
-            color: var(--white);
+
+        .btn-secondary {
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            border: 1px solid var(--border);
         }
-        /* Sections */
-        section {
-            padding: 5rem 0;
+
+        .btn-secondary:hover {
+            background: var(--bg-secondary);
+            border-color: var(--primary);
         }
-        .section-title {
+
+        /* Stats */
+        .stats {
+            background: var(--text-primary);
+            color: white;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 2rem;
+        }
+
+        .stat-item {
             text-align: center;
-            margin-bottom: 3rem;
         }
-        .section-title h2 {
+
+        .stat-number {
             font-size: 2.5rem;
-            color: var(--dark);
-            margin-bottom: 1rem;
+            font-weight: 700;
+            color: var(--primary-light);
+            margin-bottom: 0.5rem;
         }
-        .section-title p {
-            color: var(--gray);
-            max-width: 600px;
-            margin: 0 auto;
-            font-size: 1.1rem;
+
+        .stat-label {
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 0.9rem;
         }
+
         /* Features */
         .features-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
             gap: 2rem;
         }
+
         .feature-card {
-            background: var(--white);
-            border-radius: 15px;
-            padding: 2.5rem;
-            box-shadow: 0 5px 20px var(--shadow);
+            background: var(--bg-primary);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            padding: 2rem;
             transition: all 0.3s ease;
-            border-top: 4px solid var(--primary);
-            text-align: center;
         }
+
         .feature-card:hover {
-            transform: translateY(-10px);
-            box-shadow: 0 15px 30px var(--shadow-lg);
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-xl);
+            border-color: var(--primary);
         }
+
         .feature-icon {
-            font-size: 3rem;
-            margin-bottom: 1.5rem;
-            color: var(--primary);
-            width: 80px;
-            height: 80px;
+            width: 3rem;
+            height: 3rem;
+            background: linear-gradient(135deg, var(--primary), var(--primary-light));
+            border-radius: var(--radius);
             display: flex;
             align-items: center;
             justify-content: center;
-            margin: 0 auto 1.5rem;
-            background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%);
-            border-radius: 50%;
+            color: white;
+            font-size: 1.3rem;
+            margin-bottom: 1.5rem;
         }
+
         .feature-card h3 {
-            font-size: 1.5rem;
-            margin-bottom: 1rem;
-            color: var(--dark);
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin-bottom: 0.75rem;
+            color: var(--text-primary);
         }
+
         .feature-card p {
-            color: var(--gray);
+            color: var(--text-secondary);
+            line-height: 1.6;
         }
-        /* Stats */
-        .stats {
-            background: linear-gradient(135deg, var(--dark) 0%, #0f172a 100%);
-            color: var(--white);
-            text-align: center;
+
+        /* Code Section */
+        .code-demo {
+            background: var(--bg-secondary);
         }
-        .stats-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 2rem;
-            margin-top: 2rem;
-        }
-        .stat-item h3 {
-            font-size: 3rem;
-            margin-bottom: 0.5rem;
-            color: var(--primary);
-        }
-        .stat-item p {
-            font-size: 1.1rem;
-            opacity: 0.9;
-        }
-        /* Code Example */
-        .code-section {
-            background-color: var(--dark);
-            color: var(--white);
-            border-radius: 15px;
+
+        .code-container {
+            background: var(--text-primary);
+            border-radius: var(--radius-xl);
             overflow: hidden;
-            margin: 3rem 0;
+            box-shadow: var(--shadow-xl);
         }
+
         .code-header {
-            background-color: #0f172a;
+            background: #0f172a;
             padding: 1rem 1.5rem;
             display: flex;
-            justify-content: space-between;
             align-items: center;
+            justify-content: space-between;
+            border-bottom: 1px solid #334155;
         }
-        .code-header h3 {
-            font-size: 1.2rem;
+
+        .code-title {
+            color: white;
             font-weight: 600;
+            font-size: 0.9rem;
         }
-        .code-tabs {
+
+        .window-controls {
             display: flex;
+            gap: 0.5rem;
         }
-        .code-tab {
-            padding: 0.5rem 1rem;
-            background: transparent;
-            border: none;
-            color: #94a3b8;
-            cursor: pointer;
-            transition: color 0.3s;
+
+        .window-control {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
         }
-        .code-tab.active {
-            color: var(--primary);
-            border-bottom: 2px solid var(--primary);
-        }
+
+        .window-control.red { background: #ef4444; }
+        .window-control.yellow { background: #f59e0b; }
+        .window-control.green { background: #10b981; }
+
         .code-content {
             padding: 2rem;
             overflow-x: auto;
+            font-family: 'JetBrains Mono', 'Fira Code', monospace;
+            font-size: 0.9rem;
+            line-height: 1.6;
+            color: #e2e8f0;
         }
-        .code-block {
-            font-family: 'Fira Code', 'Courier New', monospace;
-            font-size: 0.95rem;
-            line-height: 1.5;
-        }
-        .hidden { display: none; }
-        .comment { color: #94a3b8; }
+
+        /* Syntax highlighting */
         .keyword { color: #818cf8; }
         .string { color: #34d399; }
+        .comment { color: #94a3b8; }
         .class { color: #fbbf24; }
         .function { color: #60a5fa; }
         .number { color: #f87171; }
-        /* Documentation */
-        .docs-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 2rem;
+
+        /* CTA Section */
+        .cta-section {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            color: white;
         }
-        .doc-card {
-            background: var(--white);
-            border-radius: 15px;
-            padding: 2rem;
-            box-shadow: 0 5px 15px var(--shadow);
-            transition: transform 0.3s ease;
+
+        .cta-content {
+            max-width: 600px;
+            margin: 0 auto;
+            text-align: center;
         }
-        .doc-card:hover {
-            transform: translateY(-5px);
-        }
-        .doc-card h3 {
-            color: var(--primary);
+
+        .cta-section h2 {
+            font-size: 2.5rem;
+            font-weight: 700;
             margin-bottom: 1rem;
+        }
+
+        .cta-section p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+            margin-bottom: 2rem;
+        }
+
+        .install-command {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: var(--radius);
+            padding: 1rem 1.5rem;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 1rem;
+            color: white;
+            margin: 2rem 0;
             display: flex;
             align-items: center;
+            justify-content: space-between;
+            backdrop-filter: blur(10px);
         }
-        .doc-card h3 i {
-            margin-right: 0.5rem;
+
+        .copy-btn {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: var(--radius-sm);
+            padding: 0.5rem;
+            color: white;
+            cursor: pointer;
+            transition: all 0.2s ease;
         }
-        .doc-card ul {
-            list-style: none;
+
+        .copy-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
         }
-        .doc-card li {
-            margin-bottom: 0.75rem;
-            padding-left: 1.5rem;
-            position: relative;
-        }
-        .doc-card li::before {
-            content: '→';
-            position: absolute;
-            left: 0;
-            color: var(--primary);
-        }
-        .doc-card a {
-            color: var(--dark);
-            text-decoration: none;
-            transition: color 0.3s;
-        }
-        .doc-card a:hover {
-            color: var(--primary);
-        }
-        /* Install */
-        .install-section {
-            background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%);
-            text-align: center;
-            border-radius: 15px;
-            padding: 4rem 2rem;
-        }
-        .install-code {
-            background: var(--dark);
-            color: var(--white);
-            padding: 1.5rem;
-            border-radius: 10px;
-            max-width: 500px;
-            margin: 2rem auto;
-            text-align: left;
-            font-family: 'Fira Code', monospace;
-            font-size: 1.1rem;
-            white-space: pre-wrap;
-        }
+
         /* Footer */
         footer {
-            background: var(--dark);
-            color: var(--white);
-            padding: 4rem 0 2rem;
+            background: var(--text-primary);
+            color: white;
+            padding: 3rem 0 2rem;
         }
-        .footer-grid {
+
+        .footer-content {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
             gap: 2rem;
-            margin-bottom: 3rem;
+            margin-bottom: 2rem;
         }
-        .footer-column h3 {
-            font-size: 1.3rem;
-            margin-bottom: 1.5rem;
-            color: var(--primary);
+
+        .footer-section h3 {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            color: var(--primary-light);
         }
-        .footer-column ul {
+
+        .footer-section ul {
             list-style: none;
         }
-        .footer-column ul li {
-            margin-bottom: 0.75rem;
+
+        .footer-section ul li {
+            margin-bottom: 0.5rem;
         }
-        .footer-column ul li a {
-            color: #94a3b8;
+
+        .footer-section a {
+            color: rgba(255, 255, 255, 0.7);
             text-decoration: none;
-            transition: color 0.3s;
+            font-size: 0.9rem;
+            transition: color 0.2s ease;
         }
-        .footer-column ul li a:hover {
-            color: var(--primary);
+
+        .footer-section a:hover {
+            color: var(--primary-light);
         }
-        .social-links {
-            display: flex;
-            gap: 1rem;
-            margin-top: 1rem;
-        }
-        .social-links a {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            background: #334155;
-            color: var(--white);
-            transition: all 0.3s ease;
-        }
-        .social-links a:hover {
-            background: var(--primary);
-            transform: translateY(-3px);
-        }
-        .copyright {
+
+        .footer-bottom {
             text-align: center;
             padding-top: 2rem;
             border-top: 1px solid #334155;
-            color: #94a3b8;
+            color: rgba(255, 255, 255, 0.6);
             font-size: 0.9rem;
         }
+
         /* Responsive Design */
-        @media (max-width: 992px) {
-            .hero h1 {
-                font-size: 2.8rem;
-            }
-            .features-grid,
-            .stats-grid,
-            .docs-grid {
-                grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            }
-        }
         @media (max-width: 768px) {
-            .header-content {
-                flex-direction: column;
-                position: relative;
+            .nav-links {
+                display: none;
             }
+
             .mobile-menu-btn {
                 display: block;
-                position: absolute;
-                right: 0;
-                top: 50%;
-                transform: translateY(-50%);
             }
-            nav {
-                margin-top: 1rem;
-                width: 100%;
-            }
-            nav ul {
-                flex-direction: column;
-                align-items: center;
-                width: 100%;
-            }
-            nav ul li {
-                margin: 0.5rem 0;
-            }
-            .hero {
-                padding: 4rem 0;
-            }
+
             .hero h1 {
-                font-size: 2.3rem;
+                font-size: 2.5rem;
             }
+
             .hero p {
                 font-size: 1.1rem;
             }
-            .cta-buttons {
+
+            .hero-actions {
                 flex-direction: column;
-                gap: 1rem;
+                align-items: center;
             }
-            .cta-button.secondary {
-                margin-left: 0;
+
+            .btn {
+                width: 100%;
+                max-width: 300px;
+                justify-content: center;
             }
-            .section-title h2 {
-                font-size: 2rem;
-            }
-            section {
+
+            .section {
                 padding: 3rem 0;
             }
-        }
-        @media (max-width: 576px) {
-            .container {
-                width: 95%;
+
+            .features-grid {
+                grid-template-columns: 1fr;
+                gap: 1.5rem;
             }
+
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 1.5rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .container {
+                padding: 0 1rem;
+            }
+
+            .hero {
+                padding: 6rem 0 4rem;
+            }
+
             .hero h1 {
                 font-size: 2rem;
             }
-            .feature-card {
-                padding: 1.5rem;
-            }
-            .code-content {
-                padding: 1rem;
-            }
-            .install-section {
-                padding: 2rem 1rem;
+
+            .install-command {
+                flex-direction: column;
+                gap: 1rem;
+                text-align: center;
             }
         }
+
         /* Animation */
+        .fade-in {
+            opacity: 0;
+            transform: translateY(20px);
+            animation: fadeIn 0.6s ease forwards;
+        }
+
+        .fade-in:nth-child(2) { animation-delay: 0.1s; }
+        .fade-in:nth-child(3) { animation-delay: 0.2s; }
+        .fade-in:nth-child(4) { animation-delay: 0.3s; }
+
         @keyframes fadeIn {
-            from {
-                opacity: 0;
-                transform: translateY(20px);
-            }
             to {
                 opacity: 1;
                 transform: translateY(0);
             }
         }
-        .animate-on-scroll {
+
+        /* Scroll animations */
+        .scroll-animate {
             opacity: 0;
-            transform: translateY(20px);
-            transition: opacity 0.6s ease, transform 0.6s ease;
+            transform: translateY(30px);
+            transition: all 0.6s ease;
         }
-        .animate-on-scroll.visible {
+
+        .scroll-animate.visible {
             opacity: 1;
             transform: translateY(0);
-        }
-        /* Custom Scrollbar */
-        ::-webkit-scrollbar {
-            width: 10px;
-        }
-        ::-webkit-scrollbar-track {
-            background: #f1f1f1;
-        }
-        ::-webkit-scrollbar-thumb {
-            background: var(--primary);
-            border-radius: 5px;
-        }
-        ::-webkit-scrollbar-thumb:hover {
-            background: var(--primary-dark);
         }
     </style>
 </head>
 <body>
     <!-- Header -->
     <header>
-        <div class="container header-content">
-            <a href="#" class="logo">Ormax<span class="logo-dot">.</span></a>
-            <button class="mobile-menu-btn">
-                <i class="fas fa-bars"></i>
-            </button>
-            <nav>
-                <ul>
-                    <li><a href="#features">Features</a></li>
-                    <li><a href="#performance">Performance</a></li>
-                    <li><a href="#docs">Documentation</a></li>
-                    <li><a href="#install">Install</a></li>
-                </ul>
-            </nav>
+        <div class="container">
+            <div class="header-content">
+                <a href="#" class="logo">
+                    <div class="logo-icon">
+                        <i class="fas fa-database"></i>
+                    </div>
+                    Ormax
+                </a>
+                <nav>
+                    <ul class="nav-links">
+                        <li><a href="#features">Features</a></li>
+                        <li><a href="#performance">Performance</a></li>
+                        <li><a href="https://ormax.shayan-heidari.ir/docs" target="_blank">Docs</a></li>
+                        <li><a href="#install">Install</a></li>
+                    </ul>
+                    <a href="https://github.com/shayanheidari01/ormax" class="nav-cta" target="_blank">
+                        <i class="fab fa-github"></i>
+                        GitHub
+                    </a>
+                </nav>
+                <button class="mobile-menu-btn">
+                    <i class="fas fa-bars"></i>
+                </button>
+            </div>
         </div>
     </header>
-    <!-- Hero -->
+
+    <!-- Hero Section -->
     <section class="hero">
-        <div class="container hero-content">
-            <h1>Ormax ORM</h1>
-            <p>The High-Performance Async ORM for Python with Multi-Database Support</p>
-            <div class="cta-buttons">
-                <a href="#install" class="cta-button">Get Started</a>
-                <a href="#docs" class="cta-button secondary">View Docs</a>
+        <div class="container">
+            <div class="hero-content">
+                <h1 class="fade-in">Async ORM for Python</h1>
+                <p class="fade-in">High-performance, secure, and intuitive database operations with full async/await support</p>
+                <div class="hero-actions fade-in">
+                    <a href="#install" class="btn btn-primary">
+                        <i class="fas fa-download"></i>
+                        Get Started
+                    </a>
+                    <a href="https://ormax.shayan-heidari.ir/docs" class="btn btn-secondary" target="_blank">
+                        <i class="fas fa-book"></i>
+                        Documentation
+                    </a>
+                </div>
             </div>
         </div>
     </section>
-    <!-- Features -->
-    <section id="features">
+
+    <!-- Stats Section -->
+    <section class="stats section-sm">
         <div class="container">
-            <div class="section-title animate-on-scroll">
-                <h2>Powerful Features</h2>
-                <p>Built for developers who demand speed, security, and simplicity</p>
+            <div class="stats-grid scroll-animate">
+                <div class="stat-item">
+                    <div class="stat-number">8x</div>
+                    <div class="stat-label">Faster than SQLAlchemy</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number">7+</div>
+                    <div class="stat-label">Database Support</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number">99.9%</div>
+                    <div class="stat-label">Test Coverage</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number">1000+</div>
+                    <div class="stat-label">Records/sec</div>
+                </div>
             </div>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section id="features" class="section">
+        <div class="container">
+            <div class="text-center mb-16 scroll-animate">
+                <h2 class="text-4xl font-bold mb-4">Why Choose Ormax?</h2>
+                <p class="text-xl text-secondary">Built for modern Python applications with performance and security in mind</p>
+            </div>
+
             <div class="features-grid">
-                <div class="feature-card animate-on-scroll">
+                <div class="feature-card scroll-animate">
                     <div class="feature-icon">
                         <i class="fas fa-bolt"></i>
                     </div>
                     <h3>Lightning Fast</h3>
-                    <p>Optimized for performance with async/await support. Up to 8x faster than traditional ORMs.</p>
+                    <p>Optimized for performance with connection pooling, lazy loading, and efficient query execution</p>
                 </div>
-                <div class="feature-card animate-on-scroll">
+
+                <div class="feature-card scroll-animate">
                     <div class="feature-icon">
                         <i class="fas fa-shield-alt"></i>
                     </div>
-                    <h3>Secure by Default</h3>
-                    <p>Built-in SQL injection protection, input validation, and data sanitization.</p>
+                    <h3>Secure by Design</h3>
+                    <p>Built-in protection against SQL injection with automatic input validation and sanitization</p>
                 </div>
-                <div class="feature-card animate-on-scroll">
+
+                <div class="feature-card scroll-animate">
                     <div class="feature-icon">
                         <i class="fas fa-database"></i>
                     </div>
                     <h3>Multi-Database</h3>
-                    <p>Supports SQLite, MySQL, PostgreSQL, MariaDB, MSSQL, Oracle, and Aurora.</p>
+                    <p>SQLite, MySQL, PostgreSQL, MariaDB, MSSQL, Oracle - all supported with the same API</p>
                 </div>
-                <div class="feature-card animate-on-scroll">
+
+                <div class="feature-card scroll-animate">
                     <div class="feature-icon">
                         <i class="fas fa-code"></i>
                     </div>
-                    <h3>Clean API</h3>
-                    <p>Elegant and intuitive API that makes database operations simple and readable.</p>
+                    <h3>Clean & Simple</h3>
+                    <p>Intuitive API design that makes database operations readable and maintainable</p>
                 </div>
-                <div class="feature-card animate-on-scroll">
+
+                <div class="feature-card scroll-animate">
                     <div class="feature-icon">
                         <i class="fas fa-sync-alt"></i>
                     </div>
-                    <h3>Connection Pooling</h3>
-                    <p>Efficient connection management with built-in pooling for optimal resource usage.</p>
+                    <h3>Async First</h3>
+                    <p>Built from ground up for async/await with proper connection pooling and concurrency</p>
                 </div>
-                <div class="feature-card animate-on-scroll">
-                    <div class="feature-icon">
-                        <i class="fas fa-tasks"></i>
-                    </div>
-                    <h3>Advanced QuerySet</h3>
-                    <p>Powerful querying capabilities with filtering, ordering, pagination, and aggregation.</p>
-                </div>
-                <div class="feature-card animate-on-scroll">
-                    <div class="feature-icon">
-                        <i class="fas fa-bullhorn"></i>
-                    </div>
-                    <h3>Bulk Operations</h3>
-                    <p>Efficiently create, update, and delete large numbers of records.</p>
-                </div>
-                 <div class="feature-card animate-on-scroll">
+
+                <div class="feature-card scroll-animate">
                     <div class="feature-icon">
                         <i class="fas fa-layer-group"></i>
                     </div>
                     <h3>Rich Field Types</h3>
-                    <p>Comprehensive set of field types with built-in validation (Email, URL, UUID, etc.).</p>
-                </div>
-                 <div class="feature-card animate-on-scroll">
-                    <div class="feature-icon">
-                        <i class="fas fa-exchange-alt"></i>
-                    </div>
-                    <h3>ACID Transactions</h3>
-                    <p>Ensure data integrity with full support for database transactions.</p>
+                    <p>Comprehensive field types with validation: Email, URL, UUID, JSON, and custom fields</p>
                 </div>
             </div>
         </div>
     </section>
-    <!-- Performance -->
-    <section id="performance" class="stats">
+
+    <!-- Code Demo Section -->
+    <section class="code-demo section">
         <div class="container">
-            <div class="section-title animate-on-scroll">
-                <h2>Performance Benchmarks</h2>
-                <p>See how Ormax ORM compares to other popular ORMs</p>
+            <div class="text-center mb-12 scroll-animate">
+                <h2 class="text-4xl font-bold mb-4">Simple & Powerful</h2>
+                <p class="text-xl text-secondary">Get started with just a few lines of code</p>
             </div>
-            <div class="stats-grid">
-                <div class="stat-item animate-on-scroll">
-                    <h3>8x</h3>
-                    <p>Faster than SQLAlchemy</p>
-                </div>
-                <div class="stat-item animate-on-scroll">
-                    <h3>4x</h3>
-                    <p>Faster than Peewee</p>
-                </div>
-                <div class="stat-item animate-on-scroll">
-                    <h3>1000+</h3>
-                    <p>Records/sec</p>
-                </div>
-                <div class="stat-item animate-on-scroll">
-                    <h3>99.9%</h3>
-                    <p>Test Coverage</p>
-                </div>
-            </div>
-            <div class="section-title animate-on-scroll" style="margin-top: 3rem;">
-                <p>Optimized with connection pooling, lazy loading, and batch operations.</p>
-            </div>
-        </div>
-    </section>
-    <!-- Code Example -->
-    <section>
-        <div class="container">
-            <div class="section-title animate-on-scroll">
-                <h2>Simple & Elegant</h2>
-                <p>Experience the power of async ORM with clean, readable code</p>
-            </div>
-            <div class="code-section animate-on-scroll">
+
+            <div class="code-container scroll-animate">
                 <div class="code-header">
-                    <h3>Code Examples</h3>
-                    <div class="code-tabs">
-                        <button class="code-tab active" data-example="basic">Basic Usage</button>
-                        <button class="code-tab" data-example="advanced">Advanced Features</button>
+                    <div class="code-title">Quick Example</div>
+                    <div class="window-controls">
+                        <div class="window-control red"></div>
+                        <div class="window-control yellow"></div>
+                        <div class="window-control green"></div>
                     </div>
                 </div>
                 <div class="code-content">
-                     <pre class="code-block" id="code-basic"><code><span class="keyword">import</span> asyncio
+<pre><code><span class="keyword">import</span> asyncio
 <span class="keyword">from</span> ormax <span class="keyword">import</span> Database, Model
 <span class="keyword">from</span> ormax.fields <span class="keyword">import</span> *
 
 <span class="keyword">class</span> <span class="class">User</span>(Model):
     table_name = <span class="string">"users"</span>
+    
     id = AutoField()
     username = CharField(max_length=<span class="number">50</span>, unique=<span class="keyword">True</span>)
     email = EmailField(unique=<span class="keyword">True</span>)
@@ -689,268 +770,227 @@
     created_at = DateTimeField(auto_now_add=<span class="keyword">True</span>)
 
 <span class="keyword">async def</span> <span class="function">main</span>():
-    <span class="comment"># Initialize database</span>
+    <span class="comment"># Connect to database</span>
     db = Database(<span class="string">"sqlite:///example.db"</span>)
     <span class="keyword">await</span> db.connect()
-
-    <span class="comment"># Register model and create tables</span>
+    
+    <span class="comment"># Register models and create tables</span>
     db.register_model(User)
     <span class="keyword">await</span> db.create_tables()
-
-    <span class="comment"># Create users</span>
+    
+    <span class="comment"># Create a user</span>
     user = <span class="keyword">await</span> User.create(
         username=<span class="string">"john_doe"</span>,
         email=<span class="string">"john@example.com"</span>
     )
-
+    
     <span class="comment"># Query users</span>
-    active_users = <span class="keyword">await</span> User.objects().filter(is_active=<span class="keyword">True</span>).all()
-
+    users = <span class="keyword">await</span> User.objects().filter(is_active=<span class="keyword">True</span>).all()
+    
     <span class="keyword">await</span> db.disconnect()
 
 asyncio.run(main())</code></pre>
-                    <pre class="code-block hidden" id="code-advanced"><code><span class="keyword">import</span> asyncio
-<span class="keyword">from</span> ormax <span class="keyword">import</span> Database, Model
-<span class="keyword">from</span> ormax.fields <span class="keyword">import</span> *
-
-<span class="keyword">class</span> <span class="class">User</span>(Model):
-    table_name = <span class="string">"users"</span>
-    id = AutoField()
-    username = CharField(max_length=<span class="number">50</span>, unique=<span class="keyword">True</span>)
-    email = EmailField(unique=<span class="keyword">True</span>)
-
-<span class="keyword">class</span> <span class="class">Post</span>(Model):
-    table_name = <span class="string">"posts"</span>
-    id = AutoField()
-    title = CharField(max_length=<span class="number">200</span>)
-    content = TextField()
-    author_id = IntegerField(foreign_key=<span class="string">'users.id'</span>)
-    published = BooleanField(default=<span class="keyword">False</span>)
-
-<span class="keyword">async def</span> <span class="function">advanced_example</span>():
-    db = Database(<span class="string">"sqlite:///example.db"</span>)
-    <span class="keyword">await</span> db.connect()
-    db.register_model(User)
-    db.register_model(Post)
-    <span class="keyword">await</span> db.create_tables()
-
-    <span class="comment"># Transactions</span>
-    <span class="keyword">async with</span> db.transaction():
-        user = <span class="keyword">await</span> User.create(username=<span class="string">"test"</span>, email=<span class="string">"test@example.com"</span>)
-        post = <span class="keyword">await</span> Post.create(title=<span class="string">"Test Post"</span>, content=<span class="string">"Content"</span>, author_id=user.id)
-
-    <span class="comment"># Complex Queries</span>
-    published_posts = <span class="keyword">await</span> Post.objects().filter(published=<span class="keyword">True</span>).order_by(<span class="string">'-created_at'</span>).limit(<span class="number">10</span>)
-
-    <span class="comment"># Bulk Create</span>
-    users_data = [
-        {<span class="string">'username'</span>: <span class="string">'user1'</span>, <span class="string">'email'</span>: <span class="string">'user1@example.com'</span>},
-        {<span class="string">'username'</span>: <span class="string">'user2'</span>, <span class="string">'email'</span>: <span class="string">'user2@example.com'</span>}
-    ]
-    <span class="keyword">await</span> User.bulk_create(users_data)
-
-    <span class="keyword">await</span> db.disconnect()
-
-asyncio.run(advanced_example())</code></pre>
                 </div>
             </div>
         </div>
     </section>
-    <!-- Documentation -->
-    <section id="docs">
+
+    <!-- CTA Section -->
+    <section id="install" class="cta-section section">
         <div class="container">
-            <div class="section-title animate-on-scroll">
-                <h2>Documentation</h2>
-                <p>Complete guide to using Ormax ORM</p>
-            </div>
-            <div class="docs-grid">
-                <div class="doc-card animate-on-scroll">
-                    <h3><i class="fas fa-download"></i> Getting Started</h3>
-                    <ul>
-                        <li><a href="#">Installation</a></li>
-                        <li><a href="#">Quick Start</a></li>
-                        <li><a href="#">Dependencies</a></li>
-                        <li><a href="#">Supported Databases</a></li>
-                    </ul>
+            <div class="cta-content">
+                <h2>Ready to Get Started?</h2>
+                <p>Install Ormax and start building faster, more secure applications today</p>
+                
+                <div class="install-command">
+                    <code>pip install ormax</code>
+                    <button class="copy-btn" onclick="copyToClipboard('pip install ormax')">
+                        <i class="fas fa-copy"></i>
+                    </button>
                 </div>
-                <div class="doc-card animate-on-scroll">
-                    <h3><i class="fas fa-table"></i> Models</h3>
-                    <ul>
-                        <li><a href="#">Defining Models</a></li>
-                        <li><a href="#">Model Configuration</a></li>
-                        <li><a href="#">Field Types</a></li>
-                        <li><a href="#">Meta Options</a></li>
-                    </ul>
-                </div>
-                 <div class="doc-card animate-on-scroll">
-                    <h3><i class="fas fa-database"></i> Database</h3>
-                    <ul>
-                        <li><a href="#">Connecting</a></li>
-                        <li><a href="#">Transactions</a></li>
-                        <li><a href="#">Connection Pooling</a></li>
-                        <li><a href="#">Raw SQL</a></li>
-                    </ul>
-                </div>
-                <div class="doc-card animate-on-scroll">
-                    <h3><i class="fas fa-search"></i> Queries</h3>
-                    <ul>
-                        <li><a href="#">QuerySet API</a></li>
-                        <li><a href="#">Filtering & Ordering</a></li>
-                        <li><a href="#">Aggregations</a></li>
-                        <li><a href="#">Pagination</a></li>
-                    </ul>
-                </div>
-                <div class="doc-card animate-on-scroll">
-                    <h3><i class="fas fa-cogs"></i> Advanced</h3>
-                    <ul>
-                        <li><a href="#">Bulk Operations</a></li>
-                        <li><a href="#">Relationships (Future)</a></li>
-                        <li><a href="#">Security Features</a></li>
-                        <li><a href="#">Performance Tips</a></li>
-                    </ul>
-                </div>
-                 <div class="doc-card animate-on-scroll">
-                    <h3><i class="fas fa-book"></i> API Reference</h3>
-                    <ul>
-                        <li><a href="#">Database Class</a></li>
-                        <li><a href="#">Model Class</a></li>
-                        <li><a href="#">QuerySet Class</a></li>
-                        <li><a href="#">Field Types</a></li>
-                    </ul>
+                
+                <div class="hero-actions">
+                    <a href="https://ormax.shayan-heidari.ir/docs" class="btn btn-primary" target="_blank">
+                        <i class="fas fa-book"></i>
+                        Read Documentation
+                    </a>
+                    <a href="https://github.com/shayanheidari01/ormax" class="btn btn-secondary" target="_blank">
+                        <i class="fab fa-github"></i>
+                        View on GitHub
+                    </a>
                 </div>
             </div>
         </div>
     </section>
-    <!-- Install -->
-    <section id="install">
-        <div class="container">
-            <div class="install-section animate-on-scroll">
-                <div class="section-title">
-                    <h2>Get Started Today</h2>
-                    <p>Install Ormax ORM and start building faster applications</p>
-                </div>
-                <div class="install-code">
-                    pip install ormax
-                </div>
-                <div class="section-title" style="margin-top: 1rem; margin-bottom: 1rem;">
-                    <p>Install database-specific dependencies:</p>
-                </div>
-                <div class="install-code">
-# For MySQL/MariaDB
-pip install aiomysql
 
-# For PostgreSQL
-pip install asyncpg
-
-# For SQLite (usually included)
-pip install aiosqlite
-
-# For Microsoft SQL Server
-pip install aioodbc
-
-# For Oracle Database
-pip install async-oracledb
-                </div>
-                <a href="https://pypi.org/project/ormax/" class="cta-button">View on PyPI</a>
-            </div>
-        </div>
-    </section>
     <!-- Footer -->
     <footer>
         <div class="container">
-            <div class="footer-grid">
-                <div class="footer-column">
-                    <h3>Ormax ORM</h3>
-                    <p>The high-performance async ORM for modern Python applications.</p>
-                    <div class="social-links">
-                        <a href="https://github.com/shayanheidari01/ormax" target="_blank"><i class="fab fa-github"></i></a>
-                        <!-- <a href="#" target="_blank"><i class="fab fa-twitter"></i></a> -->
-                        <!-- <a href="#" target="_blank"><i class="fab fa-discord"></i></a> -->
-                    </div>
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3>Ormax</h3>
+                    <p style="color: rgba(255, 255, 255, 0.7); margin-bottom: 1rem;">High-performance async ORM for Python developers</p>
                 </div>
-                <div class="footer-column">
+                
+                <div class="footer-section">
                     <h3>Resources</h3>
                     <ul>
-                        <li><a href="#">Documentation</a></li>
-                        <li><a href="#docs">API Reference</a></li>
-                        <li><a href="https://github.com/shayanheidari01/ormax/issues" target="_blank">Issues</a></li>
-                         <li><a href="https://github.com/shayanheidari01/ormax/blob/main/README.md" target="_blank">README</a></li>
+                        <li><a href="https://ormax.shayan-heidari.ir/docs" target="_blank">Documentation</a></li>
+                        <li><a href="https://github.com/shayanheidari01/ormax/blob/main/README.md" target="_blank">README</a></li>
+                        <li><a href="https://pypi.org/project/ormax/" target="_blank">PyPI Package</a></li>
                     </ul>
                 </div>
-                <div class="footer-column">
+                
+                <div class="footer-section">
                     <h3>Community</h3>
                     <ul>
                         <li><a href="https://github.com/shayanheidari01/ormax" target="_blank">GitHub</a></li>
-                        <!-- <li><a href="#" target="_blank">Discord</a></li> -->
+                        <li><a href="https://github.com/shayanheidari01/ormax/issues" target="_blank">Issues</a></li>
                         <li><a href="https://stackoverflow.com/questions/tagged/ormax" target="_blank">Stack Overflow</a></li>
-                        <!-- <li><a href="#" target="_blank">Twitter</a></li> -->
                     </ul>
                 </div>
-                <div class="footer-column">
+                
+                <div class="footer-section">
                     <h3>Support</h3>
                     <ul>
-                        <li><a href="https://github.com/shayanheidari01/ormax/issues" target="_blank">Report an Issue</a></li>
+                        <li><a href="https://github.com/shayanheidari01/ormax/issues" target="_blank">Report Bug</a></li>
                         <li><a href="https://github.com/shayanheidari01/ormax/blob/main/CONTRIBUTING.md" target="_blank">Contributing</a></li>
-                        <li><a href="https://github.com/shayanheidari01/ormax/blob/main/LICENSE" target="_blank">License</a></li>
-                        <li><a href="mailto:shayanheidari01@outlook.com">Contact Maintainer</a></li>
+                        <li><a href="mailto:shayanheidari01@gmail.com">Contact</a></li>
                     </ul>
                 </div>
             </div>
-            <div class="copyright">
-                <p>&copy; 2024 Ormax ORM. MIT License. Built with ❤️ for the Python community.</p>
+            
+            <div class="footer-bottom">
+                <p>&copy; 2025 Ormax ORM. MIT License. Built with ❤️ for Python developers.</p>
             </div>
         </div>
     </footer>
+
     <script>
         // Mobile menu toggle
         document.querySelector('.mobile-menu-btn').addEventListener('click', function() {
-            const nav = document.querySelector('nav ul');
-            nav.style.display = nav.style.display === 'flex' ? 'none' : 'flex';
+            const navLinks = document.querySelector('.nav-links');
+            navLinks.style.display = navLinks.style.display === 'flex' ? 'none' : 'flex';
         });
-        // Smooth scrolling for navigation links
+
+        // Smooth scrolling
         document.querySelectorAll('a[href^="#"]').forEach(anchor => {
             anchor.addEventListener('click', function (e) {
                 e.preventDefault();
                 const target = document.querySelector(this.getAttribute('href'));
                 if (target) {
-                    target.scrollIntoView({
-                        behavior: 'smooth',
-                        block: 'start'
+                    const headerHeight = document.querySelector('header').offsetHeight;
+                    const targetPosition = target.getBoundingClientRect().top + window.pageYOffset - headerHeight;
+                    
+                    window.scrollTo({
+                        top: targetPosition,
+                        behavior: 'smooth'
                     });
                 }
             });
         });
-        // Animation on scroll
-        function animateOnScroll() {
-            const elements = document.querySelectorAll('.animate-on-scroll');
-            elements.forEach(element => {
-                const elementTop = element.getBoundingClientRect().top;
-                const elementVisible = 150;
-                if (elementTop < window.innerHeight - elementVisible) {
-                    element.classList.add('visible');
+
+        // Scroll animations
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -50px 0px'
+        };
+
+        const observer = new IntersectionObserver(function(entries) {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                }
+            });
+        }, observerOptions);
+
+        document.querySelectorAll('.scroll-animate').forEach(el => {
+            observer.observe(el);
+        });
+
+        // Copy to clipboard function
+        function copyToClipboard(text) {
+            navigator.clipboard.writeText(text).then(function() {
+                const btn = event.target.closest('.copy-btn');
+                const originalIcon = btn.innerHTML;
+                btn.innerHTML = '<i class="fas fa-check"></i>';
+                setTimeout(() => {
+                    btn.innerHTML = originalIcon;
+                }, 2000);
+            });
+        }
+
+        // Header background on scroll
+        window.addEventListener('scroll', function() {
+            const header = document.querySelector('header');
+            if (window.scrollY > 100) {
+                header.style.background = 'rgba(255, 255, 255, 0.95)';
+            } else {
+                header.style.background = 'rgba(255, 255, 255, 0.8)';
+            }
+        });
+
+        // Active navigation highlighting
+        window.addEventListener('scroll', function() {
+            const sections = document.querySelectorAll('section[id]');
+            const navLinks = document.querySelectorAll('.nav-links a');
+            
+            let current = '';
+            sections.forEach(section => {
+                const sectionTop = section.getBoundingClientRect().top;
+                if (sectionTop <= 100) {
+                    current = section.getAttribute('id');
+                }
+            });
+
+            navLinks.forEach(link => {
+                link.classList.remove('active');
+                if (link.getAttribute('href') === `#${current}`) {
+                    link.classList.add('active');
+                }
+            });
+        });
+
+        // Animate stats on scroll
+        function animateStats() {
+            const statNumbers = document.querySelectorAll('.stat-number');
+            statNumbers.forEach(stat => {
+                const finalValue = stat.textContent;
+                let currentValue = 0;
+                const increment = parseFloat(finalValue) / 50;
+                const isPercentage = finalValue.includes('%');
+                const isMultiplier = finalValue.includes('x');
+                const isPlus = finalValue.includes('+');
+                
+                if (stat.closest('.stats').getBoundingClientRect().top < window.innerHeight) {
+                    const timer = setInterval(() => {
+                        currentValue += increment;
+                        if (currentValue >= parseFloat(finalValue)) {
+                            currentValue = parseFloat(finalValue);
+                            clearInterval(timer);
+                        }
+                        
+                        let displayValue = Math.floor(currentValue);
+                        if (isPercentage) displayValue += '%';
+                        if (isMultiplier) displayValue += 'x';
+                        if (isPlus) displayValue += '+';
+                        
+                        stat.textContent = displayValue;
+                    }, 50);
                 }
             });
         }
-        // Initial check
-        window.addEventListener('scroll', animateOnScroll);
-        window.addEventListener('load', animateOnScroll);
-        // Code tab switching - Updated
-        document.querySelectorAll('.code-tab').forEach(tab => {
-            tab.addEventListener('click', function() {
-                // Remove active class from all tabs and code blocks
-                document.querySelectorAll('.code-tab').forEach(t => t.classList.remove('active'));
-                document.querySelectorAll('.code-block').forEach(cb => cb.classList.add('hidden'));
 
-                // Add active class to clicked tab
-                this.classList.add('active');
-
-                // Show the corresponding code block
-                const exampleId = this.getAttribute('data-example');
-                const targetBlock = document.getElementById(`code-${exampleId}`);
-                if (targetBlock) {
-                    targetBlock.classList.remove('hidden');
+        // Trigger stats animation on scroll
+        let statsAnimated = false;
+        window.addEventListener('scroll', function() {
+            if (!statsAnimated) {
+                const statsSection = document.querySelector('.stats');
+                if (statsSection.getBoundingClientRect().top < window.innerHeight) {
+                    animateStats();
+                    statsAnimated = true;
                 }
-            });
+            }
         });
     </script>
 </body>
