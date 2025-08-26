@@ -1,51 +1,51 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
     <url>
-         <loc>https://ormax.shayan-heidari.ir/</loc>
-         <lastmod>2025-08-26</lastmod>
+         <loc>https://ormax.shayan-heidari.ir/docs</loc>
+         <lastmod>2025-08-27</lastmod>
     </url>
     <url>
-         <loc>https://ormax.shayan-heidari.ir/advanced/custom-models/</loc>
-         <lastmod>2025-08-26</lastmod>
+         <loc>https://ormax.shayan-heidari.ir/docs/advanced/custom-models/</loc>
+         <lastmod>2025-08-27</lastmod>
     </url>
     <url>
-         <loc>https://ormax.shayan-heidari.ir/advanced/debugging/</loc>
-         <lastmod>2025-08-26</lastmod>
+         <loc>https://ormax.shayan-heidari.ir/docs/advanced/debugging/</loc>
+         <lastmod>2025-08-27</lastmod>
     </url>
     <url>
-         <loc>https://ormax.shayan-heidari.ir/advanced/deployment/</loc>
-         <lastmod>2025-08-26</lastmod>
+         <loc>https://ormax.shayan-heidari.ir/docs/advanced/deployment/</loc>
+         <lastmod>2025-08-27</lastmod>
     </url>
     <url>
-         <loc>https://ormax.shayan-heidari.ir/advanced/performance-monitoring/</loc>
-         <lastmod>2025-08-26</lastmod>
+         <loc>https://ormax.shayan-heidari.ir/docs/advanced/performance-monitoring/</loc>
+         <lastmod>2025-08-27</lastmod>
     </url>
     <url>
-         <loc>https://ormax.shayan-heidari.ir/advanced/query-optimization/</loc>
-         <lastmod>2025-08-26</lastmod>
+         <loc>https://ormax.shayan-heidari.ir/docs/advanced/query-optimization/</loc>
+         <lastmod>2025-08-27</lastmod>
     </url>
     <url>
-         <loc>https://ormax.shayan-heidari.ir/advanced/testing/</loc>
-         <lastmod>2025-08-26</lastmod>
+         <loc>https://ormax.shayan-heidari.ir/docs/advanced/testing/</loc>
+         <lastmod>2025-08-27</lastmod>
     </url>
     <url>
-         <loc>https://ormax.shayan-heidari.ir/advanced/transactions/</loc>
-         <lastmod>2025-08-26</lastmod>
+         <loc>https://ormax.shayan-heidari.ir/docs/advanced/transactions/</loc>
+         <lastmod>2025-08-27</lastmod>
     </url>
     <url>
-         <loc>https://ormax.shayan-heidari.ir/getting-started/installation/</loc>
-         <lastmod>2025-08-26</lastmod>
+         <loc>https://ormax.shayan-heidari.ir/docs/getting-started/installation/</loc>
+         <lastmod>2025-08-27</lastmod>
     </url>
     <url>
-         <loc>https://ormax.shayan-heidari.ir/getting-started/models/</loc>
-         <lastmod>2025-08-26</lastmod>
+         <loc>https://ormax.shayan-heidari.ir/docs/getting-started/models/</loc>
+         <lastmod>2025-08-27</lastmod>
     </url>
     <url>
-         <loc>https://ormax.shayan-heidari.ir/querying/queryset/</loc>
-         <lastmod>2025-08-26</lastmod>
+         <loc>https://ormax.shayan-heidari.ir/docs/querying/queryset/</loc>
+         <lastmod>2025-08-27</lastmod>
     </url>
     <url>
-         <loc>https://ormax.shayan-heidari.ir/relationships/overview/</loc>
-         <lastmod>2025-08-26</lastmod>
+         <loc>https://ormax.shayan-heidari.ir/docs/relationships/overview/</loc>
+         <lastmod>2025-08-27</lastmod>
     </url>
 </urlset>
