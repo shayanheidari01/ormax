@@ -1,0 +1,2560 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Ormax Python ORM Documents">
+      
+      
+        <meta name="author" content="Shayan Heidari">
+      
+      
+        <link rel="canonical" href="https://ormax.shayan-heidari.ir/advanced/transactions/">
+      
+      
+        <link rel="prev" href="../../relationships/overview/">
+      
+      
+        <link rel="next" href="../query-optimization/">
+      
+      
+      <link rel="icon" href="../../assets/logo.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.6.17">
+    
+    
+      
+        <title>Transactions - Ormax Python ORM</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.7e37652d.min.css">
+      
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.06af60db.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Vazirmatn:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Vazirmatn";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../../css/termynal.css">
+    
+      <link rel="stylesheet" href="../../css/custom.css">
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="white" data-md-color-accent="amber">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#transaction-management-in-ormax" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../.." title="Ormax Python ORM" class="md-header__button md-logo" aria-label="Ormax Python ORM" data-md-component="logo">
+      
+  <img src="../../assets/logo.png" alt="logo">
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            Ormax Python ORM
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Transactions
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="default" data-md-color-primary="white" data-md-color-accent="amber"  aria-label="Dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 7a5 5 0 0 1 5 5 5 5 0 0 1-5 5 5 5 0 0 1-5-5 5 5 0 0 1 5-5m0 2a3 3 0 0 0-3 3 3 3 0 0 0 3 3 3 3 0 0 0 3-3 3 3 0 0 0-3-3m0-7 2.39 3.42C13.65 5.15 12.84 5 12 5s-1.65.15-2.39.42zM3.34 7l4.16-.35A7.2 7.2 0 0 0 5.94 8.5c-.44.74-.69 1.5-.83 2.29zm.02 10 1.76-3.77a7.131 7.131 0 0 0 2.38 4.14zM20.65 7l-1.77 3.79a7.02 7.02 0 0 0-2.38-4.15zm-.01 10-4.14.36c.59-.51 1.12-1.14 1.54-1.86.42-.73.69-1.5.83-2.29zM12 22l-2.41-3.44c.74.27 1.55.44 2.41.44.82 0 1.63-.17 2.37-.44z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="slate" data-md-color-primary="white" data-md-color-accent="amber"  aria-label="Light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="m17.75 4.09-2.53 1.94.91 3.06-2.63-1.81-2.63 1.81.91-3.06-2.53-1.94L12.44 4l1.06-3 1.06 3zm3.5 6.91-1.64 1.25.59 1.98-1.7-1.17-1.7 1.17.59-1.98L15.75 11l2.06-.05L18.5 9l.69 1.95zm-2.28 4.95c.83-.08 1.72 1.1 1.19 1.85-.32.45-.66.87-1.08 1.27C15.17 23 8.84 23 4.94 19.07c-3.91-3.9-3.91-10.24 0-14.14.4-.4.82-.76 1.27-1.08.75-.53 1.93.36 1.85 1.19-.27 2.86.69 5.83 2.89 8.02a9.96 9.96 0 0 0 8.02 2.89m-1.64 2.02a12.08 12.08 0 0 1-7.8-3.47c-2.17-2.19-3.33-5-3.49-7.82-2.81 3.14-2.7 7.96.31 10.98 3.02 3.01 7.84 3.12 10.98.31"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/shayanheidari01/ormax/" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.0.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path fill="currentColor" d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    GitHub
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="Ormax Python ORM" class="md-nav__button md-logo" aria-label="Ormax Python ORM" data-md-component="logo">
+      
+  <img src="../../assets/logo.png" alt="logo">
+
+    </a>
+    Ormax Python ORM
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/shayanheidari01/ormax/" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.0.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path fill="currentColor" d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    GitHub
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Home
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    Getting Started
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            Getting Started
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../getting-started/installation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Installation
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../getting-started/models/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Basic Model Definition
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    Querying Data
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            Querying Data
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../querying/queryset/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    QuerySet API
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    Relationships
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            Relationships
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../relationships/overview/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Overview
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    Advanced Features
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            Advanced Features
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    Transactions
+    
+  </span>
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    Transactions
+    
+  </span>
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#understanding-transactions" class="md-nav__link">
+    <span class="md-ellipsis">
+      Understanding Transactions
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Understanding Transactions">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#acid-properties" class="md-nav__link">
+    <span class="md-ellipsis">
+      ACID Properties
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#basic-transaction-usage" class="md-nav__link">
+    <span class="md-ellipsis">
+      Basic Transaction Usage
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Basic Transaction Usage">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#why-use-transactions" class="md-nav__link">
+    <span class="md-ellipsis">
+      Why Use Transactions?
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#nested-transactions-with-savepoints" class="md-nav__link">
+    <span class="md-ellipsis">
+      Nested Transactions with Savepoints
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Nested Transactions with Savepoints">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#how-nested-transactions-work" class="md-nav__link">
+    <span class="md-ellipsis">
+      How Nested Transactions Work
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#savepoint-behavior-by-database" class="md-nav__link">
+    <span class="md-ellipsis">
+      Savepoint Behavior by Database
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#manual-transaction-control" class="md-nav__link">
+    <span class="md-ellipsis">
+      Manual Transaction Control
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Manual Transaction Control">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#transaction-state-checking" class="md-nav__link">
+    <span class="md-ellipsis">
+      Transaction State Checking
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#transaction-isolation-levels" class="md-nav__link">
+    <span class="md-ellipsis">
+      Transaction Isolation Levels
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Transaction Isolation Levels">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#supported-isolation-levels" class="md-nav__link">
+    <span class="md-ellipsis">
+      Supported Isolation Levels
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#advanced-transaction-patterns" class="md-nav__link">
+    <span class="md-ellipsis">
+      Advanced Transaction Patterns
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Advanced Transaction Patterns">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#transaction-with-retry-logic" class="md-nav__link">
+    <span class="md-ellipsis">
+      Transaction with Retry Logic
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#transaction-with-time-limit" class="md-nav__link">
+    <span class="md-ellipsis">
+      Transaction with Time Limit
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#savepoint-based-partial-rollbacks" class="md-nav__link">
+    <span class="md-ellipsis">
+      Savepoint-Based Partial Rollbacks
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#working-with-model-transactions" class="md-nav__link">
+    <span class="md-ellipsis">
+      Working with Model Transactions
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Working with Model Transactions">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#transaction-aware-model-methods" class="md-nav__link">
+    <span class="md-ellipsis">
+      Transaction-Aware Model Methods
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#bulk-operations-in-transactions" class="md-nav__link">
+    <span class="md-ellipsis">
+      Bulk Operations in Transactions
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#database-specific-transaction-features" class="md-nav__link">
+    <span class="md-ellipsis">
+      Database-Specific Transaction Features
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Database-Specific Transaction Features">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#postgresql-advisory-locks" class="md-nav__link">
+    <span class="md-ellipsis">
+      PostgreSQL Advisory Locks
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#mysql-locking-reads" class="md-nav__link">
+    <span class="md-ellipsis">
+      MySQL Locking Reads
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#error-handling-and-recovery" class="md-nav__link">
+    <span class="md-ellipsis">
+      Error Handling and Recovery
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Error Handling and Recovery">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#handling-transaction-errors" class="md-nav__link">
+    <span class="md-ellipsis">
+      Handling Transaction Errors
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#common-transaction-errors" class="md-nav__link">
+    <span class="md-ellipsis">
+      Common Transaction Errors
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#deadlock-prevention-strategies" class="md-nav__link">
+    <span class="md-ellipsis">
+      Deadlock Prevention Strategies
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#performance-considerations" class="md-nav__link">
+    <span class="md-ellipsis">
+      Performance Considerations
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Performance Considerations">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#transaction-size" class="md-nav__link">
+    <span class="md-ellipsis">
+      Transaction Size
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#batch-processing-in-transactions" class="md-nav__link">
+    <span class="md-ellipsis">
+      Batch Processing in Transactions
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#read-only-transactions" class="md-nav__link">
+    <span class="md-ellipsis">
+      Read-Only Transactions
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#real-world-examples" class="md-nav__link">
+    <span class="md-ellipsis">
+      Real-World Examples
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Real-World Examples">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#e-commerce-order-processing" class="md-nav__link">
+    <span class="md-ellipsis">
+      E-commerce Order Processing
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#banking-transaction-system" class="md-nav__link">
+    <span class="md-ellipsis">
+      Banking Transaction System
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#testing-transactions" class="md-nav__link">
+    <span class="md-ellipsis">
+      Testing Transactions
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Testing Transactions">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#unit-testing-transactions" class="md-nav__link">
+    <span class="md-ellipsis">
+      Unit Testing Transactions
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#simulating-transaction-failures" class="md-nav__link">
+    <span class="md-ellipsis">
+      Simulating Transaction Failures
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#best-practices" class="md-nav__link">
+    <span class="md-ellipsis">
+      Best Practices
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Best Practices">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#keep-transactions-short" class="md-nav__link">
+    <span class="md-ellipsis">
+      Keep Transactions Short
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#avoid-user-interaction-in-transactions" class="md-nav__link">
+    <span class="md-ellipsis">
+      Avoid User Interaction in Transactions
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#use-appropriate-isolation-levels" class="md-nav__link">
+    <span class="md-ellipsis">
+      Use Appropriate Isolation Levels
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#implement-retry-logic" class="md-nav__link">
+    <span class="md-ellipsis">
+      Implement Retry Logic
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#monitor-long-running-transactions" class="md-nav__link">
+    <span class="md-ellipsis">
+      Monitor Long-Running Transactions
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#troubleshooting-common-issues" class="md-nav__link">
+    <span class="md-ellipsis">
+      Troubleshooting Common Issues
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Troubleshooting Common Issues">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#stale-data-after-transaction" class="md-nav__link">
+    <span class="md-ellipsis">
+      Stale Data After Transaction
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#deadlocks" class="md-nav__link">
+    <span class="md-ellipsis">
+      Deadlocks
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#transaction-not-rolling-back" class="md-nav__link">
+    <span class="md-ellipsis">
+      Transaction Not Rolling Back
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#savepoint-errors-in-nested-transactions" class="md-nav__link">
+    <span class="md-ellipsis">
+      Savepoint Errors in Nested Transactions
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#performance-tuning" class="md-nav__link">
+    <span class="md-ellipsis">
+      Performance Tuning
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Performance Tuning">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#connection-pool-configuration" class="md-nav__link">
+    <span class="md-ellipsis">
+      Connection Pool Configuration
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#batch-size-optimization" class="md-nav__link">
+    <span class="md-ellipsis">
+      Batch Size Optimization
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#monitoring-long-transactions" class="md-nav__link">
+    <span class="md-ellipsis">
+      Monitoring Long Transactions
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../query-optimization/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Query Optimization
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../custom-models/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Custom Model Patterns
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../performance-monitoring/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Performance Monitoring
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../deployment/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Deployment Strategies
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../testing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Testing Strategies
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../debugging/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Debugging Techniques
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#understanding-transactions" class="md-nav__link">
+    <span class="md-ellipsis">
+      Understanding Transactions
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Understanding Transactions">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#acid-properties" class="md-nav__link">
+    <span class="md-ellipsis">
+      ACID Properties
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#basic-transaction-usage" class="md-nav__link">
+    <span class="md-ellipsis">
+      Basic Transaction Usage
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Basic Transaction Usage">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#why-use-transactions" class="md-nav__link">
+    <span class="md-ellipsis">
+      Why Use Transactions?
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#nested-transactions-with-savepoints" class="md-nav__link">
+    <span class="md-ellipsis">
+      Nested Transactions with Savepoints
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Nested Transactions with Savepoints">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#how-nested-transactions-work" class="md-nav__link">
+    <span class="md-ellipsis">
+      How Nested Transactions Work
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#savepoint-behavior-by-database" class="md-nav__link">
+    <span class="md-ellipsis">
+      Savepoint Behavior by Database
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#manual-transaction-control" class="md-nav__link">
+    <span class="md-ellipsis">
+      Manual Transaction Control
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Manual Transaction Control">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#transaction-state-checking" class="md-nav__link">
+    <span class="md-ellipsis">
+      Transaction State Checking
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#transaction-isolation-levels" class="md-nav__link">
+    <span class="md-ellipsis">
+      Transaction Isolation Levels
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Transaction Isolation Levels">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#supported-isolation-levels" class="md-nav__link">
+    <span class="md-ellipsis">
+      Supported Isolation Levels
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#advanced-transaction-patterns" class="md-nav__link">
+    <span class="md-ellipsis">
+      Advanced Transaction Patterns
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Advanced Transaction Patterns">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#transaction-with-retry-logic" class="md-nav__link">
+    <span class="md-ellipsis">
+      Transaction with Retry Logic
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#transaction-with-time-limit" class="md-nav__link">
+    <span class="md-ellipsis">
+      Transaction with Time Limit
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#savepoint-based-partial-rollbacks" class="md-nav__link">
+    <span class="md-ellipsis">
+      Savepoint-Based Partial Rollbacks
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#working-with-model-transactions" class="md-nav__link">
+    <span class="md-ellipsis">
+      Working with Model Transactions
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Working with Model Transactions">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#transaction-aware-model-methods" class="md-nav__link">
+    <span class="md-ellipsis">
+      Transaction-Aware Model Methods
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#bulk-operations-in-transactions" class="md-nav__link">
+    <span class="md-ellipsis">
+      Bulk Operations in Transactions
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#database-specific-transaction-features" class="md-nav__link">
+    <span class="md-ellipsis">
+      Database-Specific Transaction Features
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Database-Specific Transaction Features">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#postgresql-advisory-locks" class="md-nav__link">
+    <span class="md-ellipsis">
+      PostgreSQL Advisory Locks
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#mysql-locking-reads" class="md-nav__link">
+    <span class="md-ellipsis">
+      MySQL Locking Reads
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#error-handling-and-recovery" class="md-nav__link">
+    <span class="md-ellipsis">
+      Error Handling and Recovery
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Error Handling and Recovery">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#handling-transaction-errors" class="md-nav__link">
+    <span class="md-ellipsis">
+      Handling Transaction Errors
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#common-transaction-errors" class="md-nav__link">
+    <span class="md-ellipsis">
+      Common Transaction Errors
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#deadlock-prevention-strategies" class="md-nav__link">
+    <span class="md-ellipsis">
+      Deadlock Prevention Strategies
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#performance-considerations" class="md-nav__link">
+    <span class="md-ellipsis">
+      Performance Considerations
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Performance Considerations">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#transaction-size" class="md-nav__link">
+    <span class="md-ellipsis">
+      Transaction Size
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#batch-processing-in-transactions" class="md-nav__link">
+    <span class="md-ellipsis">
+      Batch Processing in Transactions
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#read-only-transactions" class="md-nav__link">
+    <span class="md-ellipsis">
+      Read-Only Transactions
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#real-world-examples" class="md-nav__link">
+    <span class="md-ellipsis">
+      Real-World Examples
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Real-World Examples">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#e-commerce-order-processing" class="md-nav__link">
+    <span class="md-ellipsis">
+      E-commerce Order Processing
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#banking-transaction-system" class="md-nav__link">
+    <span class="md-ellipsis">
+      Banking Transaction System
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#testing-transactions" class="md-nav__link">
+    <span class="md-ellipsis">
+      Testing Transactions
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Testing Transactions">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#unit-testing-transactions" class="md-nav__link">
+    <span class="md-ellipsis">
+      Unit Testing Transactions
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#simulating-transaction-failures" class="md-nav__link">
+    <span class="md-ellipsis">
+      Simulating Transaction Failures
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#best-practices" class="md-nav__link">
+    <span class="md-ellipsis">
+      Best Practices
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Best Practices">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#keep-transactions-short" class="md-nav__link">
+    <span class="md-ellipsis">
+      Keep Transactions Short
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#avoid-user-interaction-in-transactions" class="md-nav__link">
+    <span class="md-ellipsis">
+      Avoid User Interaction in Transactions
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#use-appropriate-isolation-levels" class="md-nav__link">
+    <span class="md-ellipsis">
+      Use Appropriate Isolation Levels
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#implement-retry-logic" class="md-nav__link">
+    <span class="md-ellipsis">
+      Implement Retry Logic
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#monitor-long-running-transactions" class="md-nav__link">
+    <span class="md-ellipsis">
+      Monitor Long-Running Transactions
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#troubleshooting-common-issues" class="md-nav__link">
+    <span class="md-ellipsis">
+      Troubleshooting Common Issues
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Troubleshooting Common Issues">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#stale-data-after-transaction" class="md-nav__link">
+    <span class="md-ellipsis">
+      Stale Data After Transaction
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#deadlocks" class="md-nav__link">
+    <span class="md-ellipsis">
+      Deadlocks
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#transaction-not-rolling-back" class="md-nav__link">
+    <span class="md-ellipsis">
+      Transaction Not Rolling Back
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#savepoint-errors-in-nested-transactions" class="md-nav__link">
+    <span class="md-ellipsis">
+      Savepoint Errors in Nested Transactions
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#performance-tuning" class="md-nav__link">
+    <span class="md-ellipsis">
+      Performance Tuning
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Performance Tuning">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#connection-pool-configuration" class="md-nav__link">
+    <span class="md-ellipsis">
+      Connection Pool Configuration
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#batch-size-optimization" class="md-nav__link">
+    <span class="md-ellipsis">
+      Batch Size Optimization
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#monitoring-long-transactions" class="md-nav__link">
+    <span class="md-ellipsis">
+      Monitoring Long Transactions
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+<h1 id="transaction-management-in-ormax">Transaction Management in Ormax<a class="headerlink" href="#transaction-management-in-ormax" title="Permanent link">&para;</a></h1>
+<p>Transactions are essential for maintaining data integrity in database applications. Ormax provides robust transaction management with support for nested transactions, savepoints, and multiple database backends.</p>
+<h2 id="understanding-transactions">Understanding Transactions<a class="headerlink" href="#understanding-transactions" title="Permanent link">&para;</a></h2>
+<p>A database transaction is a sequence of operations performed as a single logical unit of work. Transactions ensure that either all operations succeed or none do, maintaining database consistency.</p>
+<h3 id="acid-properties">ACID Properties<a class="headerlink" href="#acid-properties" title="Permanent link">&para;</a></h3>
+<p>Ormax transactions maintain the ACID properties:</p>
+<ul>
+<li><strong>Atomicity</strong>: All operations in a transaction succeed or fail together</li>
+<li><strong>Consistency</strong>: Transactions bring the database from one valid state to another</li>
+<li><strong>Isolation</strong>: Concurrent transactions don't interfere with each other</li>
+<li><strong>Durability</strong>: Once committed, changes persist even after system failure</li>
+</ul>
+<h2 id="basic-transaction-usage">Basic Transaction Usage<a class="headerlink" href="#basic-transaction-usage" title="Permanent link">&para;</a></h2>
+<p>The simplest way to use transactions in Ormax is with the <code>transaction()</code> context manager:</p>
+<div class="highlight"><pre><span></span><code><span class="k">async</span> <span class="k">with</span> <span class="n">db</span><span class="o">.</span><span class="n">transaction</span><span class="p">():</span>
+    <span class="c1"># All operations within this block are part of a transaction</span>
+    <span class="n">book</span> <span class="o">=</span> <span class="k">await</span> <span class="n">Book</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="n">title</span><span class="o">=</span><span class="s2">&quot;Transaction Book&quot;</span><span class="p">,</span> <span class="n">pages</span><span class="o">=</span><span class="mi">200</span><span class="p">)</span>
+    <span class="n">author</span> <span class="o">=</span> <span class="k">await</span> <span class="n">Author</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;Transaction Author&quot;</span><span class="p">)</span>
+
+    <span class="c1"># If an exception occurs, the transaction will be rolled back automatically</span>
+</code></pre></div>
+<h3 id="why-use-transactions">Why Use Transactions?<a class="headerlink" href="#why-use-transactions" title="Permanent link">&para;</a></h3>
+<p>Without transactions:</p>
+<div class="highlight"><pre><span></span><code><span class="c1"># Without transaction</span>
+<span class="n">book</span> <span class="o">=</span> <span class="k">await</span> <span class="n">Book</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="n">title</span><span class="o">=</span><span class="s2">&quot;Book 1&quot;</span><span class="p">,</span> <span class="n">pages</span><span class="o">=</span><span class="mi">200</span><span class="p">)</span>
+<span class="c1"># If exception occurs here, book is created but author isn&#39;t</span>
+<span class="n">author</span> <span class="o">=</span> <span class="k">await</span> <span class="n">Author</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;Author 1&quot;</span><span class="p">)</span>
+</code></pre></div>
+<p>With transactions:</p>
+<div class="highlight"><pre><span></span><code><span class="k">async</span> <span class="k">with</span> <span class="n">db</span><span class="o">.</span><span class="n">transaction</span><span class="p">():</span>
+    <span class="n">book</span> <span class="o">=</span> <span class="k">await</span> <span class="n">Book</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="n">title</span><span class="o">=</span><span class="s2">&quot;Book 1&quot;</span><span class="p">,</span> <span class="n">pages</span><span class="o">=</span><span class="mi">200</span><span class="p">)</span>
+    <span class="n">author</span> <span class="o">=</span> <span class="k">await</span> <span class="n">Author</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;Author 1&quot;</span><span class="p">)</span>
+    <span class="c1"># Either both succeed or both fail</span>
+</code></pre></div>
+<h2 id="nested-transactions-with-savepoints">Nested Transactions with Savepoints<a class="headerlink" href="#nested-transactions-with-savepoints" title="Permanent link">&para;</a></h2>
+<p>Ormax supports nested transactions using savepoints, which is particularly useful for complex business logic.</p>
+<h3 id="how-nested-transactions-work">How Nested Transactions Work<a class="headerlink" href="#how-nested-transactions-work" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><span class="k">async</span> <span class="k">with</span> <span class="n">db</span><span class="o">.</span><span class="n">transaction</span><span class="p">():</span>
+    <span class="c1"># Outer transaction</span>
+    <span class="k">await</span> <span class="n">Book</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="n">title</span><span class="o">=</span><span class="s2">&quot;Outer Book&quot;</span><span class="p">,</span> <span class="n">pages</span><span class="o">=</span><span class="mi">100</span><span class="p">)</span>
+
+    <span class="k">try</span><span class="p">:</span>
+        <span class="k">async</span> <span class="k">with</span> <span class="n">db</span><span class="o">.</span><span class="n">transaction</span><span class="p">():</span>
+            <span class="c1"># Inner transaction (savepoint)</span>
+            <span class="k">await</span> <span class="n">Book</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="n">title</span><span class="o">=</span><span class="s2">&quot;Inner Book&quot;</span><span class="p">,</span> <span class="n">pages</span><span class="o">=</span><span class="mi">200</span><span class="p">)</span>
+            <span class="c1"># This will roll back only the inner transaction</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Something went wrong&quot;</span><span class="p">)</span>
+    <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
+        <span class="k">pass</span>
+
+    <span class="c1"># Outer transaction still succeeds</span>
+    <span class="k">await</span> <span class="n">Book</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="n">title</span><span class="o">=</span><span class="s2">&quot;Another Outer Book&quot;</span><span class="p">,</span> <span class="n">pages</span><span class="o">=</span><span class="mi">300</span><span class="p">)</span>
+</code></pre></div>
+<h3 id="savepoint-behavior-by-database">Savepoint Behavior by Database<a class="headerlink" href="#savepoint-behavior-by-database" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Database</th>
+<th>Nested Transaction Support</th>
+<th>Savepoint Syntax</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>PostgreSQL</td>
+<td>Full support</td>
+<td><code>SAVEPOINT name</code>, <code>RELEASE SAVEPOINT name</code>, <code>ROLLBACK TO name</code></td>
+</tr>
+<tr>
+<td>MySQL</td>
+<td>Full support</td>
+<td><code>SAVEPOINT name</code>, <code>RELEASE SAVEPOINT name</code>, <code>ROLLBACK TO name</code></td>
+</tr>
+<tr>
+<td>SQLite</td>
+<td>Full support</td>
+<td><code>SAVEPOINT name</code>, <code>RELEASE name</code>, <code>ROLLBACK TO name</code></td>
+</tr>
+<tr>
+<td>MSSQL</td>
+<td>Full support</td>
+<td><code>SAVE TRANSACTION name</code>, <code>ROLLBACK TRANSACTION name</code></td>
+</tr>
+<tr>
+<td>Oracle</td>
+<td>Limited support</td>
+<td><code>SAVEPOINT name</code>, <code>ROLLBACK TO name</code></td>
+</tr>
+<tr>
+<td>Aurora</td>
+<td>Full support (MySQL-compatible)</td>
+<td>Same as MySQL</td>
+</tr>
+</tbody>
+</table>
+<h2 id="manual-transaction-control">Manual Transaction Control<a class="headerlink" href="#manual-transaction-control" title="Permanent link">&para;</a></h2>
+<p>For more complex scenarios, you can manage transactions manually:</p>
+<div class="highlight"><pre><span></span><code><span class="c1"># Start transaction manually</span>
+<span class="n">transaction</span> <span class="o">=</span> <span class="k">await</span> <span class="n">db</span><span class="o">.</span><span class="n">transaction</span><span class="p">()</span><span class="o">.</span><span class="fm">__aenter__</span><span class="p">()</span>
+
+<span class="k">try</span><span class="p">:</span>
+    <span class="k">await</span> <span class="n">Book</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="n">title</span><span class="o">=</span><span class="s2">&quot;Manual Transaction Book&quot;</span><span class="p">,</span> <span class="n">pages</span><span class="o">=</span><span class="mi">250</span><span class="p">)</span>
+    <span class="c1"># Commit if everything is good</span>
+    <span class="k">await</span> <span class="n">transaction</span><span class="o">.</span><span class="fm">__aexit__</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+<span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+    <span class="c1"># Rollback on error</span>
+    <span class="k">await</span> <span class="n">transaction</span><span class="o">.</span><span class="fm">__aexit__</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">e</span><span class="p">),</span> <span class="n">e</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+    <span class="k">raise</span>
+</code></pre></div>
+<h3 id="transaction-state-checking">Transaction State Checking<a class="headerlink" href="#transaction-state-checking" title="Permanent link">&para;</a></h3>
+<p>You can check if you're currently in a transaction:</p>
+<div class="highlight"><pre><span></span><code><span class="n">is_in_transaction</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">_current_transaction</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+<span class="n">transaction_level</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">db</span><span class="p">,</span> <span class="s1">&#39;_transaction_level&#39;</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+</code></pre></div>
+<h2 id="transaction-isolation-levels">Transaction Isolation Levels<a class="headerlink" href="#transaction-isolation-levels" title="Permanent link">&para;</a></h2>
+<p>Ormax allows you to set transaction isolation levels for specific needs:</p>
+<div class="highlight"><pre><span></span><code><span class="k">async</span> <span class="k">with</span> <span class="n">db</span><span class="o">.</span><span class="n">transaction</span><span class="p">(</span><span class="n">isolation_level</span><span class="o">=</span><span class="s2">&quot;SERIALIZABLE&quot;</span><span class="p">):</span>
+    <span class="c1"># Highly isolated transaction</span>
+    <span class="k">await</span> <span class="n">process_critical_data</span><span class="p">()</span>
+</code></pre></div>
+<h3 id="supported-isolation-levels">Supported Isolation Levels<a class="headerlink" href="#supported-isolation-levels" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Level</th>
+<th>Description</th>
+<th>Use Case</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>READ UNCOMMITTED</code></td>
+<td>Can see uncommitted changes from other transactions</td>
+<td>Rarely used, highest performance</td>
+</tr>
+<tr>
+<td><code>READ COMMITTED</code></td>
+<td>Can only see committed changes (default for most databases)</td>
+<td>General purpose</td>
+</tr>
+<tr>
+<td><code>REPEATABLE READ</code></td>
+<td>Ensures consistent reads within a transaction</td>
+<td>When consistent reads are critical</td>
+</tr>
+<tr>
+<td><code>SERIALIZABLE</code></td>
+<td>Complete isolation, prevents phantom reads</td>
+<td>Critical financial operations</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p><strong>Note</strong>: Not all databases support all isolation levels. Ormax will use the closest available level for your database.</p>
+</blockquote>
+<h2 id="advanced-transaction-patterns">Advanced Transaction Patterns<a class="headerlink" href="#advanced-transaction-patterns" title="Permanent link">&para;</a></h2>
+<h3 id="transaction-with-retry-logic">Transaction with Retry Logic<a class="headerlink" href="#transaction-with-retry-logic" title="Permanent link">&para;</a></h3>
+<p>For handling transient errors like deadlocks:</p>
+<div class="highlight"><pre><span></span><code><span class="kn">from</span> <span class="nn">ormax.utils</span> <span class="kn">import</span> <span class="n">retry_async</span>
+
+<span class="nd">@retry_async</span><span class="p">(</span><span class="n">max_attempts</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">delay</span><span class="o">=</span><span class="mf">0.1</span><span class="p">,</span> <span class="n">backoff</span><span class="o">=</span><span class="mf">2.0</span><span class="p">)</span>
+<span class="k">async</span> <span class="k">def</span> <span class="nf">create_order_with_retry</span><span class="p">(</span><span class="n">user</span><span class="p">,</span> <span class="n">items</span><span class="p">):</span>
+    <span class="k">async</span> <span class="k">with</span> <span class="n">db</span><span class="o">.</span><span class="n">transaction</span><span class="p">():</span>
+        <span class="c1"># Create order and process items</span>
+        <span class="n">order</span> <span class="o">=</span> <span class="k">await</span> <span class="n">Order</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="n">user</span><span class="o">=</span><span class="n">user</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">items</span><span class="p">:</span>
+            <span class="k">await</span> <span class="n">OrderItem</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="n">order</span><span class="o">=</span><span class="n">order</span><span class="p">,</span> <span class="n">item</span><span class="o">=</span><span class="n">item</span><span class="p">,</span> <span class="n">quantity</span><span class="o">=</span><span class="n">item</span><span class="o">.</span><span class="n">quantity</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">order</span>
+</code></pre></div>
+<h3 id="transaction-with-time-limit">Transaction with Time Limit<a class="headerlink" href="#transaction-with-time-limit" title="Permanent link">&para;</a></h3>
+<p>Set a timeout for transactions to prevent long-running operations:</p>
+<div class="highlight"><pre><span></span><code><span class="kn">from</span> <span class="nn">ormax.utils</span> <span class="kn">import</span> <span class="n">timeout_async</span>
+
+<span class="nd">@timeout_async</span><span class="p">(</span><span class="n">seconds</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>
+<span class="k">async</span> <span class="k">def</span> <span class="nf">process_payment</span><span class="p">():</span>
+    <span class="k">async</span> <span class="k">with</span> <span class="n">db</span><span class="o">.</span><span class="n">transaction</span><span class="p">():</span>
+        <span class="c1"># Payment processing logic</span>
+        <span class="k">await</span> <span class="n">Payment</span><span class="o">.</span><span class="n">process</span><span class="p">()</span>
+</code></pre></div>
+<h3 id="savepoint-based-partial-rollbacks">Savepoint-Based Partial Rollbacks<a class="headerlink" href="#savepoint-based-partial-rollbacks" title="Permanent link">&para;</a></h3>
+<p>Use savepoints for granular control within a transaction:</p>
+<div class="highlight"><pre><span></span><code><span class="k">async</span> <span class="k">with</span> <span class="n">db</span><span class="o">.</span><span class="n">transaction</span><span class="p">():</span>
+    <span class="c1"># Initial operation</span>
+    <span class="k">await</span> <span class="n">create_invoice</span><span class="p">()</span>
+
+    <span class="c1"># Create a savepoint</span>
+    <span class="n">sp1</span> <span class="o">=</span> <span class="k">await</span> <span class="n">db</span><span class="o">.</span><span class="n">transaction</span><span class="p">()</span><span class="o">.</span><span class="fm">__aenter__</span><span class="p">()</span>
+
+    <span class="k">try</span><span class="p">:</span>
+        <span class="c1"># Critical operation that might fail</span>
+        <span class="k">await</span> <span class="n">process_payment</span><span class="p">()</span>
+    <span class="k">except</span> <span class="n">PaymentError</span><span class="p">:</span>
+        <span class="c1"># Roll back just the payment processing</span>
+        <span class="k">await</span> <span class="n">sp1</span><span class="o">.</span><span class="fm">__aexit__</span><span class="p">(</span><span class="ne">Exception</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="c1"># Continue with alternative payment method</span>
+        <span class="k">await</span> <span class="n">process_alternative_payment</span><span class="p">()</span>
+
+    <span class="c1"># Continue with the rest of the transaction</span>
+    <span class="k">await</span> <span class="n">send_confirmation_email</span><span class="p">()</span>
+</code></pre></div>
+<h2 id="working-with-model-transactions">Working with Model Transactions<a class="headerlink" href="#working-with-model-transactions" title="Permanent link">&para;</a></h2>
+<h3 id="transaction-aware-model-methods">Transaction-Aware Model Methods<a class="headerlink" href="#transaction-aware-model-methods" title="Permanent link">&para;</a></h3>
+<p>Some model methods automatically participate in transactions:</p>
+<div class="highlight"><pre><span></span><code><span class="c1"># These operations will be part of the current transaction</span>
+<span class="k">async</span> <span class="k">with</span> <span class="n">db</span><span class="o">.</span><span class="n">transaction</span><span class="p">():</span>
+    <span class="n">book</span> <span class="o">=</span> <span class="k">await</span> <span class="n">Book</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="n">title</span><span class="o">=</span><span class="s2">&quot;Transactional Book&quot;</span><span class="p">,</span> <span class="n">pages</span><span class="o">=</span><span class="mi">300</span><span class="p">)</span>
+    <span class="k">await</span> <span class="n">book</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">pages</span><span class="o">=</span><span class="mi">350</span><span class="p">)</span>
+    <span class="k">await</span> <span class="n">book</span><span class="o">.</span><span class="n">delete</span><span class="p">()</span>
+</code></pre></div>
+<h3 id="bulk-operations-in-transactions">Bulk Operations in Transactions<a class="headerlink" href="#bulk-operations-in-transactions" title="Permanent link">&para;</a></h3>
+<p>Perform bulk operations within a single transaction for performance:</p>
+<div class="highlight"><pre><span></span><code><span class="k">async</span> <span class="k">with</span> <span class="n">db</span><span class="o">.</span><span class="n">transaction</span><span class="p">():</span>
+    <span class="n">books_data</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="p">{</span><span class="s2">&quot;title&quot;</span><span class="p">:</span> <span class="sa">f</span><span class="s2">&quot;Book </span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="s2">&quot;pages&quot;</span><span class="p">:</span> <span class="mi">100</span> <span class="o">+</span> <span class="n">i</span><span class="p">}</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1000</span><span class="p">)</span>
+    <span class="p">]</span>
+    <span class="k">await</span> <span class="n">Book</span><span class="o">.</span><span class="n">bulk_create</span><span class="p">(</span><span class="n">books_data</span><span class="p">)</span>
+</code></pre></div>
+<h2 id="database-specific-transaction-features">Database-Specific Transaction Features<a class="headerlink" href="#database-specific-transaction-features" title="Permanent link">&para;</a></h2>
+<h3 id="postgresql-advisory-locks">PostgreSQL Advisory Locks<a class="headerlink" href="#postgresql-advisory-locks" title="Permanent link">&para;</a></h3>
+<p>Use PostgreSQL's advisory locks within transactions:</p>
+<div class="highlight"><pre><span></span><code><span class="k">async</span> <span class="k">with</span> <span class="n">db</span><span class="o">.</span><span class="n">transaction</span><span class="p">():</span>
+    <span class="c1"># Acquire an advisory lock</span>
+    <span class="k">await</span> <span class="n">db</span><span class="o">.</span><span class="n">connection</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="s2">&quot;SELECT pg_advisory_xact_lock(12345)&quot;</span><span class="p">)</span>
+    <span class="c1"># Perform operations that require exclusive access</span>
+    <span class="k">await</span> <span class="n">process_exclusive_operation</span><span class="p">()</span>
+</code></pre></div>
+<h3 id="mysql-locking-reads">MySQL Locking Reads<a class="headerlink" href="#mysql-locking-reads" title="Permanent link">&para;</a></h3>
+<p>Use MySQL's locking reads within transactions:</p>
+<div class="highlight"><pre><span></span><code><span class="k">async</span> <span class="k">with</span> <span class="n">db</span><span class="o">.</span><span class="n">transaction</span><span class="p">():</span>
+    <span class="c1"># Lock rows for update</span>
+    <span class="n">books</span> <span class="o">=</span> <span class="k">await</span> <span class="n">Book</span><span class="o">.</span><span class="n">objects</span><span class="p">()</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">pages__gt</span><span class="o">=</span><span class="mi">300</span><span class="p">)</span><span class="o">.</span><span class="n">for_update</span><span class="p">()</span><span class="o">.</span><span class="n">all</span><span class="p">()</span>
+    <span class="c1"># Now update these books without interference</span>
+    <span class="k">for</span> <span class="n">book</span> <span class="ow">in</span> <span class="n">books</span><span class="p">:</span>
+        <span class="n">book</span><span class="o">.</span><span class="n">pages</span> <span class="o">-=</span> <span class="mi">10</span>
+        <span class="k">await</span> <span class="n">book</span><span class="o">.</span><span class="n">save</span><span class="p">()</span>
+</code></pre></div>
+<h2 id="error-handling-and-recovery">Error Handling and Recovery<a class="headerlink" href="#error-handling-and-recovery" title="Permanent link">&para;</a></h2>
+<h3 id="handling-transaction-errors">Handling Transaction Errors<a class="headerlink" href="#handling-transaction-errors" title="Permanent link">&para;</a></h3>
+<p>Proper error handling is critical for transaction management:</p>
+<div class="highlight"><pre><span></span><code><span class="k">try</span><span class="p">:</span>
+    <span class="k">async</span> <span class="k">with</span> <span class="n">db</span><span class="o">.</span><span class="n">transaction</span><span class="p">():</span>
+        <span class="c1"># Transaction operations</span>
+        <span class="k">await</span> <span class="n">process_data</span><span class="p">()</span>
+<span class="k">except</span> <span class="n">DatabaseError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+    <span class="c1"># Handle specific database errors</span>
+    <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Database error in transaction: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="c1"># The transaction is already rolled back</span>
+<span class="k">except</span> <span class="n">CustomApplicationError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+    <span class="c1"># Handle application-specific errors</span>
+    <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Application error: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="c1"># The transaction is already rolled back</span>
+</code></pre></div>
+<h3 id="common-transaction-errors">Common Transaction Errors<a class="headerlink" href="#common-transaction-errors" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Error</th>
+<th>Cause</th>
+<th>Solution</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>TransactionRollbackError</code></td>
+<td>Deadlock or serialization failure</td>
+<td>Implement retry logic</td>
+</tr>
+<tr>
+<td><code>IntegrityError</code></td>
+<td>Constraint violation</td>
+<td>Fix data or adjust constraints</td>
+</tr>
+<tr>
+<td><code>OperationalError</code></td>
+<td>Connection issues</td>
+<td>Reconnect and retry</td>
+</tr>
+<tr>
+<td><code>ProgrammingError</code></td>
+<td>SQL syntax error</td>
+<td>Fix the query</td>
+</tr>
+</tbody>
+</table>
+<h3 id="deadlock-prevention-strategies">Deadlock Prevention Strategies<a class="headerlink" href="#deadlock-prevention-strategies" title="Permanent link">&para;</a></h3>
+<ol>
+<li><strong>Access tables in consistent order</strong> across your application</li>
+<li><strong>Keep transactions short</strong> - do only what's necessary</li>
+<li><strong>Use appropriate isolation levels</strong> - don't use SERIALIZABLE unless needed</li>
+<li><strong>Implement retry logic</strong> for deadlock-prone operations</li>
+<li><strong>Set timeouts</strong> to prevent long-running transactions</li>
+</ol>
+<h2 id="performance-considerations">Performance Considerations<a class="headerlink" href="#performance-considerations" title="Permanent link">&para;</a></h2>
+<h3 id="transaction-size">Transaction Size<a class="headerlink" href="#transaction-size" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>Small transactions</strong>: Better concurrency, less locking</li>
+<li><strong>Large transactions</strong>: Fewer round-trips, but more locking</li>
+</ul>
+<p><strong>Best Practice</strong>: Find the right balance for your application.</p>
+<h3 id="batch-processing-in-transactions">Batch Processing in Transactions<a class="headerlink" href="#batch-processing-in-transactions" title="Permanent link">&para;</a></h3>
+<p>For large data operations, process in batches within transactions:</p>
+<div class="highlight"><pre><span></span><code><span class="k">async</span> <span class="k">def</span> <span class="nf">process_in_batches</span><span class="p">(</span><span class="n">items</span><span class="p">,</span> <span class="n">batch_size</span><span class="o">=</span><span class="mi">100</span><span class="p">):</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">items</span><span class="p">),</span> <span class="n">batch_size</span><span class="p">):</span>
+        <span class="n">batch</span> <span class="o">=</span> <span class="n">items</span><span class="p">[</span><span class="n">i</span><span class="p">:</span><span class="n">i</span><span class="o">+</span><span class="n">batch_size</span><span class="p">]</span>
+        <span class="k">async</span> <span class="k">with</span> <span class="n">db</span><span class="o">.</span><span class="n">transaction</span><span class="p">():</span>
+            <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">batch</span><span class="p">:</span>
+                <span class="k">await</span> <span class="n">process_item</span><span class="p">(</span><span class="n">item</span><span class="p">)</span>
+</code></pre></div>
+<h3 id="read-only-transactions">Read-Only Transactions<a class="headerlink" href="#read-only-transactions" title="Permanent link">&para;</a></h3>
+<p>Mark transactions as read-only when possible for better performance:</p>
+<div class="highlight"><pre><span></span><code><span class="k">async</span> <span class="k">with</span> <span class="n">db</span><span class="o">.</span><span class="n">transaction</span><span class="p">(</span><span class="n">read_only</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+    <span class="c1"># Only read operations here</span>
+    <span class="n">books</span> <span class="o">=</span> <span class="k">await</span> <span class="n">Book</span><span class="o">.</span><span class="n">objects</span><span class="p">()</span><span class="o">.</span><span class="n">all</span><span class="p">()</span>
+</code></pre></div>
+<blockquote>
+<p><strong>Note</strong>: PostgreSQL and Oracle support explicit read-only transactions; other databases ignore this setting.</p>
+</blockquote>
+<h2 id="real-world-examples">Real-World Examples<a class="headerlink" href="#real-world-examples" title="Permanent link">&para;</a></h2>
+<h3 id="e-commerce-order-processing">E-commerce Order Processing<a class="headerlink" href="#e-commerce-order-processing" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><span class="k">async</span> <span class="k">def</span> <span class="nf">process_order</span><span class="p">(</span><span class="n">user</span><span class="p">,</span> <span class="n">cart_items</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Process an e-commerce order with proper transaction management</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">async</span> <span class="k">with</span> <span class="n">db</span><span class="o">.</span><span class="n">transaction</span><span class="p">():</span>
+        <span class="c1"># Create order</span>
+        <span class="n">order</span> <span class="o">=</span> <span class="k">await</span> <span class="n">Order</span><span class="o">.</span><span class="n">create</span><span class="p">(</span>
+            <span class="n">user</span><span class="o">=</span><span class="n">user</span><span class="p">,</span>
+            <span class="n">status</span><span class="o">=</span><span class="s2">&quot;PROCESSING&quot;</span><span class="p">,</span>
+            <span class="n">total_amount</span><span class="o">=</span><span class="n">calculate_total</span><span class="p">(</span><span class="n">cart_items</span><span class="p">)</span>
+        <span class="p">)</span>
+
+        <span class="c1"># Process each item</span>
+        <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">cart_items</span><span class="p">:</span>
+            <span class="c1"># Check inventory</span>
+            <span class="n">product</span> <span class="o">=</span> <span class="k">await</span> <span class="n">Product</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="n">item</span><span class="o">.</span><span class="n">product_id</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">product</span><span class="o">.</span><span class="n">inventory</span> <span class="o">&lt;</span> <span class="n">item</span><span class="o">.</span><span class="n">quantity</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="n">InsufficientInventoryError</span><span class="p">(</span>
+                    <span class="sa">f</span><span class="s2">&quot;Not enough </span><span class="si">{</span><span class="n">product</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> in stock&quot;</span>
+                <span class="p">)</span>
+
+            <span class="c1"># Reserve inventory</span>
+            <span class="n">product</span><span class="o">.</span><span class="n">inventory</span> <span class="o">-=</span> <span class="n">item</span><span class="o">.</span><span class="n">quantity</span>
+            <span class="k">await</span> <span class="n">product</span><span class="o">.</span><span class="n">save</span><span class="p">()</span>
+
+            <span class="c1"># Create order item</span>
+            <span class="k">await</span> <span class="n">OrderItem</span><span class="o">.</span><span class="n">create</span><span class="p">(</span>
+                <span class="n">order</span><span class="o">=</span><span class="n">order</span><span class="p">,</span>
+                <span class="n">product</span><span class="o">=</span><span class="n">product</span><span class="p">,</span>
+                <span class="n">quantity</span><span class="o">=</span><span class="n">item</span><span class="o">.</span><span class="n">quantity</span><span class="p">,</span>
+                <span class="n">price</span><span class="o">=</span><span class="n">product</span><span class="o">.</span><span class="n">price</span>
+            <span class="p">)</span>
+
+        <span class="c1"># Update order status</span>
+        <span class="n">order</span><span class="o">.</span><span class="n">status</span> <span class="o">=</span> <span class="s2">&quot;COMPLETED&quot;</span>
+        <span class="k">await</span> <span class="n">order</span><span class="o">.</span><span class="n">save</span><span class="p">()</span>
+
+        <span class="k">return</span> <span class="n">order</span>
+</code></pre></div>
+<h3 id="banking-transaction-system">Banking Transaction System<a class="headerlink" href="#banking-transaction-system" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><span class="k">async</span> <span class="k">def</span> <span class="nf">transfer_funds</span><span class="p">(</span><span class="n">from_account</span><span class="p">,</span> <span class="n">to_account</span><span class="p">,</span> <span class="n">amount</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Transfer funds between accounts with transaction safety</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># Validate inputs</span>
+    <span class="k">if</span> <span class="n">amount</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Transfer amount must be positive&quot;</span><span class="p">)</span>
+
+    <span class="k">async</span> <span class="k">with</span> <span class="n">db</span><span class="o">.</span><span class="n">transaction</span><span class="p">():</span>
+        <span class="c1"># Get accounts with row locking to prevent race conditions</span>
+        <span class="n">from_acc</span> <span class="o">=</span> <span class="k">await</span> <span class="n">Account</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="n">from_account</span><span class="p">,</span> <span class="n">for_update</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="n">to_acc</span> <span class="o">=</span> <span class="k">await</span> <span class="n">Account</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="n">to_account</span><span class="p">,</span> <span class="n">for_update</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+        <span class="c1"># Check sufficient funds</span>
+        <span class="k">if</span> <span class="n">from_acc</span><span class="o">.</span><span class="n">balance</span> <span class="o">&lt;</span> <span class="n">amount</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">InsufficientFundsError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;Account </span><span class="si">{</span><span class="n">from_account</span><span class="si">}</span><span class="s2"> has insufficient funds&quot;</span>
+            <span class="p">)</span>
+
+        <span class="c1"># Perform transfer</span>
+        <span class="n">from_acc</span><span class="o">.</span><span class="n">balance</span> <span class="o">-=</span> <span class="n">amount</span>
+        <span class="n">to_acc</span><span class="o">.</span><span class="n">balance</span> <span class="o">+=</span> <span class="n">amount</span>
+
+        <span class="c1"># Save changes</span>
+        <span class="k">await</span> <span class="n">from_acc</span><span class="o">.</span><span class="n">save</span><span class="p">()</span>
+        <span class="k">await</span> <span class="n">to_acc</span><span class="o">.</span><span class="n">save</span><span class="p">()</span>
+
+        <span class="c1"># Create transaction records</span>
+        <span class="k">await</span> <span class="n">Transaction</span><span class="o">.</span><span class="n">create</span><span class="p">(</span>
+            <span class="n">account_id</span><span class="o">=</span><span class="n">from_account</span><span class="p">,</span>
+            <span class="n">amount</span><span class="o">=-</span><span class="n">amount</span><span class="p">,</span>
+            <span class="n">description</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;Transfer to </span><span class="si">{</span><span class="n">to_account</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="p">)</span>
+        <span class="k">await</span> <span class="n">Transaction</span><span class="o">.</span><span class="n">create</span><span class="p">(</span>
+            <span class="n">account_id</span><span class="o">=</span><span class="n">to_account</span><span class="p">,</span>
+            <span class="n">amount</span><span class="o">=</span><span class="n">amount</span><span class="p">,</span>
+            <span class="n">description</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;Transfer from </span><span class="si">{</span><span class="n">from_account</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="p">)</span>
+
+        <span class="k">return</span> <span class="p">{</span>
+            <span class="s2">&quot;from_balance&quot;</span><span class="p">:</span> <span class="n">from_acc</span><span class="o">.</span><span class="n">balance</span><span class="p">,</span>
+            <span class="s2">&quot;to_balance&quot;</span><span class="p">:</span> <span class="n">to_acc</span><span class="o">.</span><span class="n">balance</span>
+        <span class="p">}</span>
+</code></pre></div>
+<h2 id="testing-transactions">Testing Transactions<a class="headerlink" href="#testing-transactions" title="Permanent link">&para;</a></h2>
+<h3 id="unit-testing-transactions">Unit Testing Transactions<a class="headerlink" href="#unit-testing-transactions" title="Permanent link">&para;</a></h3>
+<p>When testing transactional code, use in-memory SQLite for speed:</p>
+<div class="highlight"><pre><span></span><code><span class="kn">import</span> <span class="nn">pytest</span>
+<span class="kn">from</span> <span class="nn">unittest.mock</span> <span class="kn">import</span> <span class="n">AsyncMock</span>
+
+<span class="nd">@pytest</span><span class="o">.</span><span class="n">mark</span><span class="o">.</span><span class="n">asyncio</span>
+<span class="k">async</span> <span class="k">def</span> <span class="nf">test_order_processing</span><span class="p">():</span>
+    <span class="c1"># Setup test database</span>
+    <span class="n">db</span> <span class="o">=</span> <span class="n">Database</span><span class="p">(</span><span class="s2">&quot;sqlite:///:memory:&quot;</span><span class="p">)</span>
+    <span class="n">db</span><span class="o">.</span><span class="n">register_model</span><span class="p">(</span><span class="n">Order</span><span class="p">)</span>
+    <span class="n">db</span><span class="o">.</span><span class="n">register_model</span><span class="p">(</span><span class="n">OrderItem</span><span class="p">)</span>
+    <span class="k">await</span> <span class="n">db</span><span class="o">.</span><span class="n">create_tables</span><span class="p">()</span>
+
+    <span class="c1"># Test transactional function</span>
+    <span class="n">user</span> <span class="o">=</span> <span class="k">await</span> <span class="n">User</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;Test User&quot;</span><span class="p">)</span>
+    <span class="n">cart_items</span> <span class="o">=</span> <span class="p">[{</span><span class="s2">&quot;product_id&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;quantity&quot;</span><span class="p">:</span> <span class="mi">2</span><span class="p">}]</span>
+
+    <span class="c1"># Should complete without errors</span>
+    <span class="n">order</span> <span class="o">=</span> <span class="k">await</span> <span class="n">process_order</span><span class="p">(</span><span class="n">user</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">cart_items</span><span class="p">)</span>
+    <span class="k">assert</span> <span class="n">order</span><span class="o">.</span><span class="n">status</span> <span class="o">==</span> <span class="s2">&quot;COMPLETED&quot;</span>
+
+    <span class="c1"># Verify inventory was updated</span>
+    <span class="n">product</span> <span class="o">=</span> <span class="k">await</span> <span class="n">Product</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+    <span class="k">assert</span> <span class="n">product</span><span class="o">.</span><span class="n">inventory</span> <span class="o">==</span> <span class="n">INITIAL_INVENTORY</span> <span class="o">-</span> <span class="mi">2</span>
+</code></pre></div>
+<h3 id="simulating-transaction-failures">Simulating Transaction Failures<a class="headerlink" href="#simulating-transaction-failures" title="Permanent link">&para;</a></h3>
+<p>Test your error handling by simulating failures:</p>
+<div class="highlight"><pre><span></span><code><span class="nd">@pytest</span><span class="o">.</span><span class="n">mark</span><span class="o">.</span><span class="n">asyncio</span>
+<span class="k">async</span> <span class="k">def</span> <span class="nf">test_order_processing_insufficient_inventory</span><span class="p">():</span>
+    <span class="c1"># Setup test database</span>
+    <span class="n">db</span> <span class="o">=</span> <span class="n">Database</span><span class="p">(</span><span class="s2">&quot;sqlite:///:memory:&quot;</span><span class="p">)</span>
+    <span class="c1"># ... setup models and data ...</span>
+
+    <span class="c1"># Create product with limited inventory</span>
+    <span class="n">product</span> <span class="o">=</span> <span class="k">await</span> <span class="n">Product</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;Test Product&quot;</span><span class="p">,</span> <span class="n">inventory</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+
+    <span class="c1"># Attempt to order more than available</span>
+    <span class="n">cart_items</span> <span class="o">=</span> <span class="p">[{</span><span class="s2">&quot;product_id&quot;</span><span class="p">:</span> <span class="n">product</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="s2">&quot;quantity&quot;</span><span class="p">:</span> <span class="mi">2</span><span class="p">}]</span>
+
+    <span class="c1"># Should raise InsufficientInventoryError</span>
+    <span class="k">with</span> <span class="n">pytest</span><span class="o">.</span><span class="n">raises</span><span class="p">(</span><span class="n">InsufficientInventoryError</span><span class="p">):</span>
+        <span class="k">await</span> <span class="n">process_order</span><span class="p">(</span><span class="n">user</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">cart_items</span><span class="p">)</span>
+
+    <span class="c1"># Verify no changes were made</span>
+    <span class="n">product</span> <span class="o">=</span> <span class="k">await</span> <span class="n">Product</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="n">product</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
+    <span class="k">assert</span> <span class="n">product</span><span class="o">.</span><span class="n">inventory</span> <span class="o">==</span> <span class="mi">1</span>  <span class="c1"># No change</span>
+</code></pre></div>
+<h2 id="best-practices">Best Practices<a class="headerlink" href="#best-practices" title="Permanent link">&para;</a></h2>
+<h3 id="keep-transactions-short">Keep Transactions Short<a class="headerlink" href="#keep-transactions-short" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Do as little work as possible within a transaction</li>
+<li>Move non-database operations outside transactions</li>
+<li>Process data before entering the transaction</li>
+</ul>
+<h3 id="avoid-user-interaction-in-transactions">Avoid User Interaction in Transactions<a class="headerlink" href="#avoid-user-interaction-in-transactions" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Never wait for user input inside a transaction</li>
+<li>Complete all business logic before starting a transaction</li>
+</ul>
+<h3 id="use-appropriate-isolation-levels">Use Appropriate Isolation Levels<a class="headerlink" href="#use-appropriate-isolation-levels" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Use the lowest isolation level that meets your needs</li>
+<li>Don't use SERIALIZABLE unless absolutely necessary</li>
+</ul>
+<h3 id="implement-retry-logic">Implement Retry Logic<a class="headerlink" href="#implement-retry-logic" title="Permanent link">&para;</a></h3>
+<ul>
+<li>For operations prone to deadlocks or serialization failures</li>
+<li>Use exponential backoff for retries</li>
+</ul>
+<h3 id="monitor-long-running-transactions">Monitor Long-Running Transactions<a class="headerlink" href="#monitor-long-running-transactions" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Set up monitoring for transactions exceeding expected duration</li>
+<li>Implement timeouts to prevent runaway transactions</li>
+</ul>
+<h2 id="troubleshooting-common-issues">Troubleshooting Common Issues<a class="headerlink" href="#troubleshooting-common-issues" title="Permanent link">&para;</a></h2>
+<h3 id="stale-data-after-transaction">Stale Data After Transaction<a class="headerlink" href="#stale-data-after-transaction" title="Permanent link">&para;</a></h3>
+<p><strong>Issue</strong>: Reading data that appears unchanged after a transaction</p>
+<p><strong>Solution</strong>:
+- Verify you're not in a nested transaction that hasn't committed
+- Check if you're using the correct isolation level
+- Ensure you're not caching results outside the transaction</p>
+<h3 id="deadlocks">Deadlocks<a class="headerlink" href="#deadlocks" title="Permanent link">&para;</a></h3>
+<p><strong>Issue</strong>: <code>TransactionRollbackError</code> due to deadlocks</p>
+<p><strong>Solution</strong>:
+- Access tables in consistent order across your application
+- Keep transactions as short as possible
+- Implement retry logic for deadlock-prone operations
+- Consider using lower isolation levels</p>
+<h3 id="transaction-not-rolling-back">Transaction Not Rolling Back<a class="headerlink" href="#transaction-not-rolling-back" title="Permanent link">&para;</a></h3>
+<p><strong>Issue</strong>: Changes persist after an exception within a transaction</p>
+<p><strong>Solution</strong>:
+- Ensure you're using the async context manager correctly
+- Verify you're not catching and ignoring exceptions
+- Check if you're using manual transaction control correctly</p>
+<h3 id="savepoint-errors-in-nested-transactions">Savepoint Errors in Nested Transactions<a class="headerlink" href="#savepoint-errors-in-nested-transactions" title="Permanent link">&para;</a></h3>
+<p><strong>Issue</strong>: <code>ProgrammingError</code> related to savepoints in nested transactions</p>
+<p><strong>Solution</strong>:
+- Verify your database supports nested transactions
+- Check if you're properly exiting inner transaction contexts
+- Ensure you're not mixing manual and context manager transaction styles</p>
+<h2 id="performance-tuning">Performance Tuning<a class="headerlink" href="#performance-tuning" title="Permanent link">&para;</a></h2>
+<h3 id="connection-pool-configuration">Connection Pool Configuration<a class="headerlink" href="#connection-pool-configuration" title="Permanent link">&para;</a></h3>
+<p>Optimize connection pool settings for transaction-heavy workloads:</p>
+<div class="highlight"><pre><span></span><code><span class="n">db</span> <span class="o">=</span> <span class="n">Database</span><span class="p">(</span>
+    <span class="s2">&quot;postgresql://user:password@localhost:5432/mydb&quot;</span><span class="p">,</span>
+    <span class="n">min_size</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span>      <span class="c1"># Increase for high transaction volume</span>
+    <span class="n">max_size</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span>      <span class="c1"># Higher for more concurrent transactions</span>
+    <span class="n">command_timeout</span><span class="o">=</span><span class="mi">30</span>  <span class="c1"># Adjust based on transaction complexity</span>
+<span class="p">)</span>
+</code></pre></div>
+<h3 id="batch-size-optimization">Batch Size Optimization<a class="headerlink" href="#batch-size-optimization" title="Permanent link">&para;</a></h3>
+<p>Find the optimal batch size for bulk operations:</p>
+<div class="highlight"><pre><span></span><code><span class="c1"># Experiment with different batch sizes</span>
+<span class="n">BATCH_SIZES</span> <span class="o">=</span> <span class="p">[</span><span class="mi">50</span><span class="p">,</span> <span class="mi">100</span><span class="p">,</span> <span class="mi">200</span><span class="p">,</span> <span class="mi">500</span><span class="p">]</span>
+
+<span class="k">for</span> <span class="n">batch_size</span> <span class="ow">in</span> <span class="n">BATCH_SIZES</span><span class="p">:</span>
+    <span class="n">start</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+    <span class="k">async</span> <span class="k">with</span> <span class="n">db</span><span class="o">.</span><span class="n">transaction</span><span class="p">():</span>
+        <span class="k">await</span> <span class="n">process_in_batches</span><span class="p">(</span><span class="n">items</span><span class="p">,</span> <span class="n">batch_size</span><span class="p">)</span>
+    <span class="n">duration</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span> <span class="o">-</span> <span class="n">start</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Batch size </span><span class="si">{</span><span class="n">batch_size</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">duration</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2"> seconds&quot;</span><span class="p">)</span>
+</code></pre></div>
+<h3 id="monitoring-long-transactions">Monitoring Long Transactions<a class="headerlink" href="#monitoring-long-transactions" title="Permanent link">&para;</a></h3>
+<p>Implement monitoring for long-running transactions:</p>
+<div class="highlight"><pre><span></span><code><span class="kn">from</span> <span class="nn">ormax.utils</span> <span class="kn">import</span> <span class="n">Timer</span>
+
+<span class="k">async</span> <span class="k">def</span> <span class="nf">monitored_transaction</span><span class="p">():</span>
+    <span class="k">with</span> <span class="n">Timer</span><span class="p">(</span><span class="s2">&quot;Order Processing&quot;</span><span class="p">):</span>
+        <span class="k">async</span> <span class="k">with</span> <span class="n">db</span><span class="o">.</span><span class="n">transaction</span><span class="p">():</span>
+            <span class="c1"># Transaction operations</span>
+            <span class="k">await</span> <span class="n">process_order</span><span class="p">()</span>
+</code></pre></div>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+  <script>var tabs=__md_get("__tabs");if(Array.isArray(tabs))e:for(var set of document.querySelectorAll(".tabbed-set")){var labels=set.querySelector(".tabbed-labels");for(var tab of tabs)for(var label of labels.getElementsByTagName("label"))if(label.innerText.trim()===tab){var input=document.getElementById(label.htmlFor);input.checked=!0;continue e}}</script>
+
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+    
+      
+      <nav class="md-footer__inner md-grid" aria-label="Footer" >
+        
+          
+          <a href="../../relationships/overview/" class="md-footer__link md-footer__link--prev" aria-label="Previous: Overview">
+            <div class="md-footer__button md-icon">
+              
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+            </div>
+            <div class="md-footer__title">
+              <span class="md-footer__direction">
+                Previous
+              </span>
+              <div class="md-ellipsis">
+                Overview
+              </div>
+            </div>
+          </a>
+        
+        
+          
+          <a href="../query-optimization/" class="md-footer__link md-footer__link--next" aria-label="Next: Query Optimization">
+            <div class="md-footer__title">
+              <span class="md-footer__direction">
+                Next
+              </span>
+              <div class="md-ellipsis">
+                Query Optimization
+              </div>
+            </div>
+            <div class="md-footer__button md-icon">
+              
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M4 11v2h12l-5.5 5.5 1.42 1.42L19.84 12l-7.92-7.92L10.5 5.5 16 11z"/></svg>
+            </div>
+          </a>
+        
+      </nav>
+    
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      <script id="__config" type="application/json">{"base": "../..", "features": ["search.suggest", "search.highlight", "content.tabs.link", "navigation.footer", "content.code.copy", "navigation.instant", "navigation.sections", "navigation.expand"], "search": "../../assets/javascripts/workers/search.973d3a69.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.92b07e13.min.js"></script>
+      
+        <script src="../../js/termynal.js"></script>
+      
+        <script src="../../js/custom.js"></script>
+      
+        <script src="../../&lt;script type=&#34;application/ld+json&#34;&gt;
+{
+  &#34;@context&#34;: &#34;https:/schema.org&#34;,
+  &#34;@type&#34;: &#34;SoftwareApplication&#34;,
+  &#34;name&#34;: &#34;Ormax ORM&#34;,
+  &#34;applicationCategory&#34;: &#34;DeveloperLibrary&#34;,
+  &#34;operatingSystem&#34;: &#34;Any&#34;,
+  &#34;url&#34;: &#34;https:/ormax.shayan-heidari.ir/&#34;,
+  &#34;logo&#34;: &#34;https:/raw.githubusercontent.com/shayanheidari01/ormax/master/icon.png&#34;,
+  &#34;author&#34;: {
+    &#34;@type&#34;: &#34;Person&#34;,
+    &#34;name&#34;: &#34;Shayan Heidari&#34;
+  },
+  &#34;description&#34;: &#34;Ormax ORM: A lightweight and async ORM for Python with simple models, transactions, relations, and performance monitoring.&#34;
+}
+&lt;/script&gt;
+"></script>
+      
+    
+  </body>
+</html>

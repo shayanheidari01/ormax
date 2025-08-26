@@ -1,0 +1,2650 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Ormax Python ORM Documents">
+      
+      
+        <meta name="author" content="Shayan Heidari">
+      
+      
+        <link rel="canonical" href="https://ormax.shayan-heidari.ir/querying/queryset/">
+      
+      
+        <link rel="prev" href="../../getting-started/models/">
+      
+      
+        <link rel="next" href="../../relationships/overview/">
+      
+      
+      <link rel="icon" href="../../assets/logo.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.6.17">
+    
+    
+      
+        <title>QuerySet API - Ormax Python ORM</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.7e37652d.min.css">
+      
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.06af60db.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Vazirmatn:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Vazirmatn";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../../css/termynal.css">
+    
+      <link rel="stylesheet" href="../../css/custom.css">
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="white" data-md-color-accent="amber">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#querying-data-with-ormax" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../.." title="Ormax Python ORM" class="md-header__button md-logo" aria-label="Ormax Python ORM" data-md-component="logo">
+      
+  <img src="../../assets/logo.png" alt="logo">
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            Ormax Python ORM
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              QuerySet API
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="default" data-md-color-primary="white" data-md-color-accent="amber"  aria-label="Dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 7a5 5 0 0 1 5 5 5 5 0 0 1-5 5 5 5 0 0 1-5-5 5 5 0 0 1 5-5m0 2a3 3 0 0 0-3 3 3 3 0 0 0 3 3 3 3 0 0 0 3-3 3 3 0 0 0-3-3m0-7 2.39 3.42C13.65 5.15 12.84 5 12 5s-1.65.15-2.39.42zM3.34 7l4.16-.35A7.2 7.2 0 0 0 5.94 8.5c-.44.74-.69 1.5-.83 2.29zm.02 10 1.76-3.77a7.131 7.131 0 0 0 2.38 4.14zM20.65 7l-1.77 3.79a7.02 7.02 0 0 0-2.38-4.15zm-.01 10-4.14.36c.59-.51 1.12-1.14 1.54-1.86.42-.73.69-1.5.83-2.29zM12 22l-2.41-3.44c.74.27 1.55.44 2.41.44.82 0 1.63-.17 2.37-.44z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="slate" data-md-color-primary="white" data-md-color-accent="amber"  aria-label="Light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="m17.75 4.09-2.53 1.94.91 3.06-2.63-1.81-2.63 1.81.91-3.06-2.53-1.94L12.44 4l1.06-3 1.06 3zm3.5 6.91-1.64 1.25.59 1.98-1.7-1.17-1.7 1.17.59-1.98L15.75 11l2.06-.05L18.5 9l.69 1.95zm-2.28 4.95c.83-.08 1.72 1.1 1.19 1.85-.32.45-.66.87-1.08 1.27C15.17 23 8.84 23 4.94 19.07c-3.91-3.9-3.91-10.24 0-14.14.4-.4.82-.76 1.27-1.08.75-.53 1.93.36 1.85 1.19-.27 2.86.69 5.83 2.89 8.02a9.96 9.96 0 0 0 8.02 2.89m-1.64 2.02a12.08 12.08 0 0 1-7.8-3.47c-2.17-2.19-3.33-5-3.49-7.82-2.81 3.14-2.7 7.96.31 10.98 3.02 3.01 7.84 3.12 10.98.31"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/shayanheidari01/ormax/" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.0.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path fill="currentColor" d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    GitHub
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="Ormax Python ORM" class="md-nav__button md-logo" aria-label="Ormax Python ORM" data-md-component="logo">
+      
+  <img src="../../assets/logo.png" alt="logo">
+
+    </a>
+    Ormax Python ORM
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/shayanheidari01/ormax/" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.0.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path fill="currentColor" d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    GitHub
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Home
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    Getting Started
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            Getting Started
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../getting-started/installation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Installation
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../getting-started/models/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Basic Model Definition
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    Querying Data
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            Querying Data
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    QuerySet API
+    
+  </span>
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    QuerySet API
+    
+  </span>
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#understanding-queryset" class="md-nav__link">
+    <span class="md-ellipsis">
+      Understanding QuerySet
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#basic-query-operations" class="md-nav__link">
+    <span class="md-ellipsis">
+      Basic Query Operations
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Basic Query Operations">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#retrieving-all-objects" class="md-nav__link">
+    <span class="md-ellipsis">
+      Retrieving All Objects
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#getting-a-single-object" class="md-nav__link">
+    <span class="md-ellipsis">
+      Getting a Single Object
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#filtering-results" class="md-nav__link">
+    <span class="md-ellipsis">
+      Filtering Results
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#excluding-results" class="md-nav__link">
+    <span class="md-ellipsis">
+      Excluding Results
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#field-lookups" class="md-nav__link">
+    <span class="md-ellipsis">
+      Field Lookups
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Field Lookups">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#basic-lookups" class="md-nav__link">
+    <span class="md-ellipsis">
+      Basic Lookups
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#date-and-time-lookups" class="md-nav__link">
+    <span class="md-ellipsis">
+      Date and Time Lookups
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#ordering-results" class="md-nav__link">
+    <span class="md-ellipsis">
+      Ordering Results
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Ordering Results">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#basic-ordering" class="md-nav__link">
+    <span class="md-ellipsis">
+      Basic Ordering
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#using-expressions-in-ordering" class="md-nav__link">
+    <span class="md-ellipsis">
+      Using Expressions in Ordering
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#limiting-and-pagination" class="md-nav__link">
+    <span class="md-ellipsis">
+      Limiting and Pagination
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Limiting and Pagination">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#limiting-results" class="md-nav__link">
+    <span class="md-ellipsis">
+      Limiting Results
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#pagination-helper" class="md-nav__link">
+    <span class="md-ellipsis">
+      Pagination Helper
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#aggregation-and-statistics" class="md-nav__link">
+    <span class="md-ellipsis">
+      Aggregation and Statistics
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Aggregation and Statistics">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#counting-records" class="md-nav__link">
+    <span class="md-ellipsis">
+      Counting Records
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#checking-existence" class="md-nav__link">
+    <span class="md-ellipsis">
+      Checking Existence
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#advanced-aggregation" class="md-nav__link">
+    <span class="md-ellipsis">
+      Advanced Aggregation
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#advanced-query-operations" class="md-nav__link">
+    <span class="md-ellipsis">
+      Advanced Query Operations
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Advanced Query Operations">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#distinct-results" class="md-nav__link">
+    <span class="md-ellipsis">
+      Distinct Results
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#grouping-results" class="md-nav__link">
+    <span class="md-ellipsis">
+      Grouping Results
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#using-only-specific-fields" class="md-nav__link">
+    <span class="md-ellipsis">
+      Using Only Specific Fields
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#deferring-fields" class="md-nav__link">
+    <span class="md-ellipsis">
+      Deferring Fields
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#using-specific-indexes" class="md-nav__link">
+    <span class="md-ellipsis">
+      Using Specific Indexes
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#locking-records" class="md-nav__link">
+    <span class="md-ellipsis">
+      Locking Records
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#query-timeout" class="md-nav__link">
+    <span class="md-ellipsis">
+      Query Timeout
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#raw-sql-queries" class="md-nav__link">
+    <span class="md-ellipsis">
+      Raw SQL Queries
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Raw SQL Queries">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#executing-raw-queries" class="md-nav__link">
+    <span class="md-ellipsis">
+      Executing Raw Queries
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#async-iteration" class="md-nav__link">
+    <span class="md-ellipsis">
+      Async Iteration
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#mapping-results-to-models" class="md-nav__link">
+    <span class="md-ellipsis">
+      Mapping Results to Models
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#query-optimization" class="md-nav__link">
+    <span class="md-ellipsis">
+      Query Optimization
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Query Optimization">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#select-related-join" class="md-nav__link">
+    <span class="md-ellipsis">
+      Select Related (JOIN)
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#prefetch-related-separate-queries" class="md-nav__link">
+    <span class="md-ellipsis">
+      Prefetch Related (Separate Queries)
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#combining-both-techniques" class="md-nav__link">
+    <span class="md-ellipsis">
+      Combining Both Techniques
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#common-query-patterns" class="md-nav__link">
+    <span class="md-ellipsis">
+      Common Query Patterns
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Common Query Patterns">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#getting-the-earliestlatest-records" class="md-nav__link">
+    <span class="md-ellipsis">
+      Getting the Earliest/Latest Records
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#in-bulk-operations" class="md-nav__link">
+    <span class="md-ellipsis">
+      In Bulk Operations
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#updating-multiple-records" class="md-nav__link">
+    <span class="md-ellipsis">
+      Updating Multiple Records
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#deleting-multiple-records" class="md-nav__link">
+    <span class="md-ellipsis">
+      Deleting Multiple Records
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#performance-considerations" class="md-nav__link">
+    <span class="md-ellipsis">
+      Performance Considerations
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Performance Considerations">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#avoiding-n1-query-problem" class="md-nav__link">
+    <span class="md-ellipsis">
+      Avoiding N+1 Query Problem
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#using-values-and-values-list" class="md-nav__link">
+    <span class="md-ellipsis">
+      Using Values and Values List
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#batch-processing" class="md-nav__link">
+    <span class="md-ellipsis">
+      Batch Processing
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#complete-examples" class="md-nav__link">
+    <span class="md-ellipsis">
+      Complete Examples
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Complete Examples">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#book-search-example" class="md-nav__link">
+    <span class="md-ellipsis">
+      Book Search Example
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#dashboard-statistics-example" class="md-nav__link">
+    <span class="md-ellipsis">
+      Dashboard Statistics Example
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#troubleshooting-common-issues" class="md-nav__link">
+    <span class="md-ellipsis">
+      Troubleshooting Common Issues
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Troubleshooting Common Issues">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#empty-queryset" class="md-nav__link">
+    <span class="md-ellipsis">
+      Empty QuerySet
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#multipleobjectsreturned" class="md-nav__link">
+    <span class="md-ellipsis">
+      MultipleObjectsReturned
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#fielddoesnotexist" class="md-nav__link">
+    <span class="md-ellipsis">
+      FieldDoesNotExist
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#performance-problems" class="md-nav__link">
+    <span class="md-ellipsis">
+      Performance Problems
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#best-practices" class="md-nav__link">
+    <span class="md-ellipsis">
+      Best Practices
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Best Practices">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#use-asynchronous-pattern-correctly" class="md-nav__link">
+    <span class="md-ellipsis">
+      Use Asynchronous Pattern Correctly
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#chain-queries-for-readability" class="md-nav__link">
+    <span class="md-ellipsis">
+      Chain Queries for Readability
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#use-transactions-for-related-operations" class="md-nav__link">
+    <span class="md-ellipsis">
+      Use Transactions for Related Operations
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    Relationships
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            Relationships
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../relationships/overview/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Overview
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_5" >
+        
+          
+          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    Advanced Features
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            Advanced Features
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../advanced/transactions/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Transactions
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../advanced/query-optimization/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Query Optimization
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../advanced/custom-models/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Custom Model Patterns
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../advanced/performance-monitoring/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Performance Monitoring
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../advanced/deployment/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Deployment Strategies
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../advanced/testing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Testing Strategies
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../advanced/debugging/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Debugging Techniques
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#understanding-queryset" class="md-nav__link">
+    <span class="md-ellipsis">
+      Understanding QuerySet
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#basic-query-operations" class="md-nav__link">
+    <span class="md-ellipsis">
+      Basic Query Operations
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Basic Query Operations">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#retrieving-all-objects" class="md-nav__link">
+    <span class="md-ellipsis">
+      Retrieving All Objects
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#getting-a-single-object" class="md-nav__link">
+    <span class="md-ellipsis">
+      Getting a Single Object
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#filtering-results" class="md-nav__link">
+    <span class="md-ellipsis">
+      Filtering Results
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#excluding-results" class="md-nav__link">
+    <span class="md-ellipsis">
+      Excluding Results
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#field-lookups" class="md-nav__link">
+    <span class="md-ellipsis">
+      Field Lookups
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Field Lookups">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#basic-lookups" class="md-nav__link">
+    <span class="md-ellipsis">
+      Basic Lookups
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#date-and-time-lookups" class="md-nav__link">
+    <span class="md-ellipsis">
+      Date and Time Lookups
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#ordering-results" class="md-nav__link">
+    <span class="md-ellipsis">
+      Ordering Results
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Ordering Results">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#basic-ordering" class="md-nav__link">
+    <span class="md-ellipsis">
+      Basic Ordering
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#using-expressions-in-ordering" class="md-nav__link">
+    <span class="md-ellipsis">
+      Using Expressions in Ordering
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#limiting-and-pagination" class="md-nav__link">
+    <span class="md-ellipsis">
+      Limiting and Pagination
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Limiting and Pagination">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#limiting-results" class="md-nav__link">
+    <span class="md-ellipsis">
+      Limiting Results
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#pagination-helper" class="md-nav__link">
+    <span class="md-ellipsis">
+      Pagination Helper
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#aggregation-and-statistics" class="md-nav__link">
+    <span class="md-ellipsis">
+      Aggregation and Statistics
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Aggregation and Statistics">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#counting-records" class="md-nav__link">
+    <span class="md-ellipsis">
+      Counting Records
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#checking-existence" class="md-nav__link">
+    <span class="md-ellipsis">
+      Checking Existence
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#advanced-aggregation" class="md-nav__link">
+    <span class="md-ellipsis">
+      Advanced Aggregation
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#advanced-query-operations" class="md-nav__link">
+    <span class="md-ellipsis">
+      Advanced Query Operations
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Advanced Query Operations">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#distinct-results" class="md-nav__link">
+    <span class="md-ellipsis">
+      Distinct Results
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#grouping-results" class="md-nav__link">
+    <span class="md-ellipsis">
+      Grouping Results
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#using-only-specific-fields" class="md-nav__link">
+    <span class="md-ellipsis">
+      Using Only Specific Fields
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#deferring-fields" class="md-nav__link">
+    <span class="md-ellipsis">
+      Deferring Fields
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#using-specific-indexes" class="md-nav__link">
+    <span class="md-ellipsis">
+      Using Specific Indexes
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#locking-records" class="md-nav__link">
+    <span class="md-ellipsis">
+      Locking Records
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#query-timeout" class="md-nav__link">
+    <span class="md-ellipsis">
+      Query Timeout
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#raw-sql-queries" class="md-nav__link">
+    <span class="md-ellipsis">
+      Raw SQL Queries
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Raw SQL Queries">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#executing-raw-queries" class="md-nav__link">
+    <span class="md-ellipsis">
+      Executing Raw Queries
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#async-iteration" class="md-nav__link">
+    <span class="md-ellipsis">
+      Async Iteration
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#mapping-results-to-models" class="md-nav__link">
+    <span class="md-ellipsis">
+      Mapping Results to Models
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#query-optimization" class="md-nav__link">
+    <span class="md-ellipsis">
+      Query Optimization
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Query Optimization">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#select-related-join" class="md-nav__link">
+    <span class="md-ellipsis">
+      Select Related (JOIN)
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#prefetch-related-separate-queries" class="md-nav__link">
+    <span class="md-ellipsis">
+      Prefetch Related (Separate Queries)
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#combining-both-techniques" class="md-nav__link">
+    <span class="md-ellipsis">
+      Combining Both Techniques
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#common-query-patterns" class="md-nav__link">
+    <span class="md-ellipsis">
+      Common Query Patterns
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Common Query Patterns">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#getting-the-earliestlatest-records" class="md-nav__link">
+    <span class="md-ellipsis">
+      Getting the Earliest/Latest Records
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#in-bulk-operations" class="md-nav__link">
+    <span class="md-ellipsis">
+      In Bulk Operations
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#updating-multiple-records" class="md-nav__link">
+    <span class="md-ellipsis">
+      Updating Multiple Records
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#deleting-multiple-records" class="md-nav__link">
+    <span class="md-ellipsis">
+      Deleting Multiple Records
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#performance-considerations" class="md-nav__link">
+    <span class="md-ellipsis">
+      Performance Considerations
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Performance Considerations">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#avoiding-n1-query-problem" class="md-nav__link">
+    <span class="md-ellipsis">
+      Avoiding N+1 Query Problem
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#using-values-and-values-list" class="md-nav__link">
+    <span class="md-ellipsis">
+      Using Values and Values List
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#batch-processing" class="md-nav__link">
+    <span class="md-ellipsis">
+      Batch Processing
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#complete-examples" class="md-nav__link">
+    <span class="md-ellipsis">
+      Complete Examples
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Complete Examples">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#book-search-example" class="md-nav__link">
+    <span class="md-ellipsis">
+      Book Search Example
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#dashboard-statistics-example" class="md-nav__link">
+    <span class="md-ellipsis">
+      Dashboard Statistics Example
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#troubleshooting-common-issues" class="md-nav__link">
+    <span class="md-ellipsis">
+      Troubleshooting Common Issues
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Troubleshooting Common Issues">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#empty-queryset" class="md-nav__link">
+    <span class="md-ellipsis">
+      Empty QuerySet
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#multipleobjectsreturned" class="md-nav__link">
+    <span class="md-ellipsis">
+      MultipleObjectsReturned
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#fielddoesnotexist" class="md-nav__link">
+    <span class="md-ellipsis">
+      FieldDoesNotExist
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#performance-problems" class="md-nav__link">
+    <span class="md-ellipsis">
+      Performance Problems
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#best-practices" class="md-nav__link">
+    <span class="md-ellipsis">
+      Best Practices
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Best Practices">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#use-asynchronous-pattern-correctly" class="md-nav__link">
+    <span class="md-ellipsis">
+      Use Asynchronous Pattern Correctly
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#chain-queries-for-readability" class="md-nav__link">
+    <span class="md-ellipsis">
+      Chain Queries for Readability
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#use-transactions-for-related-operations" class="md-nav__link">
+    <span class="md-ellipsis">
+      Use Transactions for Related Operations
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+<h1 id="querying-data-with-ormax">Querying Data with Ormax<a class="headerlink" href="#querying-data-with-ormax" title="Permanent link">&para;</a></h1>
+<p>Ormax provides a powerful, chainable QuerySet API for building database queries. This guide will show you how to effectively query your data using Ormax's intuitive syntax.</p>
+<h2 id="understanding-queryset">Understanding QuerySet<a class="headerlink" href="#understanding-queryset" title="Permanent link">&para;</a></h2>
+<p>A <code>QuerySet</code> represents a collection of objects from your database. It has two key characteristics:</p>
+<ol>
+<li><strong>Lazy evaluation</strong>: Queries aren't executed until you actually need the data</li>
+<li><strong>Chainable</strong>: You can keep adding filters and operations to refine your query</li>
+</ol>
+<div class="highlight"><pre><span></span><code><span class="c1"># This doesn&#39;t hit the database yet</span>
+<span class="n">books</span> <span class="o">=</span> <span class="n">Book</span><span class="o">.</span><span class="n">objects</span><span class="p">()</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">pages__gt</span><span class="o">=</span><span class="mi">300</span><span class="p">)</span><span class="o">.</span><span class="n">order_by</span><span class="p">(</span><span class="s2">&quot;-published_date&quot;</span><span class="p">)</span>
+
+<span class="c1"># This executes the query</span>
+<span class="k">await</span> <span class="n">books</span><span class="o">.</span><span class="n">all</span><span class="p">()</span>
+</code></pre></div>
+<h2 id="basic-query-operations">Basic Query Operations<a class="headerlink" href="#basic-query-operations" title="Permanent link">&para;</a></h2>
+<h3 id="retrieving-all-objects">Retrieving All Objects<a class="headerlink" href="#retrieving-all-objects" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><span class="c1"># Get all books</span>
+<span class="n">all_books</span> <span class="o">=</span> <span class="k">await</span> <span class="n">Book</span><span class="o">.</span><span class="n">objects</span><span class="p">()</span><span class="o">.</span><span class="n">all</span><span class="p">()</span>
+
+<span class="c1"># Get the first book</span>
+<span class="n">first_book</span> <span class="o">=</span> <span class="k">await</span> <span class="n">Book</span><span class="o">.</span><span class="n">objects</span><span class="p">()</span><span class="o">.</span><span class="n">first</span><span class="p">()</span>
+
+<span class="c1"># Get the last book (by primary key)</span>
+<span class="n">last_book</span> <span class="o">=</span> <span class="k">await</span> <span class="n">Book</span><span class="o">.</span><span class="n">objects</span><span class="p">()</span><span class="o">.</span><span class="n">last</span><span class="p">()</span>
+</code></pre></div>
+<h3 id="getting-a-single-object">Getting a Single Object<a class="headerlink" href="#getting-a-single-object" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><span class="c1"># Get a book by primary key</span>
+<span class="n">book</span> <span class="o">=</span> <span class="k">await</span> <span class="n">Book</span><span class="o">.</span><span class="n">objects</span><span class="p">()</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+
+<span class="c1"># Get by other fields</span>
+<span class="n">author</span> <span class="o">=</span> <span class="k">await</span> <span class="n">Author</span><span class="o">.</span><span class="n">objects</span><span class="p">()</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;احمد محمودی&quot;</span><span class="p">)</span>
+
+<span class="c1"># Using get() with filters</span>
+<span class="n">book</span> <span class="o">=</span> <span class="k">await</span> <span class="n">Book</span><span class="o">.</span><span class="n">objects</span><span class="p">()</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">title</span><span class="o">=</span><span class="s2">&quot;شیر و خورشید&quot;</span><span class="p">,</span> <span class="n">pages</span><span class="o">=</span><span class="mi">350</span><span class="p">)</span>
+</code></pre></div>
+<blockquote>
+<p><strong>Note</strong>: <code>get()</code> will raise <code>DoesNotExist</code> if no object is found, and <code>DatabaseError</code> if multiple objects match.</p>
+</blockquote>
+<h3 id="filtering-results">Filtering Results<a class="headerlink" href="#filtering-results" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><span class="c1"># Exact match</span>
+<span class="n">books</span> <span class="o">=</span> <span class="k">await</span> <span class="n">Book</span><span class="o">.</span><span class="n">objects</span><span class="p">()</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">title</span><span class="o">=</span><span class="s2">&quot;شیر و خورشید&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">all</span><span class="p">()</span>
+
+<span class="c1"># Multiple filters (AND condition)</span>
+<span class="n">books</span> <span class="o">=</span> <span class="k">await</span> <span class="n">Book</span><span class="o">.</span><span class="n">objects</span><span class="p">()</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span>
+    <span class="n">title</span><span class="o">=</span><span class="s2">&quot;شیر و خورشید&quot;</span><span class="p">,</span> 
+    <span class="n">pages</span><span class="o">=</span><span class="mi">350</span>
+<span class="p">)</span><span class="o">.</span><span class="n">all</span><span class="p">()</span>
+
+<span class="c1"># Chained filters</span>
+<span class="n">books</span> <span class="o">=</span> <span class="k">await</span> <span class="n">Book</span><span class="o">.</span><span class="n">objects</span><span class="p">()</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">pages__gt</span><span class="o">=</span><span class="mi">300</span><span class="p">)</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">title__contains</span><span class="o">=</span><span class="s2">&quot;sun&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">all</span><span class="p">()</span>
+</code></pre></div>
+<h3 id="excluding-results">Excluding Results<a class="headerlink" href="#excluding-results" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><span class="c1"># Exclude books with less than 200 pages</span>
+<span class="n">books</span> <span class="o">=</span> <span class="k">await</span> <span class="n">Book</span><span class="o">.</span><span class="n">objects</span><span class="p">()</span><span class="o">.</span><span class="n">exclude</span><span class="p">(</span><span class="n">pages__lt</span><span class="o">=</span><span class="mi">200</span><span class="p">)</span><span class="o">.</span><span class="n">all</span><span class="p">()</span>
+
+<span class="c1"># Combine filter and exclude</span>
+<span class="n">books</span> <span class="o">=</span> <span class="k">await</span> <span class="n">Book</span><span class="o">.</span><span class="n">objects</span><span class="p">()</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">pages__gt</span><span class="o">=</span><span class="mi">100</span><span class="p">)</span><span class="o">.</span><span class="n">exclude</span><span class="p">(</span><span class="n">title__startswith</span><span class="o">=</span><span class="s2">&quot;A&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">all</span><span class="p">()</span>
+</code></pre></div>
+<h2 id="field-lookups">Field Lookups<a class="headerlink" href="#field-lookups" title="Permanent link">&para;</a></h2>
+<p>Ormax supports various field lookups to create more specific queries:</p>
+<h3 id="basic-lookups">Basic Lookups<a class="headerlink" href="#basic-lookups" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Lookup</th>
+<th>Description</th>
+<th>Example</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>__exact</code></td>
+<td>Exact match (default)</td>
+<td><code>title__exact="شیر و خورشید"</code></td>
+</tr>
+<tr>
+<td><code>__iexact</code></td>
+<td>Case-insensitive exact match</td>
+<td><code>title__iexact="shir va khorshid"</code></td>
+</tr>
+<tr>
+<td><code>__contains</code></td>
+<td>Contains the value</td>
+<td><code>title__contains="sun"</code></td>
+</tr>
+<tr>
+<td><code>__icontains</code></td>
+<td>Case-insensitive contains</td>
+<td><code>title__icontains="sun"</code></td>
+</tr>
+<tr>
+<td><code>__gt</code></td>
+<td>Greater than</td>
+<td><code>pages__gt=300</code></td>
+</tr>
+<tr>
+<td><code>__gte</code></td>
+<td>Greater than or equal to</td>
+<td><code>pages__gte=300</code></td>
+</tr>
+<tr>
+<td><code>__lt</code></td>
+<td>Less than</td>
+<td><code>pages__lt=100</code></td>
+</tr>
+<tr>
+<td><code>__lte</code></td>
+<td>Less than or equal to</td>
+<td><code>pages__lte=100</code></td>
+</tr>
+<tr>
+<td><code>__in</code></td>
+<td>In a list of values</td>
+<td><code>pages__in=[100, 200, 300]</code></td>
+</tr>
+<tr>
+<td><code>__isnull</code></td>
+<td>Is null</td>
+<td><code>published_date__isnull=True</code></td>
+</tr>
+</tbody>
+</table>
+<div class="highlight"><pre><span></span><code><span class="c1"># Books with 100-300 pages</span>
+<span class="n">books</span> <span class="o">=</span> <span class="k">await</span> <span class="n">Book</span><span class="o">.</span><span class="n">objects</span><span class="p">()</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span>
+    <span class="n">pages__gte</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span> 
+    <span class="n">pages__lte</span><span class="o">=</span><span class="mi">300</span>
+<span class="p">)</span><span class="o">.</span><span class="n">all</span><span class="p">()</span>
+
+<span class="c1"># Books with specific page counts</span>
+<span class="n">books</span> <span class="o">=</span> <span class="k">await</span> <span class="n">Book</span><span class="o">.</span><span class="n">objects</span><span class="p">()</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">pages__in</span><span class="o">=</span><span class="p">[</span><span class="mi">100</span><span class="p">,</span> <span class="mi">200</span><span class="p">,</span> <span class="mi">300</span><span class="p">])</span><span class="o">.</span><span class="n">all</span><span class="p">()</span>
+
+<span class="c1"># Books with titles containing &quot;sun&quot; (case-insensitive)</span>
+<span class="n">books</span> <span class="o">=</span> <span class="k">await</span> <span class="n">Book</span><span class="o">.</span><span class="n">objects</span><span class="p">()</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">title__icontains</span><span class="o">=</span><span class="s2">&quot;sun&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">all</span><span class="p">()</span>
+</code></pre></div>
+<h3 id="date-and-time-lookups">Date and Time Lookups<a class="headerlink" href="#date-and-time-lookups" title="Permanent link">&para;</a></h3>
+<p>For DateTimeField and DateField:</p>
+<table>
+<thead>
+<tr>
+<th>Lookup</th>
+<th>Description</th>
+<th>Example</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>__year</code></td>
+<td>Match year</td>
+<td><code>published_date__year=2020</code></td>
+</tr>
+<tr>
+<td><code>__month</code></td>
+<td>Match month</td>
+<td><code>published_date__month=5</code></td>
+</tr>
+<tr>
+<td><code>__day</code></td>
+<td>Match day</td>
+<td><code>published_date__day=15</code></td>
+</tr>
+<tr>
+<td><code>__week_day</code></td>
+<td>Match weekday (1=Sunday)</td>
+<td><code>published_date__week_day=1</code></td>
+</tr>
+<tr>
+<td><code>__hour</code></td>
+<td>Match hour</td>
+<td><code>created_at__hour=12</code></td>
+</tr>
+<tr>
+<td><code>__minute</code></td>
+<td>Match minute</td>
+<td><code>created_at__minute=30</code></td>
+</tr>
+<tr>
+<td><code>__second</code></td>
+<td>Match second</td>
+<td><code>created_at__second=45</code></td>
+</tr>
+</tbody>
+</table>
+<div class="highlight"><pre><span></span><code><span class="c1"># Books published in 2020</span>
+<span class="n">books</span> <span class="o">=</span> <span class="k">await</span> <span class="n">Book</span><span class="o">.</span><span class="n">objects</span><span class="p">()</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">published_date__year</span><span class="o">=</span><span class="mi">2020</span><span class="p">)</span><span class="o">.</span><span class="n">all</span><span class="p">()</span>
+
+<span class="c1"># Books published in May</span>
+<span class="n">books</span> <span class="o">=</span> <span class="k">await</span> <span class="n">Book</span><span class="o">.</span><span class="n">objects</span><span class="p">()</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">published_date__month</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span><span class="o">.</span><span class="n">all</span><span class="p">()</span>
+</code></pre></div>
+<h2 id="ordering-results">Ordering Results<a class="headerlink" href="#ordering-results" title="Permanent link">&para;</a></h2>
+<h3 id="basic-ordering">Basic Ordering<a class="headerlink" href="#basic-ordering" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><span class="c1"># Order by title (ascending)</span>
+<span class="n">books</span> <span class="o">=</span> <span class="k">await</span> <span class="n">Book</span><span class="o">.</span><span class="n">objects</span><span class="p">()</span><span class="o">.</span><span class="n">order_by</span><span class="p">(</span><span class="s2">&quot;title&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">all</span><span class="p">()</span>
+
+<span class="c1"># Order by pages descending</span>
+<span class="n">books</span> <span class="o">=</span> <span class="k">await</span> <span class="n">Book</span><span class="o">.</span><span class="n">objects</span><span class="p">()</span><span class="o">.</span><span class="n">order_by</span><span class="p">(</span><span class="s2">&quot;-pages&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">all</span><span class="p">()</span>
+
+<span class="c1"># Multiple ordering</span>
+<span class="n">books</span> <span class="o">=</span> <span class="k">await</span> <span class="n">Book</span><span class="o">.</span><span class="n">objects</span><span class="p">()</span><span class="o">.</span><span class="n">order_by</span><span class="p">(</span><span class="s2">&quot;-published_date&quot;</span><span class="p">,</span> <span class="s2">&quot;title&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">all</span><span class="p">()</span>
+</code></pre></div>
+<h3 id="using-expressions-in-ordering">Using Expressions in Ordering<a class="headerlink" href="#using-expressions-in-ordering" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><span class="c1"># Order by calculated field</span>
+<span class="n">books</span> <span class="o">=</span> <span class="k">await</span> <span class="n">Book</span><span class="o">.</span><span class="n">objects</span><span class="p">()</span><span class="o">.</span><span class="n">annotate</span><span class="p">(</span>
+    <span class="n">page_ratio</span><span class="o">=</span><span class="s2">&quot;pages / 10&quot;</span>
+<span class="p">)</span><span class="o">.</span><span class="n">order_by</span><span class="p">(</span><span class="s2">&quot;page_ratio&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">all</span><span class="p">()</span>
+</code></pre></div>
+<h2 id="limiting-and-pagination">Limiting and Pagination<a class="headerlink" href="#limiting-and-pagination" title="Permanent link">&para;</a></h2>
+<h3 id="limiting-results">Limiting Results<a class="headerlink" href="#limiting-results" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><span class="c1"># Get first 10 books</span>
+<span class="n">books</span> <span class="o">=</span> <span class="k">await</span> <span class="n">Book</span><span class="o">.</span><span class="n">objects</span><span class="p">()</span><span class="o">.</span><span class="n">limit</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span><span class="o">.</span><span class="n">all</span><span class="p">()</span>
+
+<span class="c1"># Get books 11-20 (for pagination)</span>
+<span class="n">books</span> <span class="o">=</span> <span class="k">await</span> <span class="n">Book</span><span class="o">.</span><span class="n">objects</span><span class="p">()</span><span class="o">.</span><span class="n">limit</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span><span class="o">.</span><span class="n">offset</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span><span class="o">.</span><span class="n">all</span><span class="p">()</span>
+</code></pre></div>
+<h3 id="pagination-helper">Pagination Helper<a class="headerlink" href="#pagination-helper" title="Permanent link">&para;</a></h3>
+<p>Ormax includes a utility function for pagination:</p>
+<div class="highlight"><pre><span></span><code><span class="kn">from</span> <span class="nn">ormax.utils</span> <span class="kn">import</span> <span class="n">paginate_list</span>
+
+<span class="c1"># Get page 2 with 10 items per page</span>
+<span class="n">books</span> <span class="o">=</span> <span class="k">await</span> <span class="n">Book</span><span class="o">.</span><span class="n">objects</span><span class="p">()</span><span class="o">.</span><span class="n">all</span><span class="p">()</span>
+<span class="n">paginated_books</span><span class="p">,</span> <span class="n">total_pages</span><span class="p">,</span> <span class="n">total_items</span> <span class="o">=</span> <span class="n">paginate_list</span><span class="p">(</span><span class="n">books</span><span class="p">,</span> <span class="n">page</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">per_page</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
+</code></pre></div>
+<h2 id="aggregation-and-statistics">Aggregation and Statistics<a class="headerlink" href="#aggregation-and-statistics" title="Permanent link">&para;</a></h2>
+<h3 id="counting-records">Counting Records<a class="headerlink" href="#counting-records" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><span class="c1"># Count all books</span>
+<span class="n">total</span> <span class="o">=</span> <span class="k">await</span> <span class="n">Book</span><span class="o">.</span><span class="n">objects</span><span class="p">()</span><span class="o">.</span><span class="n">count</span><span class="p">()</span>
+
+<span class="c1"># Count filtered books</span>
+<span class="n">long_books</span> <span class="o">=</span> <span class="k">await</span> <span class="n">Book</span><span class="o">.</span><span class="n">objects</span><span class="p">()</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">pages__gt</span><span class="o">=</span><span class="mi">300</span><span class="p">)</span><span class="o">.</span><span class="n">count</span><span class="p">()</span>
+</code></pre></div>
+<h3 id="checking-existence">Checking Existence<a class="headerlink" href="#checking-existence" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><span class="c1"># Check if any books exist</span>
+<span class="n">exists</span> <span class="o">=</span> <span class="k">await</span> <span class="n">Book</span><span class="o">.</span><span class="n">objects</span><span class="p">()</span><span class="o">.</span><span class="n">exists</span><span class="p">()</span>
+
+<span class="c1"># Check if specific book exists</span>
+<span class="n">exists</span> <span class="o">=</span> <span class="k">await</span> <span class="n">Book</span><span class="o">.</span><span class="n">objects</span><span class="p">()</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">title</span><span class="o">=</span><span class="s2">&quot;شیر و خورشید&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">exists</span><span class="p">()</span>
+</code></pre></div>
+<h3 id="advanced-aggregation">Advanced Aggregation<a class="headerlink" href="#advanced-aggregation" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><span class="kn">from</span> <span class="nn">ormax.query</span> <span class="kn">import</span> <span class="n">Aggregation</span>
+
+<span class="c1"># Get average number of pages</span>
+<span class="n">avg_pages</span> <span class="o">=</span> <span class="k">await</span> <span class="n">Aggregation</span><span class="o">.</span><span class="n">avg</span><span class="p">(</span><span class="n">Book</span><span class="o">.</span><span class="n">objects</span><span class="p">(),</span> <span class="s2">&quot;pages&quot;</span><span class="p">)</span>
+
+<span class="c1"># Get total pages</span>
+<span class="n">total_pages</span> <span class="o">=</span> <span class="k">await</span> <span class="n">Aggregation</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">Book</span><span class="o">.</span><span class="n">objects</span><span class="p">(),</span> <span class="s2">&quot;pages&quot;</span><span class="p">)</span>
+
+<span class="c1"># Get minimum/maximum</span>
+<span class="n">min_pages</span> <span class="o">=</span> <span class="k">await</span> <span class="n">Aggregation</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="n">Book</span><span class="o">.</span><span class="n">objects</span><span class="p">(),</span> <span class="s2">&quot;pages&quot;</span><span class="p">)</span>
+<span class="n">max_pages</span> <span class="o">=</span> <span class="k">await</span> <span class="n">Aggregation</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">Book</span><span class="o">.</span><span class="n">objects</span><span class="p">(),</span> <span class="s2">&quot;pages&quot;</span><span class="p">)</span>
+</code></pre></div>
+<h2 id="advanced-query-operations">Advanced Query Operations<a class="headerlink" href="#advanced-query-operations" title="Permanent link">&para;</a></h2>
+<h3 id="distinct-results">Distinct Results<a class="headerlink" href="#distinct-results" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><span class="c1"># Get distinct authors</span>
+<span class="n">authors</span> <span class="o">=</span> <span class="k">await</span> <span class="n">Book</span><span class="o">.</span><span class="n">objects</span><span class="p">()</span><span class="o">.</span><span class="n">distinct</span><span class="p">()</span><span class="o">.</span><span class="n">values_list</span><span class="p">(</span><span class="s2">&quot;author&quot;</span><span class="p">,</span> <span class="n">flat</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</code></pre></div>
+<h3 id="grouping-results">Grouping Results<a class="headerlink" href="#grouping-results" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><span class="c1"># Group by author and count books</span>
+<span class="n">author_counts</span> <span class="o">=</span> <span class="k">await</span> <span class="n">Book</span><span class="o">.</span><span class="n">objects</span><span class="p">()</span><span class="o">.</span><span class="n">values</span><span class="p">(</span><span class="s2">&quot;author&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">annotate</span><span class="p">(</span><span class="n">count</span><span class="o">=</span><span class="s2">&quot;COUNT(*)&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">all</span><span class="p">()</span>
+
+<span class="c1"># Group by publication year</span>
+<span class="n">year_counts</span> <span class="o">=</span> <span class="k">await</span> <span class="n">Book</span><span class="o">.</span><span class="n">objects</span><span class="p">()</span><span class="o">.</span><span class="n">annotate</span><span class="p">(</span>
+    <span class="n">year</span><span class="o">=</span><span class="s2">&quot;EXTRACT(YEAR FROM published_date)&quot;</span>
+<span class="p">)</span><span class="o">.</span><span class="n">values</span><span class="p">(</span><span class="s2">&quot;year&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">annotate</span><span class="p">(</span><span class="n">count</span><span class="o">=</span><span class="s2">&quot;COUNT(*)&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">all</span><span class="p">()</span>
+</code></pre></div>
+<h3 id="using-only-specific-fields">Using Only Specific Fields<a class="headerlink" href="#using-only-specific-fields" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><span class="c1"># Load only title and pages</span>
+<span class="n">books</span> <span class="o">=</span> <span class="k">await</span> <span class="n">Book</span><span class="o">.</span><span class="n">objects</span><span class="p">()</span><span class="o">.</span><span class="n">only</span><span class="p">(</span><span class="s2">&quot;title&quot;</span><span class="p">,</span> <span class="s2">&quot;pages&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">all</span><span class="p">()</span>
+
+<span class="c1"># Accessing other fields will return None</span>
+<span class="k">for</span> <span class="n">book</span> <span class="ow">in</span> <span class="n">books</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">book</span><span class="o">.</span><span class="n">title</span><span class="p">)</span>  <span class="c1"># Works</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">book</span><span class="o">.</span><span class="n">author</span><span class="p">)</span>  <span class="c1"># Returns None</span>
+</code></pre></div>
+<h3 id="deferring-fields">Deferring Fields<a class="headerlink" href="#deferring-fields" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><span class="c1"># Load all fields except bio</span>
+<span class="n">authors</span> <span class="o">=</span> <span class="k">await</span> <span class="n">Author</span><span class="o">.</span><span class="n">objects</span><span class="p">()</span><span class="o">.</span><span class="n">defer</span><span class="p">(</span><span class="s2">&quot;bio&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">all</span><span class="p">()</span>
+
+<span class="c1"># Accessing bio will trigger an additional query</span>
+<span class="k">for</span> <span class="n">author</span> <span class="ow">in</span> <span class="n">authors</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">author</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>  <span class="c1"># Works</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">author</span><span class="o">.</span><span class="n">bio</span><span class="p">)</span>   <span class="c1"># Triggers additional query</span>
+</code></pre></div>
+<h3 id="using-specific-indexes">Using Specific Indexes<a class="headerlink" href="#using-specific-indexes" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><span class="c1"># Force using a specific index</span>
+<span class="n">books</span> <span class="o">=</span> <span class="k">await</span> <span class="n">Book</span><span class="o">.</span><span class="n">objects</span><span class="p">()</span><span class="o">.</span><span class="n">using_index</span><span class="p">(</span><span class="s2">&quot;title_idx&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">title__startswith</span><span class="o">=</span><span class="s2">&quot;A&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">all</span><span class="p">()</span>
+</code></pre></div>
+<h3 id="locking-records">Locking Records<a class="headerlink" href="#locking-records" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><span class="c1"># Lock records for update</span>
+<span class="n">book</span> <span class="o">=</span> <span class="k">await</span> <span class="n">Book</span><span class="o">.</span><span class="n">objects</span><span class="p">()</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">for_update</span><span class="p">()</span><span class="o">.</span><span class="n">first</span><span class="p">()</span>
+<span class="c1"># This record is now locked until the transaction ends</span>
+<span class="n">book</span><span class="o">.</span><span class="n">pages</span> <span class="o">+=</span> <span class="mi">1</span>
+<span class="k">await</span> <span class="n">book</span><span class="o">.</span><span class="n">save</span><span class="p">()</span>
+</code></pre></div>
+<h3 id="query-timeout">Query Timeout<a class="headerlink" href="#query-timeout" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><span class="c1"># Set a timeout for the query</span>
+<span class="n">books</span> <span class="o">=</span> <span class="k">await</span> <span class="n">Book</span><span class="o">.</span><span class="n">objects</span><span class="p">()</span><span class="o">.</span><span class="n">timeout</span><span class="p">(</span><span class="mi">5</span><span class="p">)</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">pages__gt</span><span class="o">=</span><span class="mi">500</span><span class="p">)</span><span class="o">.</span><span class="n">all</span><span class="p">()</span>
+<span class="c1"># Will raise TimeoutError if query takes more than 5 seconds</span>
+</code></pre></div>
+<h2 id="raw-sql-queries">Raw SQL Queries<a class="headerlink" href="#raw-sql-queries" title="Permanent link">&para;</a></h2>
+<p>For complex queries that can't be expressed with the QuerySet API:</p>
+<h3 id="executing-raw-queries">Executing Raw Queries<a class="headerlink" href="#executing-raw-queries" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><span class="c1"># Execute raw SQL</span>
+<span class="n">results</span> <span class="o">=</span> <span class="k">await</span> <span class="n">Book</span><span class="o">.</span><span class="n">objects</span><span class="p">()</span><span class="o">.</span><span class="n">raw</span><span class="p">(</span>
+    <span class="s2">&quot;SELECT * FROM book WHERE pages &gt; ?&quot;</span><span class="p">,</span> 
+    <span class="p">(</span><span class="mi">300</span><span class="p">,)</span>
+<span class="p">)</span><span class="o">.</span><span class="n">execute</span><span class="p">()</span>
+
+<span class="c1"># Get first result</span>
+<span class="n">result</span> <span class="o">=</span> <span class="k">await</span> <span class="n">Book</span><span class="o">.</span><span class="n">objects</span><span class="p">()</span><span class="o">.</span><span class="n">raw</span><span class="p">(</span>
+    <span class="s2">&quot;SELECT * FROM book WHERE id = ?&quot;</span><span class="p">,</span> 
+    <span class="p">(</span><span class="mi">1</span><span class="p">,)</span>
+<span class="p">)</span><span class="o">.</span><span class="n">fetch_one</span><span class="p">()</span>
+</code></pre></div>
+<h3 id="async-iteration">Async Iteration<a class="headerlink" href="#async-iteration" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><span class="c1"># Async iteration over results</span>
+<span class="k">async</span> <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">Book</span><span class="o">.</span><span class="n">objects</span><span class="p">()</span><span class="o">.</span><span class="n">raw</span><span class="p">(</span><span class="s2">&quot;SELECT * FROM book&quot;</span><span class="p">):</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">row</span><span class="p">)</span>
+</code></pre></div>
+<h3 id="mapping-results-to-models">Mapping Results to Models<a class="headerlink" href="#mapping-results-to-models" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><span class="c1"># Map raw results to model instances</span>
+<span class="n">books</span> <span class="o">=</span> <span class="k">await</span> <span class="n">Book</span><span class="o">.</span><span class="n">objects</span><span class="p">()</span><span class="o">.</span><span class="n">raw</span><span class="p">(</span>
+    <span class="s2">&quot;SELECT * FROM book WHERE pages &gt; ?&quot;</span><span class="p">,</span>
+    <span class="p">(</span><span class="mi">300</span><span class="p">,)</span>
+<span class="p">)</span><span class="o">.</span><span class="n">map_to_model</span><span class="p">()</span>
+</code></pre></div>
+<h2 id="query-optimization">Query Optimization<a class="headerlink" href="#query-optimization" title="Permanent link">&para;</a></h2>
+<h3 id="select-related-join">Select Related (JOIN)<a class="headerlink" href="#select-related-join" title="Permanent link">&para;</a></h3>
+<p>Use <code>select_related</code> to follow foreign key relationships in a single query:</p>
+<div class="highlight"><pre><span></span><code><span class="c1"># Get books with authors in one query</span>
+<span class="n">books</span> <span class="o">=</span> <span class="k">await</span> <span class="n">Book</span><span class="o">.</span><span class="n">objects</span><span class="p">()</span><span class="o">.</span><span class="n">select_related</span><span class="p">(</span><span class="s2">&quot;author&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">all</span><span class="p">()</span>
+
+<span class="c1"># Now accessing book.author won&#39;t trigger additional queries</span>
+<span class="k">for</span> <span class="n">book</span> <span class="ow">in</span> <span class="n">books</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">book</span><span class="o">.</span><span class="n">author</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>  <span class="c1"># No additional query</span>
+</code></pre></div>
+<h3 id="prefetch-related-separate-queries">Prefetch Related (Separate Queries)<a class="headerlink" href="#prefetch-related-separate-queries" title="Permanent link">&para;</a></h3>
+<p>Use <code>prefetch_related</code> to fetch related objects in separate queries:</p>
+<div class="highlight"><pre><span></span><code><span class="c1"># Get authors with their books</span>
+<span class="n">authors</span> <span class="o">=</span> <span class="k">await</span> <span class="n">Author</span><span class="o">.</span><span class="n">objects</span><span class="p">()</span><span class="o">.</span><span class="n">prefetch_related</span><span class="p">(</span><span class="s2">&quot;books&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">all</span><span class="p">()</span>
+
+<span class="c1"># Now accessing author.books.all() won&#39;t trigger additional queries per author</span>
+<span class="k">for</span> <span class="n">author</span> <span class="ow">in</span> <span class="n">authors</span><span class="p">:</span>
+    <span class="k">for</span> <span class="n">book</span> <span class="ow">in</span> <span class="n">author</span><span class="o">.</span><span class="n">books</span><span class="o">.</span><span class="n">all</span><span class="p">():</span>  <span class="c1"># No additional queries</span>
+        <span class="nb">print</span><span class="p">(</span><span class="n">book</span><span class="o">.</span><span class="n">title</span><span class="p">)</span>
+</code></pre></div>
+<h3 id="combining-both-techniques">Combining Both Techniques<a class="headerlink" href="#combining-both-techniques" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><span class="c1"># Complex query with both select_related and prefetch_related</span>
+<span class="n">books</span> <span class="o">=</span> <span class="k">await</span> <span class="n">Book</span><span class="o">.</span><span class="n">objects</span><span class="p">()</span><span class="o">.</span><span class="n">select_related</span><span class="p">(</span><span class="s2">&quot;author&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">prefetch_related</span><span class="p">(</span><span class="s2">&quot;reviews&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">all</span><span class="p">()</span>
+</code></pre></div>
+<h2 id="common-query-patterns">Common Query Patterns<a class="headerlink" href="#common-query-patterns" title="Permanent link">&para;</a></h2>
+<h3 id="getting-the-earliestlatest-records">Getting the Earliest/Latest Records<a class="headerlink" href="#getting-the-earliestlatest-records" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><span class="c1"># Get earliest book (by primary key or created_at)</span>
+<span class="n">earliest</span> <span class="o">=</span> <span class="k">await</span> <span class="n">Book</span><span class="o">.</span><span class="n">objects</span><span class="p">()</span><span class="o">.</span><span class="n">earliest</span><span class="p">()</span>
+
+<span class="c1"># Get latest book</span>
+<span class="n">latest</span> <span class="o">=</span> <span class="k">await</span> <span class="n">Book</span><span class="o">.</span><span class="n">objects</span><span class="p">()</span><span class="o">.</span><span class="n">latest</span><span class="p">()</span>
+
+<span class="c1"># Specify field to use</span>
+<span class="n">latest</span> <span class="o">=</span> <span class="k">await</span> <span class="n">Book</span><span class="o">.</span><span class="n">objects</span><span class="p">()</span><span class="o">.</span><span class="n">latest</span><span class="p">(</span><span class="s2">&quot;published_date&quot;</span><span class="p">)</span>
+</code></pre></div>
+<h3 id="in-bulk-operations">In Bulk Operations<a class="headerlink" href="#in-bulk-operations" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><span class="c1"># Get multiple objects by ID</span>
+<span class="n">books</span> <span class="o">=</span> <span class="k">await</span> <span class="n">Book</span><span class="o">.</span><span class="n">objects</span><span class="p">()</span><span class="o">.</span><span class="n">in_bulk</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">])</span>
+
+<span class="c1"># Get by custom field</span>
+<span class="n">authors</span> <span class="o">=</span> <span class="k">await</span> <span class="n">Author</span><span class="o">.</span><span class="n">objects</span><span class="p">()</span><span class="o">.</span><span class="n">in_bulk</span><span class="p">(</span>
+    <span class="p">[</span><span class="s2">&quot;ahmad&quot;</span><span class="p">,</span> <span class="s2">&quot;saman&quot;</span><span class="p">],</span> 
+    <span class="n">field_name</span><span class="o">=</span><span class="s2">&quot;username&quot;</span>
+<span class="p">)</span>
+</code></pre></div>
+<h3 id="updating-multiple-records">Updating Multiple Records<a class="headerlink" href="#updating-multiple-records" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><span class="c1"># Update all books with less than 200 pages</span>
+<span class="k">await</span> <span class="n">Book</span><span class="o">.</span><span class="n">objects</span><span class="p">()</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">pages__lt</span><span class="o">=</span><span class="mi">200</span><span class="p">)</span><span class="o">.</span><span class="n">update</span><span class="p">(</span>
+    <span class="n">pages</span><span class="o">=</span><span class="mi">200</span>
+<span class="p">)</span>
+</code></pre></div>
+<h3 id="deleting-multiple-records">Deleting Multiple Records<a class="headerlink" href="#deleting-multiple-records" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><span class="c1"># Delete all books with less than 100 pages</span>
+<span class="k">await</span> <span class="n">Book</span><span class="o">.</span><span class="n">objects</span><span class="p">()</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">pages__lt</span><span class="o">=</span><span class="mi">100</span><span class="p">)</span><span class="o">.</span><span class="n">delete</span><span class="p">()</span>
+</code></pre></div>
+<h2 id="performance-considerations">Performance Considerations<a class="headerlink" href="#performance-considerations" title="Permanent link">&para;</a></h2>
+<h3 id="avoiding-n1-query-problem">Avoiding N+1 Query Problem<a class="headerlink" href="#avoiding-n1-query-problem" title="Permanent link">&para;</a></h3>
+<p>The N+1 query problem occurs when you trigger a new query for each item in a loop:</p>
+<div class="highlight"><pre><span></span><code><span class="c1"># BAD: N+1 queries</span>
+<span class="n">books</span> <span class="o">=</span> <span class="k">await</span> <span class="n">Book</span><span class="o">.</span><span class="n">objects</span><span class="p">()</span><span class="o">.</span><span class="n">all</span><span class="p">()</span>
+<span class="k">for</span> <span class="n">book</span> <span class="ow">in</span> <span class="n">books</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">book</span><span class="o">.</span><span class="n">author</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>  <span class="c1"># Triggers a query for each book</span>
+
+<span class="c1"># GOOD: Use select_related</span>
+<span class="n">books</span> <span class="o">=</span> <span class="k">await</span> <span class="n">Book</span><span class="o">.</span><span class="n">objects</span><span class="p">()</span><span class="o">.</span><span class="n">select_related</span><span class="p">(</span><span class="s2">&quot;author&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">all</span><span class="p">()</span>
+<span class="k">for</span> <span class="n">book</span> <span class="ow">in</span> <span class="n">books</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">book</span><span class="o">.</span><span class="n">author</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>  <span class="c1"># No additional queries</span>
+</code></pre></div>
+<h3 id="using-values-and-values-list">Using Values and Values List<a class="headerlink" href="#using-values-and-values-list" title="Permanent link">&para;</a></h3>
+<p>When you only need specific fields, use <code>values()</code> or <code>values_list()</code>:</p>
+<div class="highlight"><pre><span></span><code><span class="c1"># Get only titles and pages as dictionaries</span>
+<span class="n">book_data</span> <span class="o">=</span> <span class="k">await</span> <span class="n">Book</span><span class="o">.</span><span class="n">objects</span><span class="p">()</span><span class="o">.</span><span class="n">values</span><span class="p">(</span><span class="s2">&quot;title&quot;</span><span class="p">,</span> <span class="s2">&quot;pages&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">all</span><span class="p">()</span>
+
+<span class="c1"># Get only titles as a flat list</span>
+<span class="n">titles</span> <span class="o">=</span> <span class="k">await</span> <span class="n">Book</span><span class="o">.</span><span class="n">objects</span><span class="p">()</span><span class="o">.</span><span class="n">values_list</span><span class="p">(</span><span class="s2">&quot;title&quot;</span><span class="p">,</span> <span class="n">flat</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span><span class="o">.</span><span class="n">all</span><span class="p">()</span>
+</code></pre></div>
+<h3 id="batch-processing">Batch Processing<a class="headerlink" href="#batch-processing" title="Permanent link">&para;</a></h3>
+<p>For large result sets, process in batches:</p>
+<div class="highlight"><pre><span></span><code><span class="k">async</span> <span class="k">def</span> <span class="nf">process_batch</span><span class="p">(</span><span class="n">batch</span><span class="p">):</span>
+    <span class="k">for</span> <span class="n">book</span> <span class="ow">in</span> <span class="n">batch</span><span class="p">:</span>
+        <span class="c1"># Process book</span>
+        <span class="k">await</span> <span class="n">book</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">pages</span><span class="o">=</span><span class="n">book</span><span class="o">.</span><span class="n">pages</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+
+<span class="c1"># Process books in batches of 100</span>
+<span class="k">async</span> <span class="k">for</span> <span class="n">batch</span> <span class="ow">in</span> <span class="n">Book</span><span class="o">.</span><span class="n">objects</span><span class="p">()</span><span class="o">.</span><span class="n">batch</span><span class="p">(</span><span class="mi">100</span><span class="p">):</span>
+    <span class="k">await</span> <span class="n">process_batch</span><span class="p">(</span><span class="n">batch</span><span class="p">)</span>
+</code></pre></div>
+<h2 id="complete-examples">Complete Examples<a class="headerlink" href="#complete-examples" title="Permanent link">&para;</a></h2>
+<h3 id="book-search-example">Book Search Example<a class="headerlink" href="#book-search-example" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><span class="k">async</span> <span class="k">def</span> <span class="nf">search_books</span><span class="p">(</span>
+    <span class="n">title</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> 
+    <span class="n">min_pages</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> 
+    <span class="n">max_pages</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> 
+    <span class="n">author_name</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">page</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+    <span class="n">per_page</span><span class="o">=</span><span class="mi">10</span>
+<span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Search books with various filters&quot;&quot;&quot;</span>
+    <span class="n">qs</span> <span class="o">=</span> <span class="n">Book</span><span class="o">.</span><span class="n">objects</span><span class="p">()</span>
+
+    <span class="c1"># Apply filters</span>
+    <span class="k">if</span> <span class="n">title</span><span class="p">:</span>
+        <span class="n">qs</span> <span class="o">=</span> <span class="n">qs</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">title__icontains</span><span class="o">=</span><span class="n">title</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">min_pages</span><span class="p">:</span>
+        <span class="n">qs</span> <span class="o">=</span> <span class="n">qs</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">pages__gte</span><span class="o">=</span><span class="n">min_pages</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">max_pages</span><span class="p">:</span>
+        <span class="n">qs</span> <span class="o">=</span> <span class="n">qs</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">pages__lte</span><span class="o">=</span><span class="n">max_pages</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">author_name</span><span class="p">:</span>
+        <span class="n">qs</span> <span class="o">=</span> <span class="n">qs</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">author__name__icontains</span><span class="o">=</span><span class="n">author_name</span><span class="p">)</span>
+
+    <span class="c1"># Apply ordering</span>
+    <span class="n">qs</span> <span class="o">=</span> <span class="n">qs</span><span class="o">.</span><span class="n">order_by</span><span class="p">(</span><span class="s2">&quot;-published_date&quot;</span><span class="p">,</span> <span class="s2">&quot;title&quot;</span><span class="p">)</span>
+
+    <span class="c1"># Apply pagination</span>
+    <span class="n">total</span> <span class="o">=</span> <span class="k">await</span> <span class="n">qs</span><span class="o">.</span><span class="n">count</span><span class="p">()</span>
+    <span class="n">books</span> <span class="o">=</span> <span class="k">await</span> <span class="n">qs</span><span class="o">.</span><span class="n">limit</span><span class="p">(</span><span class="n">per_page</span><span class="p">)</span><span class="o">.</span><span class="n">offset</span><span class="p">((</span><span class="n">page</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span><span class="o">*</span><span class="n">per_page</span><span class="p">)</span><span class="o">.</span><span class="n">all</span><span class="p">()</span>
+
+    <span class="c1"># Get authors with prefetch_related to avoid N+1</span>
+    <span class="n">author_ids</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">book</span><span class="o">.</span><span class="n">author_id</span> <span class="k">for</span> <span class="n">book</span> <span class="ow">in</span> <span class="n">books</span><span class="p">))</span>
+    <span class="n">authors</span> <span class="o">=</span> <span class="k">await</span> <span class="n">Author</span><span class="o">.</span><span class="n">objects</span><span class="p">()</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">id__in</span><span class="o">=</span><span class="n">author_ids</span><span class="p">)</span><span class="o">.</span><span class="n">all</span><span class="p">()</span>
+    <span class="n">author_map</span> <span class="o">=</span> <span class="p">{</span><span class="n">author</span><span class="o">.</span><span class="n">id</span><span class="p">:</span> <span class="n">author</span> <span class="k">for</span> <span class="n">author</span> <span class="ow">in</span> <span class="n">authors</span><span class="p">}</span>
+
+    <span class="c1"># Add authors to books</span>
+    <span class="k">for</span> <span class="n">book</span> <span class="ow">in</span> <span class="n">books</span><span class="p">:</span>
+        <span class="n">book</span><span class="o">.</span><span class="n">author</span> <span class="o">=</span> <span class="n">author_map</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">book</span><span class="o">.</span><span class="n">author_id</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="p">{</span>
+        <span class="s2">&quot;books&quot;</span><span class="p">:</span> <span class="n">books</span><span class="p">,</span>
+        <span class="s2">&quot;total&quot;</span><span class="p">:</span> <span class="n">total</span><span class="p">,</span>
+        <span class="s2">&quot;page&quot;</span><span class="p">:</span> <span class="n">page</span><span class="p">,</span>
+        <span class="s2">&quot;pages&quot;</span><span class="p">:</span> <span class="p">(</span><span class="n">total</span> <span class="o">+</span> <span class="n">per_page</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">//</span> <span class="n">per_page</span>
+    <span class="p">}</span>
+</code></pre></div>
+<h3 id="dashboard-statistics-example">Dashboard Statistics Example<a class="headerlink" href="#dashboard-statistics-example" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><span class="k">async</span> <span class="k">def</span> <span class="nf">get_dashboard_stats</span><span class="p">():</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Get statistics for dashboard&quot;&quot;&quot;</span>
+    <span class="c1"># Books stats</span>
+    <span class="n">total_books</span> <span class="o">=</span> <span class="k">await</span> <span class="n">Book</span><span class="o">.</span><span class="n">objects</span><span class="p">()</span><span class="o">.</span><span class="n">count</span><span class="p">()</span>
+    <span class="n">average_pages</span> <span class="o">=</span> <span class="k">await</span> <span class="n">Aggregation</span><span class="o">.</span><span class="n">avg</span><span class="p">(</span><span class="n">Book</span><span class="o">.</span><span class="n">objects</span><span class="p">(),</span> <span class="s2">&quot;pages&quot;</span><span class="p">)</span>
+
+    <span class="c1"># Authors stats</span>
+    <span class="n">total_authors</span> <span class="o">=</span> <span class="k">await</span> <span class="n">Author</span><span class="o">.</span><span class="n">objects</span><span class="p">()</span><span class="o">.</span><span class="n">count</span><span class="p">()</span>
+    <span class="n">authors_with_books</span> <span class="o">=</span> <span class="k">await</span> <span class="n">Author</span><span class="o">.</span><span class="n">objects</span><span class="p">()</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">books__isnull</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span><span class="o">.</span><span class="n">count</span><span class="p">()</span>
+
+    <span class="c1"># Books by year</span>
+    <span class="n">books_by_year</span> <span class="o">=</span> <span class="k">await</span> <span class="n">Book</span><span class="o">.</span><span class="n">objects</span><span class="p">()</span><span class="o">.</span><span class="n">annotate</span><span class="p">(</span>
+        <span class="n">year</span><span class="o">=</span><span class="s2">&quot;EXTRACT(YEAR FROM published_date)&quot;</span>
+    <span class="p">)</span><span class="o">.</span><span class="n">values</span><span class="p">(</span><span class="s2">&quot;year&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">annotate</span><span class="p">(</span><span class="n">count</span><span class="o">=</span><span class="s2">&quot;COUNT(*)&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">order_by</span><span class="p">(</span><span class="s2">&quot;year&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">all</span><span class="p">()</span>
+
+    <span class="c1"># Popular authors</span>
+    <span class="n">popular_authors</span> <span class="o">=</span> <span class="k">await</span> <span class="n">Author</span><span class="o">.</span><span class="n">objects</span><span class="p">()</span><span class="o">.</span><span class="n">annotate</span><span class="p">(</span>
+        <span class="n">book_count</span><span class="o">=</span><span class="s2">&quot;COUNT(books)&quot;</span>
+    <span class="p">)</span><span class="o">.</span><span class="n">order_by</span><span class="p">(</span><span class="s2">&quot;-book_count&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">limit</span><span class="p">(</span><span class="mi">5</span><span class="p">)</span><span class="o">.</span><span class="n">all</span><span class="p">()</span>
+
+    <span class="k">return</span> <span class="p">{</span>
+        <span class="s2">&quot;total_books&quot;</span><span class="p">:</span> <span class="n">total_books</span><span class="p">,</span>
+        <span class="s2">&quot;average_pages&quot;</span><span class="p">:</span> <span class="n">average_pages</span><span class="p">,</span>
+        <span class="s2">&quot;total_authors&quot;</span><span class="p">:</span> <span class="n">total_authors</span><span class="p">,</span>
+        <span class="s2">&quot;authors_with_books&quot;</span><span class="p">:</span> <span class="n">authors_with_books</span><span class="p">,</span>
+        <span class="s2">&quot;books_by_year&quot;</span><span class="p">:</span> <span class="n">books_by_year</span><span class="p">,</span>
+        <span class="s2">&quot;popular_authors&quot;</span><span class="p">:</span> <span class="n">popular_authors</span>
+    <span class="p">}</span>
+</code></pre></div>
+<h2 id="troubleshooting-common-issues">Troubleshooting Common Issues<a class="headerlink" href="#troubleshooting-common-issues" title="Permanent link">&para;</a></h2>
+<h3 id="empty-queryset">Empty QuerySet<a class="headerlink" href="#empty-queryset" title="Permanent link">&para;</a></h3>
+<p><strong>Issue</strong>: <code>await Book.objects().filter(title="test").all()</code> returns empty list</p>
+<p><strong>Solution</strong>:
+- Check if records actually exist in the database
+- Verify the filter condition matches your data
+- Check for case sensitivity (use <code>__icontains</code> for case-insensitive matching)</p>
+<h3 id="multipleobjectsreturned">MultipleObjectsReturned<a class="headerlink" href="#multipleobjectsreturned" title="Permanent link">&para;</a></h3>
+<p><strong>Issue</strong>: <code>await Book.objects().get(title="test")</code> raises <code>DatabaseError: Multiple objects returned</code></p>
+<p><strong>Solution</strong>:
+- Use <code>filter()</code> instead of <code>get()</code> when expecting multiple results
+- Add more specific filters to ensure only one object matches
+- Use <code>first()</code> if you only need one result: <code>await Book.objects().filter(title="test").first()</code></p>
+<h3 id="fielddoesnotexist">FieldDoesNotExist<a class="headerlink" href="#fielddoesnotexist" title="Permanent link">&para;</a></h3>
+<p><strong>Issue</strong>: <code>DatabaseError: Field 'xyz' does not exist on model 'Book'</code></p>
+<p><strong>Solution</strong>:
+- Check that the field name is correctly spelled
+- Verify the field is defined in your model
+- For related fields, ensure the relationship is properly defined</p>
+<h3 id="performance-problems">Performance Problems<a class="headerlink" href="#performance-problems" title="Permanent link">&para;</a></h3>
+<p><strong>Issue</strong>: Queries are slow with large datasets</p>
+<p><strong>Solution</strong>:
+- Add indexes to frequently queried fields
+- Use <code>select_related</code> or <code>prefetch_related</code> to avoid N+1 queries
+- Use <code>only()</code> or <code>defer()</code> to load only necessary fields
+- Limit the number of results with <code>limit()</code></p>
+<h2 id="best-practices">Best Practices<a class="headerlink" href="#best-practices" title="Permanent link">&para;</a></h2>
+<h3 id="use-asynchronous-pattern-correctly">Use Asynchronous Pattern Correctly<a class="headerlink" href="#use-asynchronous-pattern-correctly" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><span class="c1"># CORRECT</span>
+<span class="n">books</span> <span class="o">=</span> <span class="k">await</span> <span class="n">Book</span><span class="o">.</span><span class="n">objects</span><span class="p">()</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">pages__gt</span><span class="o">=</span><span class="mi">300</span><span class="p">)</span><span class="o">.</span><span class="n">all</span><span class="p">()</span>
+
+<span class="c1"># INCORRECT (will return a coroutine object, not results)</span>
+<span class="n">books</span> <span class="o">=</span> <span class="n">Book</span><span class="o">.</span><span class="n">objects</span><span class="p">()</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">pages__gt</span><span class="o">=</span><span class="mi">300</span><span class="p">)</span><span class="o">.</span><span class="n">all</span><span class="p">()</span>
+</code></pre></div>
+<h3 id="chain-queries-for-readability">Chain Queries for Readability<a class="headerlink" href="#chain-queries-for-readability" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><span class="c1"># GOOD</span>
+<span class="n">books</span> <span class="o">=</span> <span class="k">await</span> <span class="n">Book</span><span class="o">.</span><span class="n">objects</span><span class="p">()</span> \
+    <span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">pages__gt</span><span class="o">=</span><span class="mi">300</span><span class="p">)</span> \
+    <span class="o">.</span><span class="n">order_by</span><span class="p">(</span><span class="s2">&quot;-published_date&quot;</span><span class="p">)</span> \
+    <span class="o">.</span><span class="n">limit</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span> \
+    <span class="o">.</span><span class="n">all</span><span class="p">()</span>
+
+<span class="c1"># BAD (harder to read and modify)</span>
+<span class="n">books</span> <span class="o">=</span> <span class="k">await</span> <span class="n">Book</span><span class="o">.</span><span class="n">objects</span><span class="p">()</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">pages__gt</span><span class="o">=</span><span class="mi">300</span><span class="p">)</span><span class="o">.</span><span class="n">order_by</span><span class="p">(</span><span class="s2">&quot;-published_date&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">limit</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span><span class="o">.</span><span class="n">all</span><span class="p">()</span>
+</code></pre></div>
+<h3 id="use-transactions-for-related-operations">Use Transactions for Related Operations<a class="headerlink" href="#use-transactions-for-related-operations" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><span class="k">async</span> <span class="k">with</span> <span class="n">db</span><span class="o">.</span><span class="n">transaction</span><span class="p">():</span>
+    <span class="c1"># Create book</span>
+    <span class="n">book</span> <span class="o">=</span> <span class="k">await</span> <span class="n">Book</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="n">title</span><span class="o">=</span><span class="s2">&quot;New Book&quot;</span><span class="p">,</span> <span class="n">pages</span><span class="o">=</span><span class="mi">200</span><span class="p">)</span>
+
+    <span class="c1"># Update author&#39;s book count</span>
+    <span class="n">author</span> <span class="o">=</span> <span class="k">await</span> <span class="n">Author</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="n">book</span><span class="o">.</span><span class="n">author_id</span><span class="p">)</span>
+    <span class="n">author</span><span class="o">.</span><span class="n">book_count</span> <span class="o">+=</span> <span class="mi">1</span>
+    <span class="k">await</span> <span class="n">author</span><span class="o">.</span><span class="n">save</span><span class="p">()</span>
+</code></pre></div>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+  <script>var tabs=__md_get("__tabs");if(Array.isArray(tabs))e:for(var set of document.querySelectorAll(".tabbed-set")){var labels=set.querySelector(".tabbed-labels");for(var tab of tabs)for(var label of labels.getElementsByTagName("label"))if(label.innerText.trim()===tab){var input=document.getElementById(label.htmlFor);input.checked=!0;continue e}}</script>
+
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+    
+      
+      <nav class="md-footer__inner md-grid" aria-label="Footer" >
+        
+          
+          <a href="../../getting-started/models/" class="md-footer__link md-footer__link--prev" aria-label="Previous: Basic Model Definition">
+            <div class="md-footer__button md-icon">
+              
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+            </div>
+            <div class="md-footer__title">
+              <span class="md-footer__direction">
+                Previous
+              </span>
+              <div class="md-ellipsis">
+                Basic Model Definition
+              </div>
+            </div>
+          </a>
+        
+        
+          
+          <a href="../../relationships/overview/" class="md-footer__link md-footer__link--next" aria-label="Next: Overview">
+            <div class="md-footer__title">
+              <span class="md-footer__direction">
+                Next
+              </span>
+              <div class="md-ellipsis">
+                Overview
+              </div>
+            </div>
+            <div class="md-footer__button md-icon">
+              
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M4 11v2h12l-5.5 5.5 1.42 1.42L19.84 12l-7.92-7.92L10.5 5.5 16 11z"/></svg>
+            </div>
+          </a>
+        
+      </nav>
+    
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      <script id="__config" type="application/json">{"base": "../..", "features": ["search.suggest", "search.highlight", "content.tabs.link", "navigation.footer", "content.code.copy", "navigation.instant", "navigation.sections", "navigation.expand"], "search": "../../assets/javascripts/workers/search.973d3a69.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.92b07e13.min.js"></script>
+      
+        <script src="../../js/termynal.js"></script>
+      
+        <script src="../../js/custom.js"></script>
+      
+        <script src="../../&lt;script type=&#34;application/ld+json&#34;&gt;
+{
+  &#34;@context&#34;: &#34;https:/schema.org&#34;,
+  &#34;@type&#34;: &#34;SoftwareApplication&#34;,
+  &#34;name&#34;: &#34;Ormax ORM&#34;,
+  &#34;applicationCategory&#34;: &#34;DeveloperLibrary&#34;,
+  &#34;operatingSystem&#34;: &#34;Any&#34;,
+  &#34;url&#34;: &#34;https:/ormax.shayan-heidari.ir/&#34;,
+  &#34;logo&#34;: &#34;https:/raw.githubusercontent.com/shayanheidari01/ormax/master/icon.png&#34;,
+  &#34;author&#34;: {
+    &#34;@type&#34;: &#34;Person&#34;,
+    &#34;name&#34;: &#34;Shayan Heidari&#34;
+  },
+  &#34;description&#34;: &#34;Ormax ORM: A lightweight and async ORM for Python with simple models, transactions, relations, and performance monitoring.&#34;
+}
+&lt;/script&gt;
+"></script>
+      
+    
+  </body>
+</html>

@@ -1,0 +1,2858 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Ormax Python ORM Documents">
+      
+      
+        <meta name="author" content="Shayan Heidari">
+      
+      
+        <link rel="canonical" href="https://ormax.shayan-heidari.ir/advanced/custom-models/">
+      
+      
+        <link rel="prev" href="../query-optimization/">
+      
+      
+        <link rel="next" href="../performance-monitoring/">
+      
+      
+      <link rel="icon" href="../../assets/logo.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.6.17">
+    
+    
+      
+        <title>Custom Model Patterns - Ormax Python ORM</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.7e37652d.min.css">
+      
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.06af60db.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Vazirmatn:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Vazirmatn";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../../css/termynal.css">
+    
+      <link rel="stylesheet" href="../../css/custom.css">
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="white" data-md-color-accent="amber">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#custom-model-patterns-in-ormax" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../.." title="Ormax Python ORM" class="md-header__button md-logo" aria-label="Ormax Python ORM" data-md-component="logo">
+      
+  <img src="../../assets/logo.png" alt="logo">
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            Ormax Python ORM
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Custom Model Patterns
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="default" data-md-color-primary="white" data-md-color-accent="amber"  aria-label="Dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 7a5 5 0 0 1 5 5 5 5 0 0 1-5 5 5 5 0 0 1-5-5 5 5 0 0 1 5-5m0 2a3 3 0 0 0-3 3 3 3 0 0 0 3 3 3 3 0 0 0 3-3 3 3 0 0 0-3-3m0-7 2.39 3.42C13.65 5.15 12.84 5 12 5s-1.65.15-2.39.42zM3.34 7l4.16-.35A7.2 7.2 0 0 0 5.94 8.5c-.44.74-.69 1.5-.83 2.29zm.02 10 1.76-3.77a7.131 7.131 0 0 0 2.38 4.14zM20.65 7l-1.77 3.79a7.02 7.02 0 0 0-2.38-4.15zm-.01 10-4.14.36c.59-.51 1.12-1.14 1.54-1.86.42-.73.69-1.5.83-2.29zM12 22l-2.41-3.44c.74.27 1.55.44 2.41.44.82 0 1.63-.17 2.37-.44z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="slate" data-md-color-primary="white" data-md-color-accent="amber"  aria-label="Light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="m17.75 4.09-2.53 1.94.91 3.06-2.63-1.81-2.63 1.81.91-3.06-2.53-1.94L12.44 4l1.06-3 1.06 3zm3.5 6.91-1.64 1.25.59 1.98-1.7-1.17-1.7 1.17.59-1.98L15.75 11l2.06-.05L18.5 9l.69 1.95zm-2.28 4.95c.83-.08 1.72 1.1 1.19 1.85-.32.45-.66.87-1.08 1.27C15.17 23 8.84 23 4.94 19.07c-3.91-3.9-3.91-10.24 0-14.14.4-.4.82-.76 1.27-1.08.75-.53 1.93.36 1.85 1.19-.27 2.86.69 5.83 2.89 8.02a9.96 9.96 0 0 0 8.02 2.89m-1.64 2.02a12.08 12.08 0 0 1-7.8-3.47c-2.17-2.19-3.33-5-3.49-7.82-2.81 3.14-2.7 7.96.31 10.98 3.02 3.01 7.84 3.12 10.98.31"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/shayanheidari01/ormax/" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.0.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path fill="currentColor" d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    GitHub
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="Ormax Python ORM" class="md-nav__button md-logo" aria-label="Ormax Python ORM" data-md-component="logo">
+      
+  <img src="../../assets/logo.png" alt="logo">
+
+    </a>
+    Ormax Python ORM
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/shayanheidari01/ormax/" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.0.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path fill="currentColor" d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    GitHub
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Home
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    Getting Started
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            Getting Started
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../getting-started/installation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Installation
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../getting-started/models/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Basic Model Definition
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    Querying Data
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            Querying Data
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../querying/queryset/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    QuerySet API
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    Relationships
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            Relationships
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../relationships/overview/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Overview
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    Advanced Features
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            Advanced Features
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../transactions/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Transactions
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../query-optimization/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Query Optimization
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    Custom Model Patterns
+    
+  </span>
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    Custom Model Patterns
+    
+  </span>
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#custom-model-methods" class="md-nav__link">
+    <span class="md-ellipsis">
+      Custom Model Methods
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Custom Model Methods">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#instance-methods" class="md-nav__link">
+    <span class="md-ellipsis">
+      Instance Methods
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#class-methods" class="md-nav__link">
+    <span class="md-ellipsis">
+      Class Methods
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#async-methods" class="md-nav__link">
+    <span class="md-ellipsis">
+      Async Methods
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#model-inheritance" class="md-nav__link">
+    <span class="md-ellipsis">
+      Model Inheritance
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Model Inheritance">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#abstract-base-classes" class="md-nav__link">
+    <span class="md-ellipsis">
+      Abstract Base Classes
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#multi-table-inheritance" class="md-nav__link">
+    <span class="md-ellipsis">
+      Multi-table Inheritance
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#proxy-models" class="md-nav__link">
+    <span class="md-ellipsis">
+      Proxy Models
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#custom-managers" class="md-nav__link">
+    <span class="md-ellipsis">
+      Custom Managers
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Custom Managers">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#basic-custom-manager" class="md-nav__link">
+    <span class="md-ellipsis">
+      Basic Custom Manager
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#usage" class="md-nav__link">
+    <span class="md-ellipsis">
+      Usage
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#manager-with-relationship-support" class="md-nav__link">
+    <span class="md-ellipsis">
+      Manager with Relationship Support
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#advanced-field-customization" class="md-nav__link">
+    <span class="md-ellipsis">
+      Advanced Field Customization
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Advanced Field Customization">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#custom-field-types" class="md-nav__link">
+    <span class="md-ellipsis">
+      Custom Field Types
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#field-with-custom-conversion" class="md-nav__link">
+    <span class="md-ellipsis">
+      Field with Custom Conversion
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#encrypted-fields" class="md-nav__link">
+    <span class="md-ellipsis">
+      Encrypted Fields
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#model-validation" class="md-nav__link">
+    <span class="md-ellipsis">
+      Model Validation
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Model Validation">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#field-level-validation" class="md-nav__link">
+    <span class="md-ellipsis">
+      Field-level Validation
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#model-level-validation" class="md-nav__link">
+    <span class="md-ellipsis">
+      Model-level Validation
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#validation-on-save" class="md-nav__link">
+    <span class="md-ellipsis">
+      Validation on Save
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#signals-and-events" class="md-nav__link">
+    <span class="md-ellipsis">
+      Signals and Events
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Signals and Events">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#built-in-signals" class="md-nav__link">
+    <span class="md-ellipsis">
+      Built-in Signals
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#custom-signals" class="md-nav__link">
+    <span class="md-ellipsis">
+      Custom Signals
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#custom-querysets" class="md-nav__link">
+    <span class="md-ellipsis">
+      Custom QuerySets
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Custom QuerySets">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#basic-custom-queryset" class="md-nav__link">
+    <span class="md-ellipsis">
+      Basic Custom QuerySet
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#usage_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      Usage
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#queryset-with-relationship-support" class="md-nav__link">
+    <span class="md-ellipsis">
+      QuerySet with Relationship Support
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#advanced-model-patterns" class="md-nav__link">
+    <span class="md-ellipsis">
+      Advanced Model Patterns
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Advanced Model Patterns">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#soft-delete-pattern" class="md-nav__link">
+    <span class="md-ellipsis">
+      Soft Delete Pattern
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#versioned-models" class="md-nav__link">
+    <span class="md-ellipsis">
+      Versioned Models
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#tree-structures" class="md-nav__link">
+    <span class="md-ellipsis">
+      Tree Structures
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#performance-considerations-for-custom-models" class="md-nav__link">
+    <span class="md-ellipsis">
+      Performance Considerations for Custom Models
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Performance Considerations for Custom Models">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#avoid-heavy-operations-in-init" class="md-nav__link">
+    <span class="md-ellipsis">
+      Avoid Heavy Operations in init
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#use-caching-for-expensive-methods" class="md-nav__link">
+    <span class="md-ellipsis">
+      Use Caching for Expensive Methods
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#optimize-relationship-loading" class="md-nav__link">
+    <span class="md-ellipsis">
+      Optimize Relationship Loading
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#real-world-examples" class="md-nav__link">
+    <span class="md-ellipsis">
+      Real-World Examples
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Real-World Examples">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#e-commerce-product-model" class="md-nav__link">
+    <span class="md-ellipsis">
+      E-commerce Product Model
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#blog-system-with-nested-comments" class="md-nav__link">
+    <span class="md-ellipsis">
+      Blog System with Nested Comments
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#best-practices-for-custom-models" class="md-nav__link">
+    <span class="md-ellipsis">
+      Best Practices for Custom Models
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Best Practices for Custom Models">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#keep-business-logic-in-models" class="md-nav__link">
+    <span class="md-ellipsis">
+      Keep Business Logic in Models
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#use-properties-for-simple-calculations" class="md-nav__link">
+    <span class="md-ellipsis">
+      Use Properties for Simple Calculations
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#use-async-methods-for-database-operations" class="md-nav__link">
+    <span class="md-ellipsis">
+      Use Async Methods for Database Operations
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#document-custom-methods" class="md-nav__link">
+    <span class="md-ellipsis">
+      Document Custom Methods
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#testing-custom-models" class="md-nav__link">
+    <span class="md-ellipsis">
+      Testing Custom Models
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Testing Custom Models">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#unit-testing-model-methods" class="md-nav__link">
+    <span class="md-ellipsis">
+      Unit Testing Model Methods
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#testing-custom-managers" class="md-nav__link">
+    <span class="md-ellipsis">
+      Testing Custom Managers
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#testing-signals" class="md-nav__link">
+    <span class="md-ellipsis">
+      Testing Signals
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#troubleshooting-custom-models" class="md-nav__link">
+    <span class="md-ellipsis">
+      Troubleshooting Custom Models
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Troubleshooting Custom Models">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#method-not-found" class="md-nav__link">
+    <span class="md-ellipsis">
+      Method Not Found
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#unexpected-query-behavior" class="md-nav__link">
+    <span class="md-ellipsis">
+      Unexpected Query Behavior
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#signal-not-firing" class="md-nav__link">
+    <span class="md-ellipsis">
+      Signal Not Firing
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#performance-issues-with-custom-methods" class="md-nav__link">
+    <span class="md-ellipsis">
+      Performance Issues with Custom Methods
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../performance-monitoring/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Performance Monitoring
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../deployment/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Deployment Strategies
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../testing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Testing Strategies
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../debugging/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Debugging Techniques
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#custom-model-methods" class="md-nav__link">
+    <span class="md-ellipsis">
+      Custom Model Methods
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Custom Model Methods">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#instance-methods" class="md-nav__link">
+    <span class="md-ellipsis">
+      Instance Methods
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#class-methods" class="md-nav__link">
+    <span class="md-ellipsis">
+      Class Methods
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#async-methods" class="md-nav__link">
+    <span class="md-ellipsis">
+      Async Methods
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#model-inheritance" class="md-nav__link">
+    <span class="md-ellipsis">
+      Model Inheritance
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Model Inheritance">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#abstract-base-classes" class="md-nav__link">
+    <span class="md-ellipsis">
+      Abstract Base Classes
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#multi-table-inheritance" class="md-nav__link">
+    <span class="md-ellipsis">
+      Multi-table Inheritance
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#proxy-models" class="md-nav__link">
+    <span class="md-ellipsis">
+      Proxy Models
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#custom-managers" class="md-nav__link">
+    <span class="md-ellipsis">
+      Custom Managers
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Custom Managers">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#basic-custom-manager" class="md-nav__link">
+    <span class="md-ellipsis">
+      Basic Custom Manager
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#usage" class="md-nav__link">
+    <span class="md-ellipsis">
+      Usage
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#manager-with-relationship-support" class="md-nav__link">
+    <span class="md-ellipsis">
+      Manager with Relationship Support
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#advanced-field-customization" class="md-nav__link">
+    <span class="md-ellipsis">
+      Advanced Field Customization
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Advanced Field Customization">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#custom-field-types" class="md-nav__link">
+    <span class="md-ellipsis">
+      Custom Field Types
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#field-with-custom-conversion" class="md-nav__link">
+    <span class="md-ellipsis">
+      Field with Custom Conversion
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#encrypted-fields" class="md-nav__link">
+    <span class="md-ellipsis">
+      Encrypted Fields
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#model-validation" class="md-nav__link">
+    <span class="md-ellipsis">
+      Model Validation
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Model Validation">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#field-level-validation" class="md-nav__link">
+    <span class="md-ellipsis">
+      Field-level Validation
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#model-level-validation" class="md-nav__link">
+    <span class="md-ellipsis">
+      Model-level Validation
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#validation-on-save" class="md-nav__link">
+    <span class="md-ellipsis">
+      Validation on Save
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#signals-and-events" class="md-nav__link">
+    <span class="md-ellipsis">
+      Signals and Events
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Signals and Events">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#built-in-signals" class="md-nav__link">
+    <span class="md-ellipsis">
+      Built-in Signals
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#custom-signals" class="md-nav__link">
+    <span class="md-ellipsis">
+      Custom Signals
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#custom-querysets" class="md-nav__link">
+    <span class="md-ellipsis">
+      Custom QuerySets
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Custom QuerySets">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#basic-custom-queryset" class="md-nav__link">
+    <span class="md-ellipsis">
+      Basic Custom QuerySet
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#usage_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      Usage
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#queryset-with-relationship-support" class="md-nav__link">
+    <span class="md-ellipsis">
+      QuerySet with Relationship Support
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#advanced-model-patterns" class="md-nav__link">
+    <span class="md-ellipsis">
+      Advanced Model Patterns
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Advanced Model Patterns">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#soft-delete-pattern" class="md-nav__link">
+    <span class="md-ellipsis">
+      Soft Delete Pattern
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#versioned-models" class="md-nav__link">
+    <span class="md-ellipsis">
+      Versioned Models
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#tree-structures" class="md-nav__link">
+    <span class="md-ellipsis">
+      Tree Structures
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#performance-considerations-for-custom-models" class="md-nav__link">
+    <span class="md-ellipsis">
+      Performance Considerations for Custom Models
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Performance Considerations for Custom Models">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#avoid-heavy-operations-in-init" class="md-nav__link">
+    <span class="md-ellipsis">
+      Avoid Heavy Operations in init
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#use-caching-for-expensive-methods" class="md-nav__link">
+    <span class="md-ellipsis">
+      Use Caching for Expensive Methods
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#optimize-relationship-loading" class="md-nav__link">
+    <span class="md-ellipsis">
+      Optimize Relationship Loading
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#real-world-examples" class="md-nav__link">
+    <span class="md-ellipsis">
+      Real-World Examples
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Real-World Examples">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#e-commerce-product-model" class="md-nav__link">
+    <span class="md-ellipsis">
+      E-commerce Product Model
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#blog-system-with-nested-comments" class="md-nav__link">
+    <span class="md-ellipsis">
+      Blog System with Nested Comments
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#best-practices-for-custom-models" class="md-nav__link">
+    <span class="md-ellipsis">
+      Best Practices for Custom Models
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Best Practices for Custom Models">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#keep-business-logic-in-models" class="md-nav__link">
+    <span class="md-ellipsis">
+      Keep Business Logic in Models
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#use-properties-for-simple-calculations" class="md-nav__link">
+    <span class="md-ellipsis">
+      Use Properties for Simple Calculations
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#use-async-methods-for-database-operations" class="md-nav__link">
+    <span class="md-ellipsis">
+      Use Async Methods for Database Operations
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#document-custom-methods" class="md-nav__link">
+    <span class="md-ellipsis">
+      Document Custom Methods
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#testing-custom-models" class="md-nav__link">
+    <span class="md-ellipsis">
+      Testing Custom Models
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Testing Custom Models">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#unit-testing-model-methods" class="md-nav__link">
+    <span class="md-ellipsis">
+      Unit Testing Model Methods
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#testing-custom-managers" class="md-nav__link">
+    <span class="md-ellipsis">
+      Testing Custom Managers
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#testing-signals" class="md-nav__link">
+    <span class="md-ellipsis">
+      Testing Signals
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#troubleshooting-custom-models" class="md-nav__link">
+    <span class="md-ellipsis">
+      Troubleshooting Custom Models
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Troubleshooting Custom Models">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#method-not-found" class="md-nav__link">
+    <span class="md-ellipsis">
+      Method Not Found
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#unexpected-query-behavior" class="md-nav__link">
+    <span class="md-ellipsis">
+      Unexpected Query Behavior
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#signal-not-firing" class="md-nav__link">
+    <span class="md-ellipsis">
+      Signal Not Firing
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#performance-issues-with-custom-methods" class="md-nav__link">
+    <span class="md-ellipsis">
+      Performance Issues with Custom Methods
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+<h1 id="custom-model-patterns-in-ormax">Custom Model Patterns in Ormax<a class="headerlink" href="#custom-model-patterns-in-ormax" title="Permanent link">&para;</a></h1>
+<p>While basic models cover many use cases, Ormax provides powerful tools for creating custom model patterns that solve complex business requirements. This guide covers advanced techniques for extending and customizing Ormax models.</p>
+<h2 id="custom-model-methods">Custom Model Methods<a class="headerlink" href="#custom-model-methods" title="Permanent link">&para;</a></h2>
+<p>Adding custom methods to your models is the simplest way to encapsulate business logic.</p>
+<h3 id="instance-methods">Instance Methods<a class="headerlink" href="#instance-methods" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><span class="k">class</span> <span class="nc">Book</span><span class="p">(</span><span class="n">ormax</span><span class="o">.</span><span class="n">Model</span><span class="p">):</span>
+    <span class="n">title</span> <span class="o">=</span> <span class="n">CharField</span><span class="p">(</span><span class="n">max_length</span><span class="o">=</span><span class="mi">200</span><span class="p">)</span>
+    <span class="n">pages</span> <span class="o">=</span> <span class="n">IntegerField</span><span class="p">()</span>
+    <span class="n">published_date</span> <span class="o">=</span> <span class="n">DateTimeField</span><span class="p">(</span><span class="n">null</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">is_long</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Check if book is considered long&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">pages</span> <span class="o">&gt;</span> <span class="mi">300</span>
+
+    <span class="k">def</span> <span class="nf">days_since_publication</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Calculate days since publication&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">published_date</span><span class="p">:</span>
+            <span class="k">return</span> <span class="mi">0</span>
+        <span class="k">return</span> <span class="p">(</span><span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">published_date</span><span class="p">)</span><span class="o">.</span><span class="n">days</span>
+</code></pre></div>
+<h3 id="class-methods">Class Methods<a class="headerlink" href="#class-methods" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><span class="k">class</span> <span class="nc">Author</span><span class="p">(</span><span class="n">ormax</span><span class="o">.</span><span class="n">Model</span><span class="p">):</span>
+    <span class="n">name</span> <span class="o">=</span> <span class="n">CharField</span><span class="p">(</span><span class="n">max_length</span><span class="o">=</span><span class="mi">100</span><span class="p">)</span>
+    <span class="n">bio</span> <span class="o">=</span> <span class="n">CharField</span><span class="p">(</span><span class="n">max_length</span><span class="o">=</span><span class="mi">500</span><span class="p">,</span> <span class="n">null</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+    <span class="nd">@classmethod</span>
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">get_top_authors</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">min_books</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">limit</span><span class="o">=</span><span class="mi">10</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get authors with at least min_books published&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="k">await</span> <span class="bp">cls</span><span class="o">.</span><span class="n">objects</span><span class="p">()</span> \
+            <span class="o">.</span><span class="n">annotate</span><span class="p">(</span><span class="n">book_count</span><span class="o">=</span><span class="s2">&quot;COUNT(books)&quot;</span><span class="p">)</span> \
+            <span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">book_count__gte</span><span class="o">=</span><span class="n">min_books</span><span class="p">)</span> \
+            <span class="o">.</span><span class="n">order_by</span><span class="p">(</span><span class="s2">&quot;-book_count&quot;</span><span class="p">)</span> \
+            <span class="o">.</span><span class="n">limit</span><span class="p">(</span><span class="n">limit</span><span class="p">)</span> \
+            <span class="o">.</span><span class="n">all</span><span class="p">()</span>
+</code></pre></div>
+<h3 id="async-methods">Async Methods<a class="headerlink" href="#async-methods" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><span class="k">class</span> <span class="nc">Product</span><span class="p">(</span><span class="n">ormax</span><span class="o">.</span><span class="n">Model</span><span class="p">):</span>
+    <span class="n">name</span> <span class="o">=</span> <span class="n">CharField</span><span class="p">(</span><span class="n">max_length</span><span class="o">=</span><span class="mi">200</span><span class="p">)</span>
+    <span class="n">price</span> <span class="o">=</span> <span class="n">DecimalField</span><span class="p">(</span><span class="n">max_digits</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">decimal_places</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+    <span class="n">stock</span> <span class="o">=</span> <span class="n">IntegerField</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">check_availability</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">quantity</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Check if product is available in requested quantity&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">stock</span> <span class="o">&gt;=</span> <span class="n">quantity</span>
+
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">reserve_stock</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">quantity</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Reserve stock for an order&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">check_availability</span><span class="p">(</span><span class="n">quantity</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">stock</span> <span class="o">-=</span> <span class="n">quantity</span>
+            <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">save</span><span class="p">()</span>
+            <span class="k">return</span> <span class="kc">True</span>
+        <span class="k">return</span> <span class="kc">False</span>
+</code></pre></div>
+<h2 id="model-inheritance">Model Inheritance<a class="headerlink" href="#model-inheritance" title="Permanent link">&para;</a></h2>
+<p>Ormax supports several inheritance patterns for models.</p>
+<h3 id="abstract-base-classes">Abstract Base Classes<a class="headerlink" href="#abstract-base-classes" title="Permanent link">&para;</a></h3>
+<p>Abstract models let you define common fields without creating a database table:</p>
+<div class="highlight"><pre><span></span><code><span class="k">class</span> <span class="nc">TimestampedModel</span><span class="p">(</span><span class="n">ormax</span><span class="o">.</span><span class="n">Model</span><span class="p">):</span>
+    <span class="n">created_at</span> <span class="o">=</span> <span class="n">DateTimeField</span><span class="p">(</span><span class="n">auto_now_add</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">updated_at</span> <span class="o">=</span> <span class="n">DateTimeField</span><span class="p">(</span><span class="n">auto_now</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+    <span class="k">class</span> <span class="nc">Meta</span><span class="p">:</span>
+        <span class="n">abstract</span> <span class="o">=</span> <span class="kc">True</span>
+
+<span class="k">class</span> <span class="nc">Book</span><span class="p">(</span><span class="n">TimestampedModel</span><span class="p">):</span>
+    <span class="n">title</span> <span class="o">=</span> <span class="n">CharField</span><span class="p">(</span><span class="n">max_length</span><span class="o">=</span><span class="mi">200</span><span class="p">)</span>
+    <span class="n">pages</span> <span class="o">=</span> <span class="n">IntegerField</span><span class="p">()</span>
+
+    <span class="c1"># Inherits created_at and updated_at fields</span>
+</code></pre></div>
+<h3 id="multi-table-inheritance">Multi-table Inheritance<a class="headerlink" href="#multi-table-inheritance" title="Permanent link">&para;</a></h3>
+<p>Create separate tables for parent and child models:</p>
+<div class="highlight"><pre><span></span><code><span class="k">class</span> <span class="nc">Person</span><span class="p">(</span><span class="n">ormax</span><span class="o">.</span><span class="n">Model</span><span class="p">):</span>
+    <span class="n">name</span> <span class="o">=</span> <span class="n">CharField</span><span class="p">(</span><span class="n">max_length</span><span class="o">=</span><span class="mi">100</span><span class="p">)</span>
+    <span class="n">email</span> <span class="o">=</span> <span class="n">EmailField</span><span class="p">()</span>
+
+<span class="k">class</span> <span class="nc">Author</span><span class="p">(</span><span class="n">Person</span><span class="p">):</span>
+    <span class="n">bio</span> <span class="o">=</span> <span class="n">CharField</span><span class="p">(</span><span class="n">max_length</span><span class="o">=</span><span class="mi">500</span><span class="p">,</span> <span class="n">null</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+    <span class="k">class</span> <span class="nc">Meta</span><span class="p">:</span>
+        <span class="c1"># This enables multi-table inheritance</span>
+        <span class="n">proxy</span> <span class="o">=</span> <span class="kc">False</span>
+
+<span class="k">class</span> <span class="nc">Editor</span><span class="p">(</span><span class="n">Person</span><span class="p">):</span>
+    <span class="n">department</span> <span class="o">=</span> <span class="n">CharField</span><span class="p">(</span><span class="n">max_length</span><span class="o">=</span><span class="mi">100</span><span class="p">)</span>
+
+    <span class="k">class</span> <span class="nc">Meta</span><span class="p">:</span>
+        <span class="n">proxy</span> <span class="o">=</span> <span class="kc">False</span>
+</code></pre></div>
+<blockquote>
+<p><strong>Note</strong>: Multi-table inheritance requires additional queries to retrieve all fields.</p>
+</blockquote>
+<h3 id="proxy-models">Proxy Models<a class="headerlink" href="#proxy-models" title="Permanent link">&para;</a></h3>
+<p>Create different Python interfaces to the same database table:</p>
+<div class="highlight"><pre><span></span><code><span class="k">class</span> <span class="nc">Book</span><span class="p">(</span><span class="n">ormax</span><span class="o">.</span><span class="n">Model</span><span class="p">):</span>
+    <span class="n">title</span> <span class="o">=</span> <span class="n">CharField</span><span class="p">(</span><span class="n">max_length</span><span class="o">=</span><span class="mi">200</span><span class="p">)</span>
+    <span class="n">pages</span> <span class="o">=</span> <span class="n">IntegerField</span><span class="p">()</span>
+    <span class="n">published_date</span> <span class="o">=</span> <span class="n">DateTimeField</span><span class="p">(</span><span class="n">null</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+<span class="k">class</span> <span class="nc">PublishedBook</span><span class="p">(</span><span class="n">Book</span><span class="p">):</span>
+    <span class="k">class</span> <span class="nc">Meta</span><span class="p">:</span>
+        <span class="n">proxy</span> <span class="o">=</span> <span class="kc">True</span>
+
+    <span class="nd">@classmethod</span>
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">get_queryset</span><span class="p">(</span><span class="bp">cls</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Only return published books&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">get_queryset</span><span class="p">()</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">published_date__isnull</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+</code></pre></div>
+<h2 id="custom-managers">Custom Managers<a class="headerlink" href="#custom-managers" title="Permanent link">&para;</a></h2>
+<p>Custom managers let you encapsulate query logic and provide model-specific query methods.</p>
+<h3 id="basic-custom-manager">Basic Custom Manager<a class="headerlink" href="#basic-custom-manager" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><span class="k">class</span> <span class="nc">PublishedBookManager</span><span class="p">(</span><span class="n">ormax</span><span class="o">.</span><span class="n">Manager</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">get_queryset</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Override to filter only published books&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">get_queryset</span><span class="p">()</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">published_date__isnull</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">recently_published</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">days</span><span class="o">=</span><span class="mi">7</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get books published in the last N days&quot;&quot;&quot;</span>
+        <span class="n">from_date</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span> <span class="o">-</span> <span class="n">timedelta</span><span class="p">(</span><span class="n">days</span><span class="o">=</span><span class="n">days</span><span class="p">)</span>
+        <span class="k">return</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_queryset</span><span class="p">()</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">published_date__gte</span><span class="o">=</span><span class="n">from_date</span><span class="p">)</span><span class="o">.</span><span class="n">all</span><span class="p">()</span>
+
+<span class="k">class</span> <span class="nc">Book</span><span class="p">(</span><span class="n">ormax</span><span class="o">.</span><span class="n">Model</span><span class="p">):</span>
+    <span class="n">title</span> <span class="o">=</span> <span class="n">CharField</span><span class="p">(</span><span class="n">max_length</span><span class="o">=</span><span class="mi">200</span><span class="p">)</span>
+    <span class="n">pages</span> <span class="o">=</span> <span class="n">IntegerField</span><span class="p">()</span>
+    <span class="n">published_date</span> <span class="o">=</span> <span class="n">DateTimeField</span><span class="p">(</span><span class="n">null</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+    <span class="n">objects</span> <span class="o">=</span> <span class="n">ormax</span><span class="o">.</span><span class="n">Manager</span><span class="p">()</span>  <span class="c1"># Default manager</span>
+    <span class="n">published</span> <span class="o">=</span> <span class="n">PublishedBookManager</span><span class="p">()</span>  <span class="c1"># Custom manager</span>
+</code></pre></div>
+<h3 id="usage">Usage<a class="headerlink" href="#usage" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><span class="c1"># Get all books (including unpublished)</span>
+<span class="n">all_books</span> <span class="o">=</span> <span class="k">await</span> <span class="n">Book</span><span class="o">.</span><span class="n">objects</span><span class="p">()</span><span class="o">.</span><span class="n">all</span><span class="p">()</span>
+
+<span class="c1"># Get only published books</span>
+<span class="n">published_books</span> <span class="o">=</span> <span class="k">await</span> <span class="n">Book</span><span class="o">.</span><span class="n">published</span><span class="o">.</span><span class="n">all</span><span class="p">()</span>
+
+<span class="c1"># Get recently published books</span>
+<span class="n">recent_books</span> <span class="o">=</span> <span class="k">await</span> <span class="n">Book</span><span class="o">.</span><span class="n">published</span><span class="o">.</span><span class="n">recently_published</span><span class="p">(</span><span class="n">days</span><span class="o">=</span><span class="mi">14</span><span class="p">)</span>
+</code></pre></div>
+<h3 id="manager-with-relationship-support">Manager with Relationship Support<a class="headerlink" href="#manager-with-relationship-support" title="Permanent link">&para;</a></h3>
+<p>Managers can also handle relationship operations:</p>
+<div class="highlight"><pre><span></span><code><span class="k">class</span> <span class="nc">BookManager</span><span class="p">(</span><span class="n">ormax</span><span class="o">.</span><span class="n">Manager</span><span class="p">):</span>
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">create_with_author</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">title</span><span class="p">,</span> <span class="n">pages</span><span class="p">,</span> <span class="n">author_name</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Create a book with a new or existing author&quot;&quot;&quot;</span>
+        <span class="c1"># Check if author exists</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">author</span> <span class="o">=</span> <span class="k">await</span> <span class="n">Author</span><span class="o">.</span><span class="n">objects</span><span class="p">()</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">author_name</span><span class="p">)</span>
+        <span class="k">except</span> <span class="n">Author</span><span class="o">.</span><span class="n">DoesNotExist</span><span class="p">:</span>
+            <span class="n">author</span> <span class="o">=</span> <span class="k">await</span> <span class="n">Author</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">author_name</span><span class="p">)</span>
+
+        <span class="c1"># Create the book</span>
+        <span class="k">return</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">create</span><span class="p">(</span>
+            <span class="n">title</span><span class="o">=</span><span class="n">title</span><span class="p">,</span>
+            <span class="n">pages</span><span class="o">=</span><span class="n">pages</span><span class="p">,</span>
+            <span class="n">author</span><span class="o">=</span><span class="n">author</span>
+        <span class="p">)</span>
+
+<span class="k">class</span> <span class="nc">Book</span><span class="p">(</span><span class="n">ormax</span><span class="o">.</span><span class="n">Model</span><span class="p">):</span>
+    <span class="n">title</span> <span class="o">=</span> <span class="n">CharField</span><span class="p">(</span><span class="n">max_length</span><span class="o">=</span><span class="mi">200</span><span class="p">)</span>
+    <span class="n">pages</span> <span class="o">=</span> <span class="n">IntegerField</span><span class="p">()</span>
+    <span class="n">author</span> <span class="o">=</span> <span class="n">ForeignKeyField</span><span class="p">(</span><span class="n">Author</span><span class="p">,</span> <span class="n">related_name</span><span class="o">=</span><span class="s2">&quot;books&quot;</span><span class="p">)</span>
+
+    <span class="n">objects</span> <span class="o">=</span> <span class="n">BookManager</span><span class="p">()</span>
+</code></pre></div>
+<h2 id="advanced-field-customization">Advanced Field Customization<a class="headerlink" href="#advanced-field-customization" title="Permanent link">&para;</a></h2>
+<h3 id="custom-field-types">Custom Field Types<a class="headerlink" href="#custom-field-types" title="Permanent link">&para;</a></h3>
+<p>Create your own field types by subclassing <code>Field</code>:</p>
+<div class="highlight"><pre><span></span><code><span class="k">class</span> <span class="nc">PercentField</span><span class="p">(</span><span class="n">ormax</span><span class="o">.</span><span class="n">fields</span><span class="o">.</span><span class="n">FloatField</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="c1"># Ensure min/max constraints</span>
+        <span class="n">kwargs</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="s2">&quot;min_value&quot;</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">)</span>
+        <span class="n">kwargs</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="s2">&quot;max_value&quot;</span><span class="p">,</span> <span class="mf">100.0</span><span class="p">)</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">validate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="n">value</span> <span class="o">=</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">validate</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">value</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="p">(</span><span class="n">value</span> <span class="o">&lt;</span> <span class="mi">0</span> <span class="ow">or</span> <span class="n">value</span> <span class="o">&gt;</span> <span class="mi">100</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="n">ValidationError</span><span class="p">(</span><span class="s2">&quot;Percent value must be between 0 and 100&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">value</span>
+
+<span class="k">class</span> <span class="nc">Product</span><span class="p">(</span><span class="n">ormax</span><span class="o">.</span><span class="n">Model</span><span class="p">):</span>
+    <span class="n">name</span> <span class="o">=</span> <span class="n">CharField</span><span class="p">(</span><span class="n">max_length</span><span class="o">=</span><span class="mi">200</span><span class="p">)</span>
+    <span class="n">discount</span> <span class="o">=</span> <span class="n">PercentField</span><span class="p">()</span>
+</code></pre></div>
+<h3 id="field-with-custom-conversion">Field with Custom Conversion<a class="headerlink" href="#field-with-custom-conversion" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><span class="k">class</span> <span class="nc">CommaSeparatedListField</span><span class="p">(</span><span class="n">ormax</span><span class="o">.</span><span class="n">fields</span><span class="o">.</span><span class="n">TextField</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">to_python</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+            <span class="k">return</span> <span class="p">[</span><span class="n">item</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span> <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">value</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;,&quot;</span><span class="p">)]</span>
+        <span class="k">return</span> <span class="n">value</span>
+
+    <span class="k">def</span> <span class="nf">to_database</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
+            <span class="k">return</span> <span class="s2">&quot;, &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">item</span><span class="p">)</span> <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">value</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">value</span>
+
+<span class="k">class</span> <span class="nc">Tag</span><span class="p">(</span><span class="n">ormax</span><span class="o">.</span><span class="n">Model</span><span class="p">):</span>
+    <span class="n">name</span> <span class="o">=</span> <span class="n">CharField</span><span class="p">(</span><span class="n">max_length</span><span class="o">=</span><span class="mi">50</span><span class="p">)</span>
+
+<span class="k">class</span> <span class="nc">Article</span><span class="p">(</span><span class="n">ormax</span><span class="o">.</span><span class="n">Model</span><span class="p">):</span>
+    <span class="n">title</span> <span class="o">=</span> <span class="n">CharField</span><span class="p">(</span><span class="n">max_length</span><span class="o">=</span><span class="mi">200</span><span class="p">)</span>
+    <span class="n">tags</span> <span class="o">=</span> <span class="n">CommaSeparatedListField</span><span class="p">()</span>
+</code></pre></div>
+<h3 id="encrypted-fields">Encrypted Fields<a class="headerlink" href="#encrypted-fields" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><span class="kn">from</span> <span class="nn">ormax.utils</span> <span class="kn">import</span> <span class="n">hash_password</span><span class="p">,</span> <span class="n">verify_password</span>
+
+<span class="k">class</span> <span class="nc">EncryptedCharField</span><span class="p">(</span><span class="n">ormax</span><span class="o">.</span><span class="n">fields</span><span class="o">.</span><span class="n">CharField</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">salt</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;salt&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span> <span class="ow">or</span> <span class="n">ormax</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">generate_secure_token</span><span class="p">(</span><span class="mi">16</span><span class="p">)</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">to_database</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">value</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">hashed</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">hash_password</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">salt</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">hashed</span>
+        <span class="k">return</span> <span class="kc">None</span>
+
+    <span class="k">def</span> <span class="nf">to_python</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="c1"># We can&#39;t decrypt, so we just return the hash</span>
+        <span class="k">return</span> <span class="n">value</span>
+
+<span class="k">class</span> <span class="nc">User</span><span class="p">(</span><span class="n">ormax</span><span class="o">.</span><span class="n">Model</span><span class="p">):</span>
+    <span class="n">username</span> <span class="o">=</span> <span class="n">CharField</span><span class="p">(</span><span class="n">max_length</span><span class="o">=</span><span class="mi">50</span><span class="p">)</span>
+    <span class="n">password</span> <span class="o">=</span> <span class="n">EncryptedCharField</span><span class="p">(</span><span class="n">max_length</span><span class="o">=</span><span class="mi">100</span><span class="p">)</span>
+</code></pre></div>
+<h2 id="model-validation">Model Validation<a class="headerlink" href="#model-validation" title="Permanent link">&para;</a></h2>
+<p>Ormax provides multiple ways to validate model data.</p>
+<h3 id="field-level-validation">Field-level Validation<a class="headerlink" href="#field-level-validation" title="Permanent link">&para;</a></h3>
+<p>Already built into field types (handled by <code>Field.validate()</code>).</p>
+<h3 id="model-level-validation">Model-level Validation<a class="headerlink" href="#model-level-validation" title="Permanent link">&para;</a></h3>
+<p>Override <code>clean()</code> for model-level validation:</p>
+<div class="highlight"><pre><span></span><code><span class="k">class</span> <span class="nc">Book</span><span class="p">(</span><span class="n">ormax</span><span class="o">.</span><span class="n">Model</span><span class="p">):</span>
+    <span class="n">title</span> <span class="o">=</span> <span class="n">CharField</span><span class="p">(</span><span class="n">max_length</span><span class="o">=</span><span class="mi">200</span><span class="p">)</span>
+    <span class="n">pages</span> <span class="o">=</span> <span class="n">IntegerField</span><span class="p">()</span>
+    <span class="n">published_date</span> <span class="o">=</span> <span class="n">DateTimeField</span><span class="p">(</span><span class="n">null</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">clean</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Validate model-level constraints&quot;&quot;&quot;</span>
+        <span class="k">await</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">clean</span><span class="p">()</span>
+
+        <span class="c1"># Ensure published books have a publication date</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">published_date</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">pages</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">ValidationError</span><span class="p">(</span><span class="s2">&quot;Published books must have a publication date&quot;</span><span class="p">)</span>
+
+        <span class="c1"># Ensure page count is reasonable</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">pages</span> <span class="o">&gt;</span> <span class="mi">10000</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">ValidationError</span><span class="p">(</span><span class="s2">&quot;Page count seems unrealistically high&quot;</span><span class="p">)</span>
+</code></pre></div>
+<h3 id="validation-on-save">Validation on Save<a class="headerlink" href="#validation-on-save" title="Permanent link">&para;</a></h3>
+<p>Override <code>save()</code> for validation that requires database access:</p>
+<div class="highlight"><pre><span></span><code><span class="k">class</span> <span class="nc">Book</span><span class="p">(</span><span class="n">ormax</span><span class="o">.</span><span class="n">Model</span><span class="p">):</span>
+    <span class="c1"># fields...</span>
+
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">save</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="c1"># Check for duplicate titles</span>
+        <span class="k">if</span> <span class="k">await</span> <span class="n">Book</span><span class="o">.</span><span class="n">objects</span><span class="p">()</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">title</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">title</span><span class="p">)</span><span class="o">.</span><span class="n">exclude</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">)</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
+            <span class="k">raise</span> <span class="n">ValidationError</span><span class="p">(</span><span class="s2">&quot;Book with this title already exists&quot;</span><span class="p">)</span>
+
+        <span class="k">await</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+</code></pre></div>
+<h2 id="signals-and-events">Signals and Events<a class="headerlink" href="#signals-and-events" title="Permanent link">&para;</a></h2>
+<p>Ormax supports signals for reacting to model events.</p>
+<h3 id="built-in-signals">Built-in Signals<a class="headerlink" href="#built-in-signals" title="Permanent link">&para;</a></h3>
+<p>Ormax provides signals for common events:</p>
+<div class="highlight"><pre><span></span><code><span class="kn">from</span> <span class="nn">ormax.signals</span> <span class="kn">import</span> <span class="n">pre_save</span><span class="p">,</span> <span class="n">post_save</span><span class="p">,</span> <span class="n">pre_delete</span><span class="p">,</span> <span class="n">post_delete</span>
+
+<span class="c1"># Connect to pre_save signal</span>
+<span class="nd">@pre_save</span><span class="o">.</span><span class="n">connect</span>
+<span class="k">async</span> <span class="k">def</span> <span class="nf">book_pre_save</span><span class="p">(</span><span class="n">sender</span><span class="p">,</span> <span class="n">instance</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Called before a Book is saved&quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">instance</span><span class="p">,</span> <span class="n">Book</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">instance</span><span class="o">.</span><span class="n">published_date</span> <span class="ow">and</span> <span class="n">instance</span><span class="o">.</span><span class="n">pages</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="n">instance</span><span class="o">.</span><span class="n">published_date</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span>
+
+<span class="c1"># Connect to post_save signal</span>
+<span class="nd">@post_save</span><span class="o">.</span><span class="n">connect</span>
+<span class="k">async</span> <span class="k">def</span> <span class="nf">book_post_save</span><span class="p">(</span><span class="n">sender</span><span class="p">,</span> <span class="n">instance</span><span class="p">,</span> <span class="n">created</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Called after a Book is saved&quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">instance</span><span class="p">,</span> <span class="n">Book</span><span class="p">)</span> <span class="ow">and</span> <span class="n">created</span><span class="p">:</span>
+        <span class="c1"># Send notification for new books</span>
+        <span class="k">await</span> <span class="n">send_new_book_notification</span><span class="p">(</span><span class="n">instance</span><span class="p">)</span>
+</code></pre></div>
+<h3 id="custom-signals">Custom Signals<a class="headerlink" href="#custom-signals" title="Permanent link">&para;</a></h3>
+<p>Create your own signals for domain-specific events:</p>
+<div class="highlight"><pre><span></span><code><span class="kn">from</span> <span class="nn">ormax.signals</span> <span class="kn">import</span> <span class="n">Signal</span>
+
+<span class="c1"># Define a custom signal</span>
+<span class="n">book_published</span> <span class="o">=</span> <span class="n">Signal</span><span class="p">(</span><span class="n">providing_args</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;instance&quot;</span><span class="p">])</span>
+
+<span class="k">class</span> <span class="nc">Book</span><span class="p">(</span><span class="n">ormax</span><span class="o">.</span><span class="n">Model</span><span class="p">):</span>
+    <span class="c1"># fields...</span>
+
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">publish</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Publish the book&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">published_date</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span>
+        <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">save</span><span class="p">()</span>
+        <span class="c1"># Send the signal</span>
+        <span class="k">await</span> <span class="n">book_published</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="n">sender</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="p">,</span> <span class="n">instance</span><span class="o">=</span><span class="bp">self</span><span class="p">)</span>
+
+<span class="c1"># Connect to the custom signal</span>
+<span class="nd">@book_published</span><span class="o">.</span><span class="n">connect</span>
+<span class="k">async</span> <span class="k">def</span> <span class="nf">handle_book_published</span><span class="p">(</span><span class="n">sender</span><span class="p">,</span> <span class="n">instance</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Handle book publication&quot;&quot;&quot;</span>
+    <span class="c1"># Send email to subscribers</span>
+    <span class="k">await</span> <span class="n">notify_subscribers</span><span class="p">(</span><span class="n">instance</span><span class="p">)</span>
+    <span class="c1"># Update search index</span>
+    <span class="k">await</span> <span class="n">update_search_index</span><span class="p">(</span><span class="n">instance</span><span class="p">)</span>
+</code></pre></div>
+<h2 id="custom-querysets">Custom QuerySets<a class="headerlink" href="#custom-querysets" title="Permanent link">&para;</a></h2>
+<p>Create specialized QuerySet classes for complex query patterns.</p>
+<h3 id="basic-custom-queryset">Basic Custom QuerySet<a class="headerlink" href="#basic-custom-queryset" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><span class="k">class</span> <span class="nc">BookQuerySet</span><span class="p">(</span><span class="n">ormax</span><span class="o">.</span><span class="n">QuerySet</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">published</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Filter for published books&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">published_date__isnull</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">recent</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">days</span><span class="o">=</span><span class="mi">7</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Filter for recently published books&quot;&quot;&quot;</span>
+        <span class="n">from_date</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span> <span class="o">-</span> <span class="n">timedelta</span><span class="p">(</span><span class="n">days</span><span class="o">=</span><span class="n">days</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">published</span><span class="p">()</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">published_date__gte</span><span class="o">=</span><span class="n">from_date</span><span class="p">)</span>
+
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">top_rated</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">limit</span><span class="o">=</span><span class="mi">10</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get top rated books&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">annotate</span><span class="p">(</span>
+            <span class="n">avg_rating</span><span class="o">=</span><span class="s2">&quot;AVG(reviews__rating)&quot;</span>
+        <span class="p">)</span><span class="o">.</span><span class="n">order_by</span><span class="p">(</span><span class="s2">&quot;-avg_rating&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">limit</span><span class="p">(</span><span class="n">limit</span><span class="p">)</span><span class="o">.</span><span class="n">all</span><span class="p">()</span>
+
+<span class="k">class</span> <span class="nc">Book</span><span class="p">(</span><span class="n">ormax</span><span class="o">.</span><span class="n">Model</span><span class="p">):</span>
+    <span class="c1"># fields...</span>
+
+    <span class="n">objects</span> <span class="o">=</span> <span class="n">BookQuerySet</span><span class="o">.</span><span class="n">as_manager</span><span class="p">()</span>
+</code></pre></div>
+<h3 id="usage_1">Usage<a class="headerlink" href="#usage_1" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><span class="c1"># Get recently published books</span>
+<span class="n">recent_books</span> <span class="o">=</span> <span class="k">await</span> <span class="n">Book</span><span class="o">.</span><span class="n">objects</span><span class="p">()</span><span class="o">.</span><span class="n">recent</span><span class="p">(</span><span class="n">days</span><span class="o">=</span><span class="mi">14</span><span class="p">)</span><span class="o">.</span><span class="n">all</span><span class="p">()</span>
+
+<span class="c1"># Get top rated books</span>
+<span class="n">top_books</span> <span class="o">=</span> <span class="k">await</span> <span class="n">Book</span><span class="o">.</span><span class="n">objects</span><span class="p">()</span><span class="o">.</span><span class="n">top_rated</span><span class="p">(</span><span class="n">limit</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>
+</code></pre></div>
+<h3 id="queryset-with-relationship-support">QuerySet with Relationship Support<a class="headerlink" href="#queryset-with-relationship-support" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><span class="k">class</span> <span class="nc">AuthorQuerySet</span><span class="p">(</span><span class="n">ormax</span><span class="o">.</span><span class="n">QuerySet</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">with_book_count</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Annotate authors with their book count&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">annotate</span><span class="p">(</span><span class="n">book_count</span><span class="o">=</span><span class="s2">&quot;COUNT(books)&quot;</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">prolific_authors</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">min_books</span><span class="o">=</span><span class="mi">5</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Filter for authors with at least min_books&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">with_book_count</span><span class="p">()</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">book_count__gte</span><span class="o">=</span><span class="n">min_books</span><span class="p">)</span>
+
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">get_with_books</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">author_id</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get author with their books in one query&quot;&quot;&quot;</span>
+        <span class="n">author</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="n">author_id</span><span class="p">)</span><span class="o">.</span><span class="n">select_related</span><span class="p">(</span><span class="s2">&quot;books&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">first</span><span class="p">()</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">author</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">Author</span><span class="o">.</span><span class="n">DoesNotExist</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">author</span>
+
+<span class="k">class</span> <span class="nc">Author</span><span class="p">(</span><span class="n">ormax</span><span class="o">.</span><span class="n">Model</span><span class="p">):</span>
+    <span class="c1"># fields...</span>
+
+    <span class="n">objects</span> <span class="o">=</span> <span class="n">AuthorQuerySet</span><span class="o">.</span><span class="n">as_manager</span><span class="p">()</span>
+</code></pre></div>
+<h2 id="advanced-model-patterns">Advanced Model Patterns<a class="headerlink" href="#advanced-model-patterns" title="Permanent link">&para;</a></h2>
+<h3 id="soft-delete-pattern">Soft Delete Pattern<a class="headerlink" href="#soft-delete-pattern" title="Permanent link">&para;</a></h3>
+<p>Implement soft delete instead of actual deletion:</p>
+<div class="highlight"><pre><span></span><code><span class="k">class</span> <span class="nc">SoftDeleteModel</span><span class="p">(</span><span class="n">ormax</span><span class="o">.</span><span class="n">Model</span><span class="p">):</span>
+    <span class="n">deleted_at</span> <span class="o">=</span> <span class="n">DateTimeField</span><span class="p">(</span><span class="n">null</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+    <span class="k">class</span> <span class="nc">Meta</span><span class="p">:</span>
+        <span class="n">abstract</span> <span class="o">=</span> <span class="kc">True</span>
+
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">delete</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">hard</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Soft delete by default, hard delete with hard=True&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">hard</span><span class="p">:</span>
+            <span class="k">await</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">delete</span><span class="p">()</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">deleted_at</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span>
+            <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">save</span><span class="p">()</span>
+
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">objects</span><span class="p">(</span><span class="bp">cls</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Override to exclude soft-deleted objects&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">objects</span><span class="p">()</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">deleted_at__isnull</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+<span class="k">class</span> <span class="nc">Book</span><span class="p">(</span><span class="n">SoftDeleteModel</span><span class="p">):</span>
+    <span class="n">title</span> <span class="o">=</span> <span class="n">CharField</span><span class="p">(</span><span class="n">max_length</span><span class="o">=</span><span class="mi">200</span><span class="p">)</span>
+    <span class="n">pages</span> <span class="o">=</span> <span class="n">IntegerField</span><span class="p">()</span>
+
+    <span class="c1"># All queries will automatically exclude soft-deleted books</span>
+</code></pre></div>
+<h3 id="versioned-models">Versioned Models<a class="headerlink" href="#versioned-models" title="Permanent link">&para;</a></h3>
+<p>Track changes to model instances:</p>
+<div class="highlight"><pre><span></span><code><span class="k">class</span> <span class="nc">VersionedModel</span><span class="p">(</span><span class="n">ormax</span><span class="o">.</span><span class="n">Model</span><span class="p">):</span>
+    <span class="n">current_version</span> <span class="o">=</span> <span class="n">IntegerField</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+
+    <span class="k">class</span> <span class="nc">Meta</span><span class="p">:</span>
+        <span class="n">abstract</span> <span class="o">=</span> <span class="kc">True</span>
+
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">save</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Create a new version on save&quot;&quot;&quot;</span>
+        <span class="n">is_new</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_is_new</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">is_new</span><span class="p">:</span>
+            <span class="c1"># Create version before updating</span>
+            <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">create_version</span><span class="p">()</span>
+        <span class="k">await</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">create_version</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Create a new version of the model&quot;&quot;&quot;</span>
+        <span class="n">version_data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">to_dict</span><span class="p">()</span>
+        <span class="n">version_data</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;id&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>  <span class="c1"># Remove ID for new version</span>
+        <span class="n">version_data</span><span class="p">[</span><span class="s2">&quot;original_id&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">id</span>
+        <span class="n">version_data</span><span class="p">[</span><span class="s2">&quot;version&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">current_version</span> <span class="o">+</span> <span class="mi">1</span>
+
+        <span class="c1"># Create version record</span>
+        <span class="k">await</span> <span class="n">VersionedBookVersion</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="o">**</span><span class="n">version_data</span><span class="p">)</span>
+
+        <span class="c1"># Increment version counter</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">current_version</span> <span class="o">+=</span> <span class="mi">1</span>
+
+<span class="k">class</span> <span class="nc">BookVersion</span><span class="p">(</span><span class="n">ormax</span><span class="o">.</span><span class="n">Model</span><span class="p">):</span>
+    <span class="n">original_id</span> <span class="o">=</span> <span class="n">IntegerField</span><span class="p">()</span>
+    <span class="n">version</span> <span class="o">=</span> <span class="n">IntegerField</span><span class="p">()</span>
+    <span class="n">title</span> <span class="o">=</span> <span class="n">CharField</span><span class="p">(</span><span class="n">max_length</span><span class="o">=</span><span class="mi">200</span><span class="p">)</span>
+    <span class="n">pages</span> <span class="o">=</span> <span class="n">IntegerField</span><span class="p">()</span>
+    <span class="n">created_at</span> <span class="o">=</span> <span class="n">DateTimeField</span><span class="p">(</span><span class="n">auto_now_add</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+<span class="k">class</span> <span class="nc">Book</span><span class="p">(</span><span class="n">VersionedModel</span><span class="p">):</span>
+    <span class="n">title</span> <span class="o">=</span> <span class="n">CharField</span><span class="p">(</span><span class="n">max_length</span><span class="o">=</span><span class="mi">200</span><span class="p">)</span>
+    <span class="n">pages</span> <span class="o">=</span> <span class="n">IntegerField</span><span class="p">()</span>
+</code></pre></div>
+<h3 id="tree-structures">Tree Structures<a class="headerlink" href="#tree-structures" title="Permanent link">&para;</a></h3>
+<p>Model hierarchical data with self-referential relationships:</p>
+<div class="highlight"><pre><span></span><code><span class="k">class</span> <span class="nc">Category</span><span class="p">(</span><span class="n">ormax</span><span class="o">.</span><span class="n">Model</span><span class="p">):</span>
+    <span class="n">name</span> <span class="o">=</span> <span class="n">CharField</span><span class="p">(</span><span class="n">max_length</span><span class="o">=</span><span class="mi">100</span><span class="p">)</span>
+    <span class="n">parent</span> <span class="o">=</span> <span class="n">ForeignKeyField</span><span class="p">(</span><span class="s2">&quot;Category&quot;</span><span class="p">,</span> <span class="n">related_name</span><span class="o">=</span><span class="s2">&quot;children&quot;</span><span class="p">,</span> <span class="n">null</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">get_ancestors</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">include_self</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get all ancestors of this category&quot;&quot;&quot;</span>
+        <span class="n">ancestors</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">current</span> <span class="o">=</span> <span class="bp">self</span> <span class="k">if</span> <span class="n">include_self</span> <span class="k">else</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">parent</span>
+        <span class="k">while</span> <span class="n">current</span><span class="p">:</span>
+            <span class="n">ancestors</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">current</span><span class="p">)</span>
+            <span class="n">current</span> <span class="o">=</span> <span class="k">await</span> <span class="n">current</span><span class="o">.</span><span class="n">parent</span>
+        <span class="k">return</span> <span class="n">ancestors</span>
+
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">get_descendants</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">include_self</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get all descendants of this category (breadth-first)&quot;&quot;&quot;</span>
+        <span class="n">descendants</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">queue</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="p">]</span> <span class="k">if</span> <span class="n">include_self</span> <span class="k">else</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">children</span><span class="o">.</span><span class="n">all</span><span class="p">()</span>
+
+        <span class="k">while</span> <span class="n">queue</span><span class="p">:</span>
+            <span class="n">node</span> <span class="o">=</span> <span class="n">queue</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+            <span class="n">descendants</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">node</span><span class="p">)</span>
+            <span class="n">children</span> <span class="o">=</span> <span class="k">await</span> <span class="n">node</span><span class="o">.</span><span class="n">children</span><span class="o">.</span><span class="n">all</span><span class="p">()</span>
+            <span class="n">queue</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">children</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">descendants</span>
+
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">move_to</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">new_parent</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Move category to a new parent&quot;&quot;&quot;</span>
+        <span class="c1"># Prevent circular references</span>
+        <span class="k">if</span> <span class="n">new_parent</span> <span class="o">==</span> <span class="bp">self</span> <span class="ow">or</span> <span class="bp">self</span> <span class="ow">in</span> <span class="k">await</span> <span class="n">new_parent</span><span class="o">.</span><span class="n">get_descendants</span><span class="p">():</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Cannot move category to itself or its descendants&quot;</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">parent</span> <span class="o">=</span> <span class="n">new_parent</span>
+        <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">save</span><span class="p">()</span>
+</code></pre></div>
+<h2 id="performance-considerations-for-custom-models">Performance Considerations for Custom Models<a class="headerlink" href="#performance-considerations-for-custom-models" title="Permanent link">&para;</a></h2>
+<h3 id="avoid-heavy-operations-in-init">Avoid Heavy Operations in <strong>init</strong><a class="headerlink" href="#avoid-heavy-operations-in-init" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><span class="c1"># BAD: Heavy operation in __init__</span>
+<span class="k">class</span> <span class="nc">Book</span><span class="p">(</span><span class="n">ormax</span><span class="o">.</span><span class="n">Model</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="c1"># This will run for EVERY instance, even in QuerySet</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">related_books</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_related_books</span><span class="p">()</span>  <span class="c1"># Expensive operation</span>
+
+<span class="c1"># GOOD: Use a method or property instead</span>
+<span class="k">class</span> <span class="nc">Book</span><span class="p">(</span><span class="n">ormax</span><span class="o">.</span><span class="n">Model</span><span class="p">):</span>
+    <span class="nd">@property</span>
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">related_books</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">&quot;_related_books&quot;</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_related_books</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_related_books</span><span class="p">()</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_related_books</span>
+</code></pre></div>
+<h3 id="use-caching-for-expensive-methods">Use Caching for Expensive Methods<a class="headerlink" href="#use-caching-for-expensive-methods" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><span class="kn">from</span> <span class="nn">ormax.utils</span> <span class="kn">import</span> <span class="n">cached_property</span><span class="p">,</span> <span class="n">memoize_async</span>
+
+<span class="k">class</span> <span class="nc">Book</span><span class="p">(</span><span class="n">ormax</span><span class="o">.</span><span class="n">Model</span><span class="p">):</span>
+    <span class="c1"># fields...</span>
+
+    <span class="nd">@cached_property</span>
+    <span class="k">def</span> <span class="nf">normalized_title</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Cached property - computed once per instance&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">title</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot; &quot;</span><span class="p">,</span> <span class="s2">&quot;-&quot;</span><span class="p">)</span>
+
+    <span class="nd">@memoize_async</span><span class="p">(</span><span class="n">maxsize</span><span class="o">=</span><span class="mi">100</span><span class="p">)</span>
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">get_recommendations</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">limit</span><span class="o">=</span><span class="mi">5</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Cached async method - computed once per argument combination&quot;&quot;&quot;</span>
+        <span class="c1"># Expensive recommendation algorithm</span>
+        <span class="k">return</span> <span class="k">await</span> <span class="n">calculate_recommendations</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">limit</span><span class="p">)</span>
+</code></pre></div>
+<h3 id="optimize-relationship-loading">Optimize Relationship Loading<a class="headerlink" href="#optimize-relationship-loading" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><span class="k">class</span> <span class="nc">Author</span><span class="p">(</span><span class="n">ormax</span><span class="o">.</span><span class="n">Model</span><span class="p">):</span>
+    <span class="c1"># fields...</span>
+
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">get_books_with_reviews</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Optimized method to get books with reviews in minimal queries&quot;&quot;&quot;</span>
+        <span class="c1"># Get author&#39;s books in one query</span>
+        <span class="n">books</span> <span class="o">=</span> <span class="k">await</span> <span class="n">Book</span><span class="o">.</span><span class="n">objects</span><span class="p">()</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">author</span><span class="o">=</span><span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">select_related</span><span class="p">(</span><span class="s2">&quot;reviews&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">all</span><span class="p">()</span>
+
+        <span class="c1"># Process books and reviews</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">book</span> <span class="ow">in</span> <span class="n">books</span><span class="p">:</span>
+            <span class="c1"># Reviews are already loaded due to select_related</span>
+            <span class="n">book_reviews</span> <span class="o">=</span> <span class="k">await</span> <span class="n">book</span><span class="o">.</span><span class="n">reviews</span><span class="o">.</span><span class="n">all</span><span class="p">()</span>
+            <span class="n">result</span><span class="o">.</span><span class="n">append</span><span class="p">({</span>
+                <span class="s2">&quot;book&quot;</span><span class="p">:</span> <span class="n">book</span><span class="p">,</span>
+                <span class="s2">&quot;review_count&quot;</span><span class="p">:</span> <span class="nb">len</span><span class="p">(</span><span class="n">book_reviews</span><span class="p">),</span>
+                <span class="s2">&quot;average_rating&quot;</span><span class="p">:</span> <span class="nb">sum</span><span class="p">(</span><span class="n">r</span><span class="o">.</span><span class="n">rating</span> <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">book_reviews</span><span class="p">)</span> <span class="o">/</span> <span class="nb">len</span><span class="p">(</span><span class="n">book_reviews</span><span class="p">)</span> <span class="k">if</span> <span class="n">book_reviews</span> <span class="k">else</span> <span class="mi">0</span>
+            <span class="p">})</span>
+
+        <span class="k">return</span> <span class="n">result</span>
+</code></pre></div>
+<h2 id="real-world-examples">Real-World Examples<a class="headerlink" href="#real-world-examples" title="Permanent link">&para;</a></h2>
+<h3 id="e-commerce-product-model">E-commerce Product Model<a class="headerlink" href="#e-commerce-product-model" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><span class="k">class</span> <span class="nc">Product</span><span class="p">(</span><span class="n">ormax</span><span class="o">.</span><span class="n">Model</span><span class="p">):</span>
+    <span class="n">name</span> <span class="o">=</span> <span class="n">CharField</span><span class="p">(</span><span class="n">max_length</span><span class="o">=</span><span class="mi">200</span><span class="p">)</span>
+    <span class="n">description</span> <span class="o">=</span> <span class="n">TextField</span><span class="p">(</span><span class="n">null</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">price</span> <span class="o">=</span> <span class="n">DecimalField</span><span class="p">(</span><span class="n">max_digits</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">decimal_places</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+    <span class="n">stock</span> <span class="o">=</span> <span class="n">IntegerField</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+    <span class="n">sku</span> <span class="o">=</span> <span class="n">CharField</span><span class="p">(</span><span class="n">max_length</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span> <span class="n">unique</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">category</span> <span class="o">=</span> <span class="n">ForeignKeyField</span><span class="p">(</span><span class="s2">&quot;Category&quot;</span><span class="p">,</span> <span class="n">related_name</span><span class="o">=</span><span class="s2">&quot;products&quot;</span><span class="p">)</span>
+    <span class="n">created_at</span> <span class="o">=</span> <span class="n">DateTimeField</span><span class="p">(</span><span class="n">auto_now_add</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">updated_at</span> <span class="o">=</span> <span class="n">DateTimeField</span><span class="p">(</span><span class="n">auto_now</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">is_active</span> <span class="o">=</span> <span class="n">BooleanField</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+    <span class="k">class</span> <span class="nc">Meta</span><span class="p">:</span>
+        <span class="n">indexes</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="p">{</span><span class="s2">&quot;fields&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">],</span> <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;FULLTEXT&quot;</span><span class="p">}</span>
+        <span class="p">]</span>
+
+    <span class="k">def</span> <span class="nf">get_formatted_price</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Format price for display&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;$</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">price</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">&quot;</span>
+
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">is_in_stock</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">quantity</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Check if product is in stock&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">stock</span> <span class="o">&gt;=</span> <span class="n">quantity</span>
+
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">reduce_stock</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">quantity</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Reduce stock after purchase&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_in_stock</span><span class="p">(</span><span class="n">quantity</span><span class="p">):</span>
+            <span class="k">return</span> <span class="kc">False</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">stock</span> <span class="o">-=</span> <span class="n">quantity</span>
+        <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">save</span><span class="p">()</span>
+        <span class="k">return</span> <span class="kc">True</span>
+
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">get_similar_products</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">limit</span><span class="o">=</span><span class="mi">5</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get similar products based on category&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="k">await</span> <span class="n">Product</span><span class="o">.</span><span class="n">objects</span><span class="p">()</span> \
+            <span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">category</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">category</span><span class="p">,</span> <span class="n">is_active</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span> \
+            <span class="o">.</span><span class="n">exclude</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">)</span> \
+            <span class="o">.</span><span class="n">order_by</span><span class="p">(</span><span class="s2">&quot;-created_at&quot;</span><span class="p">)</span> \
+            <span class="o">.</span><span class="n">limit</span><span class="p">(</span><span class="n">limit</span><span class="p">)</span> \
+            <span class="o">.</span><span class="n">all</span><span class="p">()</span>
+
+<span class="k">class</span> <span class="nc">ProductQuerySet</span><span class="p">(</span><span class="n">ormax</span><span class="o">.</span><span class="n">QuerySet</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">active</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Filter for active products&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">is_active</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">in_stock</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Filter for products in stock&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">active</span><span class="p">()</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">stock__gt</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">search</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">query</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Search products by name and description&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="s2">&quot;postgresql&quot;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_database</span><span class="o">.</span><span class="n">connection_string</span><span class="p">:</span>
+            <span class="c1"># Use PostgreSQL full-text search</span>
+            <span class="k">return</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span>
+                <span class="n">name__icontains</span><span class="o">=</span><span class="n">query</span>
+            <span class="p">)</span> <span class="o">|</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">description__icontains</span><span class="o">=</span><span class="n">query</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># Fallback for other databases</span>
+            <span class="k">return</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span>
+                <span class="n">name__icontains</span><span class="o">=</span><span class="n">query</span>
+            <span class="p">)</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">description__icontains</span><span class="o">=</span><span class="n">query</span><span class="p">)</span>
+
+<span class="k">class</span> <span class="nc">ProductManager</span><span class="p">(</span><span class="n">ormax</span><span class="o">.</span><span class="n">Manager</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">get_queryset</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">ProductQuerySet</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="p">)</span>
+
+<span class="n">Product</span><span class="o">.</span><span class="n">objects</span> <span class="o">=</span> <span class="n">ProductManager</span><span class="p">()</span>
+</code></pre></div>
+<h3 id="blog-system-with-nested-comments">Blog System with Nested Comments<a class="headerlink" href="#blog-system-with-nested-comments" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><span class="k">class</span> <span class="nc">User</span><span class="p">(</span><span class="n">ormax</span><span class="o">.</span><span class="n">Model</span><span class="p">):</span>
+    <span class="n">username</span> <span class="o">=</span> <span class="n">CharField</span><span class="p">(</span><span class="n">max_length</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span> <span class="n">unique</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">email</span> <span class="o">=</span> <span class="n">EmailField</span><span class="p">(</span><span class="n">unique</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">joined_at</span> <span class="o">=</span> <span class="n">DateTimeField</span><span class="p">(</span><span class="n">auto_now_add</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+<span class="k">class</span> <span class="nc">Post</span><span class="p">(</span><span class="n">ormax</span><span class="o">.</span><span class="n">Model</span><span class="p">):</span>
+    <span class="n">title</span> <span class="o">=</span> <span class="n">CharField</span><span class="p">(</span><span class="n">max_length</span><span class="o">=</span><span class="mi">200</span><span class="p">)</span>
+    <span class="n">content</span> <span class="o">=</span> <span class="n">TextField</span><span class="p">()</span>
+    <span class="n">author</span> <span class="o">=</span> <span class="n">ForeignKeyField</span><span class="p">(</span><span class="n">User</span><span class="p">,</span> <span class="n">related_name</span><span class="o">=</span><span class="s2">&quot;posts&quot;</span><span class="p">)</span>
+    <span class="n">created_at</span> <span class="o">=</span> <span class="n">DateTimeField</span><span class="p">(</span><span class="n">auto_now_add</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">updated_at</span> <span class="o">=</span> <span class="n">DateTimeField</span><span class="p">(</span><span class="n">auto_now</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">is_published</span> <span class="o">=</span> <span class="n">BooleanField</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">excerpt</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">length</span><span class="o">=</span><span class="mi">100</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get a shortened excerpt of the post&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">content</span><span class="p">[:</span><span class="n">length</span><span class="p">]</span> <span class="o">+</span> <span class="s2">&quot;...&quot;</span> <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">content</span><span class="p">)</span> <span class="o">&gt;</span> <span class="n">length</span> <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">content</span>
+
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">get_comment_count</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get total comment count including nested comments&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="k">await</span> <span class="n">Comment</span><span class="o">.</span><span class="n">objects</span><span class="p">()</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">post</span><span class="o">=</span><span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">count</span><span class="p">()</span>
+
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">get_top_level_comments</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get top-level comments (no parent)&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="k">await</span> <span class="n">Comment</span><span class="o">.</span><span class="n">objects</span><span class="p">()</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">post</span><span class="o">=</span><span class="bp">self</span><span class="p">,</span> <span class="n">parent</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span><span class="o">.</span><span class="n">all</span><span class="p">()</span>
+
+<span class="k">class</span> <span class="nc">CommentQuerySet</span><span class="p">(</span><span class="n">ormax</span><span class="o">.</span><span class="n">QuerySet</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">for_post</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">post_id</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Filter comments for a specific post&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">post_id</span><span class="o">=</span><span class="n">post_id</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">top_level</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Filter for top-level comments&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">parent</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
+
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">with_nested_replies</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">comment_id</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get a comment with all nested replies&quot;&quot;&quot;</span>
+        <span class="n">comment</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="n">comment_id</span><span class="p">)</span><span class="o">.</span><span class="n">first</span><span class="p">()</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">comment</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">None</span>
+        <span class="n">comment</span><span class="o">.</span><span class="n">replies</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">parent_id</span><span class="o">=</span><span class="n">comment_id</span><span class="p">)</span><span class="o">.</span><span class="n">all</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">reply</span> <span class="ow">in</span> <span class="n">comment</span><span class="o">.</span><span class="n">replies</span><span class="p">:</span>
+            <span class="n">reply</span><span class="o">.</span><span class="n">replies</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">with_nested_replies</span><span class="p">(</span><span class="n">reply</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">comment</span>
+
+<span class="k">class</span> <span class="nc">Comment</span><span class="p">(</span><span class="n">ormax</span><span class="o">.</span><span class="n">Model</span><span class="p">):</span>
+    <span class="n">post</span> <span class="o">=</span> <span class="n">ForeignKeyField</span><span class="p">(</span><span class="n">Post</span><span class="p">,</span> <span class="n">related_name</span><span class="o">=</span><span class="s2">&quot;comments&quot;</span><span class="p">)</span>
+    <span class="n">author</span> <span class="o">=</span> <span class="n">ForeignKeyField</span><span class="p">(</span><span class="n">User</span><span class="p">,</span> <span class="n">related_name</span><span class="o">=</span><span class="s2">&quot;comments&quot;</span><span class="p">)</span>
+    <span class="n">content</span> <span class="o">=</span> <span class="n">TextField</span><span class="p">()</span>
+    <span class="n">parent</span> <span class="o">=</span> <span class="n">ForeignKeyField</span><span class="p">(</span><span class="s2">&quot;Comment&quot;</span><span class="p">,</span> <span class="n">related_name</span><span class="o">=</span><span class="s2">&quot;replies&quot;</span><span class="p">,</span> <span class="n">null</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">created_at</span> <span class="o">=</span> <span class="n">DateTimeField</span><span class="p">(</span><span class="n">auto_now_add</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+    <span class="n">objects</span> <span class="o">=</span> <span class="n">CommentQuerySet</span><span class="o">.</span><span class="n">as_manager</span><span class="p">()</span>
+
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">get_ancestors</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get all ancestor comments&quot;&quot;&quot;</span>
+        <span class="n">ancestors</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">current</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">parent</span>
+        <span class="k">while</span> <span class="n">current</span><span class="p">:</span>
+            <span class="n">ancestors</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">current</span><span class="p">)</span>
+            <span class="n">current</span> <span class="o">=</span> <span class="k">await</span> <span class="n">current</span><span class="o">.</span><span class="n">parent</span>
+        <span class="k">return</span> <span class="n">ancestors</span>
+
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">get_descendants</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get all descendant comments (breadth-first)&quot;&quot;&quot;</span>
+        <span class="n">descendants</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">queue</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">replies</span><span class="o">.</span><span class="n">all</span><span class="p">()</span>
+
+        <span class="k">while</span> <span class="n">queue</span><span class="p">:</span>
+            <span class="n">comment</span> <span class="o">=</span> <span class="n">queue</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+            <span class="n">descendants</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">comment</span><span class="p">)</span>
+            <span class="n">replies</span> <span class="o">=</span> <span class="k">await</span> <span class="n">comment</span><span class="o">.</span><span class="n">replies</span><span class="o">.</span><span class="n">all</span><span class="p">()</span>
+            <span class="n">queue</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">replies</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">descendants</span>
+</code></pre></div>
+<h2 id="best-practices-for-custom-models">Best Practices for Custom Models<a class="headerlink" href="#best-practices-for-custom-models" title="Permanent link">&para;</a></h2>
+<h3 id="keep-business-logic-in-models">Keep Business Logic in Models<a class="headerlink" href="#keep-business-logic-in-models" title="Permanent link">&para;</a></h3>
+<p>Models are the right place for business logic related to the data:</p>
+<div class="highlight"><pre><span></span><code><span class="c1"># GOOD: Business logic in model</span>
+<span class="k">class</span> <span class="nc">Order</span><span class="p">(</span><span class="n">ormax</span><span class="o">.</span><span class="n">Model</span><span class="p">):</span>
+    <span class="c1"># fields...</span>
+
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">calculate_total</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Decimal</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Calculate order total with tax and discounts&quot;&quot;&quot;</span>
+        <span class="c1"># Business logic here</span>
+        <span class="k">return</span> <span class="n">total</span>
+
+<span class="c1"># BAD: Business logic outside model</span>
+<span class="k">def</span> <span class="nf">calculate_order_total</span><span class="p">(</span><span class="n">order</span><span class="p">):</span>
+    <span class="c1"># Business logic here</span>
+    <span class="k">return</span> <span class="n">total</span>
+</code></pre></div>
+<h3 id="use-properties-for-simple-calculations">Use Properties for Simple Calculations<a class="headerlink" href="#use-properties-for-simple-calculations" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><span class="k">class</span> <span class="nc">Book</span><span class="p">(</span><span class="n">ormax</span><span class="o">.</span><span class="n">Model</span><span class="p">):</span>
+    <span class="n">pages</span> <span class="o">=</span> <span class="n">IntegerField</span><span class="p">()</span>
+    <span class="n">price</span> <span class="o">=</span> <span class="n">DecimalField</span><span class="p">(</span><span class="n">max_digits</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">decimal_places</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">price_per_page</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Decimal</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Calculate price per page&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">price</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">pages</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">pages</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="k">else</span> <span class="n">Decimal</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+</code></pre></div>
+<h3 id="use-async-methods-for-database-operations">Use Async Methods for Database Operations<a class="headerlink" href="#use-async-methods-for-database-operations" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><span class="k">class</span> <span class="nc">User</span><span class="p">(</span><span class="n">ormax</span><span class="o">.</span><span class="n">Model</span><span class="p">):</span>
+    <span class="c1"># fields...</span>
+
+    <span class="c1"># GOOD: Async method for database operations</span>
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">get_purchased_books</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="k">await</span> <span class="n">Book</span><span class="o">.</span><span class="n">objects</span><span class="p">()</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">purchase__user</span><span class="o">=</span><span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">all</span><span class="p">()</span>
+
+    <span class="c1"># BAD: Synchronous method that hides async operations</span>
+    <span class="k">def</span> <span class="nf">get_purchased_books</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c1"># This would require some complex async-to-sync conversion</span>
+        <span class="c1"># and is generally a bad practice</span>
+        <span class="k">pass</span>
+</code></pre></div>
+<h3 id="document-custom-methods">Document Custom Methods<a class="headerlink" href="#document-custom-methods" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><span class="k">class</span> <span class="nc">Product</span><span class="p">(</span><span class="n">ormax</span><span class="o">.</span><span class="n">Model</span><span class="p">):</span>
+    <span class="c1"># fields...</span>
+
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">is_low_stock</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">threshold</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Check if product is low in stock.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            threshold: The stock level considered &quot;low&quot; (default: 10)</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            bool: True if stock is below threshold, False otherwise</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">stock</span> <span class="o">&lt;</span> <span class="n">threshold</span>
+</code></pre></div>
+<h2 id="testing-custom-models">Testing Custom Models<a class="headerlink" href="#testing-custom-models" title="Permanent link">&para;</a></h2>
+<h3 id="unit-testing-model-methods">Unit Testing Model Methods<a class="headerlink" href="#unit-testing-model-methods" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><span class="kn">import</span> <span class="nn">pytest</span>
+<span class="kn">from</span> <span class="nn">unittest.mock</span> <span class="kn">import</span> <span class="n">patch</span>
+
+<span class="nd">@pytest</span><span class="o">.</span><span class="n">mark</span><span class="o">.</span><span class="n">asyncio</span>
+<span class="k">async</span> <span class="k">def</span> <span class="nf">test_book_is_long</span><span class="p">():</span>
+    <span class="c1"># Create a book with 400 pages</span>
+    <span class="n">book</span> <span class="o">=</span> <span class="n">Book</span><span class="p">(</span><span class="n">title</span><span class="o">=</span><span class="s2">&quot;Long Book&quot;</span><span class="p">,</span> <span class="n">pages</span><span class="o">=</span><span class="mi">400</span><span class="p">)</span>
+    <span class="k">assert</span> <span class="n">book</span><span class="o">.</span><span class="n">is_long</span><span class="p">()</span> <span class="ow">is</span> <span class="kc">True</span>
+
+    <span class="c1"># Create a book with 200 pages</span>
+    <span class="n">book</span> <span class="o">=</span> <span class="n">Book</span><span class="p">(</span><span class="n">title</span><span class="o">=</span><span class="s2">&quot;Short Book&quot;</span><span class="p">,</span> <span class="n">pages</span><span class="o">=</span><span class="mi">200</span><span class="p">)</span>
+    <span class="k">assert</span> <span class="n">book</span><span class="o">.</span><span class="n">is_long</span><span class="p">()</span> <span class="ow">is</span> <span class="kc">False</span>
+
+<span class="nd">@pytest</span><span class="o">.</span><span class="n">mark</span><span class="o">.</span><span class="n">asyncio</span>
+<span class="k">async</span> <span class="k">def</span> <span class="nf">test_product_reserve_stock</span><span class="p">():</span>
+    <span class="c1"># Setup</span>
+    <span class="n">product</span> <span class="o">=</span> <span class="k">await</span> <span class="n">Product</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;Test Product&quot;</span><span class="p">,</span> <span class="n">price</span><span class="o">=</span><span class="mf">10.0</span><span class="p">,</span> <span class="n">stock</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
+
+    <span class="c1"># Test successful reservation</span>
+    <span class="n">result</span> <span class="o">=</span> <span class="k">await</span> <span class="n">product</span><span class="o">.</span><span class="n">reserve_stock</span><span class="p">(</span><span class="mi">5</span><span class="p">)</span>
+    <span class="k">assert</span> <span class="n">result</span> <span class="ow">is</span> <span class="kc">True</span>
+    <span class="k">assert</span> <span class="n">product</span><span class="o">.</span><span class="n">stock</span> <span class="o">==</span> <span class="mi">5</span>
+
+    <span class="c1"># Test failed reservation</span>
+    <span class="n">result</span> <span class="o">=</span> <span class="k">await</span> <span class="n">product</span><span class="o">.</span><span class="n">reserve_stock</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span>
+    <span class="k">assert</span> <span class="n">result</span> <span class="ow">is</span> <span class="kc">False</span>
+    <span class="k">assert</span> <span class="n">product</span><span class="o">.</span><span class="n">stock</span> <span class="o">==</span> <span class="mi">5</span>  <span class="c1"># No change</span>
+</code></pre></div>
+<h3 id="testing-custom-managers">Testing Custom Managers<a class="headerlink" href="#testing-custom-managers" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><span class="nd">@pytest</span><span class="o">.</span><span class="n">mark</span><span class="o">.</span><span class="n">asyncio</span>
+<span class="k">async</span> <span class="k">def</span> <span class="nf">test_published_book_manager</span><span class="p">():</span>
+    <span class="c1"># Create published and unpublished books</span>
+    <span class="k">await</span> <span class="n">Book</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="n">title</span><span class="o">=</span><span class="s2">&quot;Published Book&quot;</span><span class="p">,</span> <span class="n">pages</span><span class="o">=</span><span class="mi">200</span><span class="p">,</span> <span class="n">published_date</span><span class="o">=</span><span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">())</span>
+    <span class="k">await</span> <span class="n">Book</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="n">title</span><span class="o">=</span><span class="s2">&quot;Unpublished Book&quot;</span><span class="p">,</span> <span class="n">pages</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span> <span class="n">published_date</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
+
+    <span class="c1"># Test published manager</span>
+    <span class="n">published_books</span> <span class="o">=</span> <span class="k">await</span> <span class="n">Book</span><span class="o">.</span><span class="n">published</span><span class="o">.</span><span class="n">all</span><span class="p">()</span>
+    <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">published_books</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span>
+    <span class="k">assert</span> <span class="n">published_books</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">title</span> <span class="o">==</span> <span class="s2">&quot;Published Book&quot;</span>
+
+    <span class="c1"># Test recently published</span>
+    <span class="n">recent_books</span> <span class="o">=</span> <span class="k">await</span> <span class="n">Book</span><span class="o">.</span><span class="n">published</span><span class="o">.</span><span class="n">recently_published</span><span class="p">(</span><span class="n">days</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+    <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">recent_books</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span>
+</code></pre></div>
+<h3 id="testing-signals">Testing Signals<a class="headerlink" href="#testing-signals" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><span class="nd">@pytest</span><span class="o">.</span><span class="n">mark</span><span class="o">.</span><span class="n">asyncio</span>
+<span class="k">async</span> <span class="k">def</span> <span class="nf">test_book_published_signal</span><span class="p">():</span>
+    <span class="c1"># Create a mock signal handler</span>
+    <span class="n">handler_called</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="n">result_instance</span> <span class="o">=</span> <span class="kc">None</span>
+
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">handler</span><span class="p">(</span><span class="n">sender</span><span class="p">,</span> <span class="n">instance</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="k">nonlocal</span> <span class="n">handler_called</span><span class="p">,</span> <span class="n">result_instance</span>
+        <span class="n">handler_called</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="n">result_instance</span> <span class="o">=</span> <span class="n">instance</span>
+
+    <span class="c1"># Connect the handler</span>
+    <span class="n">book_published</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="n">handler</span><span class="p">)</span>
+
+    <span class="c1"># Create a book (should trigger the signal)</span>
+    <span class="n">book</span> <span class="o">=</span> <span class="k">await</span> <span class="n">Book</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="n">title</span><span class="o">=</span><span class="s2">&quot;Signal Test&quot;</span><span class="p">,</span> <span class="n">pages</span><span class="o">=</span><span class="mi">100</span><span class="p">)</span>
+    <span class="k">await</span> <span class="n">book</span><span class="o">.</span><span class="n">publish</span><span class="p">()</span>
+
+    <span class="c1"># Check if handler was called</span>
+    <span class="k">assert</span> <span class="n">handler_called</span> <span class="ow">is</span> <span class="kc">True</span>
+    <span class="k">assert</span> <span class="n">result_instance</span><span class="o">.</span><span class="n">id</span> <span class="o">==</span> <span class="n">book</span><span class="o">.</span><span class="n">id</span>
+
+    <span class="c1"># Disconnect the handler</span>
+    <span class="n">book_published</span><span class="o">.</span><span class="n">disconnect</span><span class="p">(</span><span class="n">handler</span><span class="p">)</span>
+</code></pre></div>
+<h2 id="troubleshooting-custom-models">Troubleshooting Custom Models<a class="headerlink" href="#troubleshooting-custom-models" title="Permanent link">&para;</a></h2>
+<h3 id="method-not-found">Method Not Found<a class="headerlink" href="#method-not-found" title="Permanent link">&para;</a></h3>
+<p><strong>Issue</strong>: <code>AttributeError: 'Book' object has no attribute 'is_long'</code></p>
+<p><strong>Solution</strong>:
+- Verify the method is defined in the model class
+- Check for typos in the method name
+- Ensure you're using the correct model instance</p>
+<h3 id="unexpected-query-behavior">Unexpected Query Behavior<a class="headerlink" href="#unexpected-query-behavior" title="Permanent link">&para;</a></h3>
+<p><strong>Issue</strong>: Custom QuerySet methods not working as expected</p>
+<p><strong>Solution</strong>:
+- Verify the QuerySet methods are returning new QuerySet instances
+- Check if you're properly chaining methods
+- Use <code>print(queryset._build_select_query())</code> to see the generated SQL</p>
+<h3 id="signal-not-firing">Signal Not Firing<a class="headerlink" href="#signal-not-firing" title="Permanent link">&para;</a></h3>
+<p><strong>Issue</strong>: Signal handlers not being called</p>
+<p><strong>Solution</strong>:
+- Verify the handler is properly connected to the signal
+- Check if the signal is being sent from the correct location
+- Ensure async handlers are awaited properly</p>
+<h3 id="performance-issues-with-custom-methods">Performance Issues with Custom Methods<a class="headerlink" href="#performance-issues-with-custom-methods" title="Permanent link">&para;</a></h3>
+<p><strong>Issue</strong>: Slow performance with custom model methods</p>
+<p><strong>Solution</strong>:
+- Avoid database operations in <code>__init__</code> or properties
+- Use <code>select_related</code> and <code>prefetch_related</code> to optimize relationship access
+- Add appropriate indexes to support your query patterns</p>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+  <script>var tabs=__md_get("__tabs");if(Array.isArray(tabs))e:for(var set of document.querySelectorAll(".tabbed-set")){var labels=set.querySelector(".tabbed-labels");for(var tab of tabs)for(var label of labels.getElementsByTagName("label"))if(label.innerText.trim()===tab){var input=document.getElementById(label.htmlFor);input.checked=!0;continue e}}</script>
+
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+    
+      
+      <nav class="md-footer__inner md-grid" aria-label="Footer" >
+        
+          
+          <a href="../query-optimization/" class="md-footer__link md-footer__link--prev" aria-label="Previous: Query Optimization">
+            <div class="md-footer__button md-icon">
+              
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+            </div>
+            <div class="md-footer__title">
+              <span class="md-footer__direction">
+                Previous
+              </span>
+              <div class="md-ellipsis">
+                Query Optimization
+              </div>
+            </div>
+          </a>
+        
+        
+          
+          <a href="../performance-monitoring/" class="md-footer__link md-footer__link--next" aria-label="Next: Performance Monitoring">
+            <div class="md-footer__title">
+              <span class="md-footer__direction">
+                Next
+              </span>
+              <div class="md-ellipsis">
+                Performance Monitoring
+              </div>
+            </div>
+            <div class="md-footer__button md-icon">
+              
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M4 11v2h12l-5.5 5.5 1.42 1.42L19.84 12l-7.92-7.92L10.5 5.5 16 11z"/></svg>
+            </div>
+          </a>
+        
+      </nav>
+    
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      <script id="__config" type="application/json">{"base": "../..", "features": ["search.suggest", "search.highlight", "content.tabs.link", "navigation.footer", "content.code.copy", "navigation.instant", "navigation.sections", "navigation.expand"], "search": "../../assets/javascripts/workers/search.973d3a69.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.92b07e13.min.js"></script>
+      
+        <script src="../../js/termynal.js"></script>
+      
+        <script src="../../js/custom.js"></script>
+      
+        <script src="../../&lt;script type=&#34;application/ld+json&#34;&gt;
+{
+  &#34;@context&#34;: &#34;https:/schema.org&#34;,
+  &#34;@type&#34;: &#34;SoftwareApplication&#34;,
+  &#34;name&#34;: &#34;Ormax ORM&#34;,
+  &#34;applicationCategory&#34;: &#34;DeveloperLibrary&#34;,
+  &#34;operatingSystem&#34;: &#34;Any&#34;,
+  &#34;url&#34;: &#34;https:/ormax.shayan-heidari.ir/&#34;,
+  &#34;logo&#34;: &#34;https:/raw.githubusercontent.com/shayanheidari01/ormax/master/icon.png&#34;,
+  &#34;author&#34;: {
+    &#34;@type&#34;: &#34;Person&#34;,
+    &#34;name&#34;: &#34;Shayan Heidari&#34;
+  },
+  &#34;description&#34;: &#34;Ormax ORM: A lightweight and async ORM for Python with simple models, transactions, relations, and performance monitoring.&#34;
+}
+&lt;/script&gt;
+"></script>
+      
+    
+  </body>
+</html>

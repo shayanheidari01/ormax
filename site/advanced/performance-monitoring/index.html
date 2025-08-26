@@ -1,0 +1,3074 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Ormax Python ORM Documents">
+      
+      
+        <meta name="author" content="Shayan Heidari">
+      
+      
+        <link rel="canonical" href="https://ormax.shayan-heidari.ir/advanced/performance-monitoring/">
+      
+      
+        <link rel="prev" href="../custom-models/">
+      
+      
+        <link rel="next" href="../deployment/">
+      
+      
+      <link rel="icon" href="../../assets/logo.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.6.17">
+    
+    
+      
+        <title>Performance Monitoring - Ormax Python ORM</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.7e37652d.min.css">
+      
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.06af60db.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Vazirmatn:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Vazirmatn";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../../css/termynal.css">
+    
+      <link rel="stylesheet" href="../../css/custom.css">
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="white" data-md-color-accent="amber">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#performance-monitoring-in-ormax" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../.." title="Ormax Python ORM" class="md-header__button md-logo" aria-label="Ormax Python ORM" data-md-component="logo">
+      
+  <img src="../../assets/logo.png" alt="logo">
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            Ormax Python ORM
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Performance Monitoring
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="default" data-md-color-primary="white" data-md-color-accent="amber"  aria-label="Dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 7a5 5 0 0 1 5 5 5 5 0 0 1-5 5 5 5 0 0 1-5-5 5 5 0 0 1 5-5m0 2a3 3 0 0 0-3 3 3 3 0 0 0 3 3 3 3 0 0 0 3-3 3 3 0 0 0-3-3m0-7 2.39 3.42C13.65 5.15 12.84 5 12 5s-1.65.15-2.39.42zM3.34 7l4.16-.35A7.2 7.2 0 0 0 5.94 8.5c-.44.74-.69 1.5-.83 2.29zm.02 10 1.76-3.77a7.131 7.131 0 0 0 2.38 4.14zM20.65 7l-1.77 3.79a7.02 7.02 0 0 0-2.38-4.15zm-.01 10-4.14.36c.59-.51 1.12-1.14 1.54-1.86.42-.73.69-1.5.83-2.29zM12 22l-2.41-3.44c.74.27 1.55.44 2.41.44.82 0 1.63-.17 2.37-.44z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="slate" data-md-color-primary="white" data-md-color-accent="amber"  aria-label="Light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="m17.75 4.09-2.53 1.94.91 3.06-2.63-1.81-2.63 1.81.91-3.06-2.53-1.94L12.44 4l1.06-3 1.06 3zm3.5 6.91-1.64 1.25.59 1.98-1.7-1.17-1.7 1.17.59-1.98L15.75 11l2.06-.05L18.5 9l.69 1.95zm-2.28 4.95c.83-.08 1.72 1.1 1.19 1.85-.32.45-.66.87-1.08 1.27C15.17 23 8.84 23 4.94 19.07c-3.91-3.9-3.91-10.24 0-14.14.4-.4.82-.76 1.27-1.08.75-.53 1.93.36 1.85 1.19-.27 2.86.69 5.83 2.89 8.02a9.96 9.96 0 0 0 8.02 2.89m-1.64 2.02a12.08 12.08 0 0 1-7.8-3.47c-2.17-2.19-3.33-5-3.49-7.82-2.81 3.14-2.7 7.96.31 10.98 3.02 3.01 7.84 3.12 10.98.31"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/shayanheidari01/ormax/" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.0.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path fill="currentColor" d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    GitHub
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="Ormax Python ORM" class="md-nav__button md-logo" aria-label="Ormax Python ORM" data-md-component="logo">
+      
+  <img src="../../assets/logo.png" alt="logo">
+
+    </a>
+    Ormax Python ORM
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/shayanheidari01/ormax/" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.0.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path fill="currentColor" d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    GitHub
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Home
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    Getting Started
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            Getting Started
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../getting-started/installation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Installation
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../getting-started/models/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Basic Model Definition
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    Querying Data
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            Querying Data
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../querying/queryset/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    QuerySet API
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    Relationships
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            Relationships
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../relationships/overview/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Overview
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    Advanced Features
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            Advanced Features
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../transactions/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Transactions
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../query-optimization/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Query Optimization
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../custom-models/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Custom Model Patterns
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    Performance Monitoring
+    
+  </span>
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    Performance Monitoring
+    
+  </span>
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#understanding-performance-metrics" class="md-nav__link">
+    <span class="md-ellipsis">
+      Understanding Performance Metrics
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Understanding Performance Metrics">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#key-performance-indicators" class="md-nav__link">
+    <span class="md-ellipsis">
+      Key Performance Indicators
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#built-in-logging-system" class="md-nav__link">
+    <span class="md-ellipsis">
+      Built-in Logging System
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Built-in Logging System">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#configuring-logging" class="md-nav__link">
+    <span class="md-ellipsis">
+      Configuring Logging
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#log-levels-and-their-meaning" class="md-nav__link">
+    <span class="md-ellipsis">
+      Log Levels and Their Meaning
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#sample-log-output" class="md-nav__link">
+    <span class="md-ellipsis">
+      Sample Log Output
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#query-performance-monitoring" class="md-nav__link">
+    <span class="md-ellipsis">
+      Query Performance Monitoring
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Query Performance Monitoring">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#tracking-query-execution-time" class="md-nav__link">
+    <span class="md-ellipsis">
+      Tracking Query Execution Time
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Tracking Query Execution Time">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#using-the-measure_time_async-decorator" class="md-nav__link">
+    <span class="md-ellipsis">
+      Using the measure_time_async Decorator
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#using-context-managers" class="md-nav__link">
+    <span class="md-ellipsis">
+      Using Context Managers
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#manual-timing" class="md-nav__link">
+    <span class="md-ellipsis">
+      Manual Timing
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#identifying-slow-queries" class="md-nav__link">
+    <span class="md-ellipsis">
+      Identifying Slow Queries
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#connection-pool-monitoring" class="md-nav__link">
+    <span class="md-ellipsis">
+      Connection Pool Monitoring
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Connection Pool Monitoring">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#viewing-connection-pool-status" class="md-nav__link">
+    <span class="md-ellipsis">
+      Viewing Connection Pool Status
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#monitoring-connection-usage-over-time" class="md-nav__link">
+    <span class="md-ellipsis">
+      Monitoring Connection Usage Over Time
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#connection-pool-tuning-parameters" class="md-nav__link">
+    <span class="md-ellipsis">
+      Connection Pool Tuning Parameters
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#query-analysis-tools" class="md-nav__link">
+    <span class="md-ellipsis">
+      Query Analysis Tools
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Query Analysis Tools">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#explain-plans" class="md-nav__link">
+    <span class="md-ellipsis">
+      EXPLAIN Plans
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="EXPLAIN Plans">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#interpreting-explain-output" class="md-nav__link">
+    <span class="md-ellipsis">
+      Interpreting EXPLAIN Output
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#query-profiling" class="md-nav__link">
+    <span class="md-ellipsis">
+      Query Profiling
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#tracking-query-counts" class="md-nav__link">
+    <span class="md-ellipsis">
+      Tracking Query Counts
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#monitoring-dashboard" class="md-nav__link">
+    <span class="md-ellipsis">
+      Monitoring Dashboard
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#database-specific-monitoring" class="md-nav__link">
+    <span class="md-ellipsis">
+      Database-Specific Monitoring
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Database-Specific Monitoring">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#postgresql-monitoring" class="md-nav__link">
+    <span class="md-ellipsis">
+      PostgreSQL Monitoring
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#mysql-monitoring" class="md-nav__link">
+    <span class="md-ellipsis">
+      MySQL Monitoring
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#sqlite-monitoring" class="md-nav__link">
+    <span class="md-ellipsis">
+      SQLite Monitoring
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#performance-analysis-techniques" class="md-nav__link">
+    <span class="md-ellipsis">
+      Performance Analysis Techniques
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Performance Analysis Techniques">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#identifying-n1-query-problems" class="md-nav__link">
+    <span class="md-ellipsis">
+      Identifying N+1 Query Problems
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#memory-usage-monitoring" class="md-nav__link">
+    <span class="md-ellipsis">
+      Memory Usage Monitoring
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#alerting-and-notification-systems" class="md-nav__link">
+    <span class="md-ellipsis">
+      Alerting and Notification Systems
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Alerting and Notification Systems">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#setting-up-performance-alerts" class="md-nav__link">
+    <span class="md-ellipsis">
+      Setting Up Performance Alerts
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#integrating-with-external-monitoring-services" class="md-nav__link">
+    <span class="md-ellipsis">
+      Integrating with External Monitoring Services
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#performance-optimization-checklist" class="md-nav__link">
+    <span class="md-ellipsis">
+      Performance Optimization Checklist
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Performance Optimization Checklist">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#daily-checks" class="md-nav__link">
+    <span class="md-ellipsis">
+      Daily Checks
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#weekly-checks" class="md-nav__link">
+    <span class="md-ellipsis">
+      Weekly Checks
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#monthly-checks" class="md-nav__link">
+    <span class="md-ellipsis">
+      Monthly Checks
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#common-performance-issues-and-solutions" class="md-nav__link">
+    <span class="md-ellipsis">
+      Common Performance Issues and Solutions
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Common Performance Issues and Solutions">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#issue-high-connection-usage" class="md-nav__link">
+    <span class="md-ellipsis">
+      Issue: High Connection Usage
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#issue-slow-queries" class="md-nav__link">
+    <span class="md-ellipsis">
+      Issue: Slow Queries
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#issue-n1-query-problem" class="md-nav__link">
+    <span class="md-ellipsis">
+      Issue: N+1 Query Problem
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#issue-memory-pressure" class="md-nav__link">
+    <span class="md-ellipsis">
+      Issue: Memory Pressure
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#best-practices-for-performance-monitoring" class="md-nav__link">
+    <span class="md-ellipsis">
+      Best Practices for Performance Monitoring
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Best Practices for Performance Monitoring">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#set-realistic-thresholds" class="md-nav__link">
+    <span class="md-ellipsis">
+      Set Realistic Thresholds
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#monitor-in-production" class="md-nav__link">
+    <span class="md-ellipsis">
+      Monitor in Production
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#correlate-metrics" class="md-nav__link">
+    <span class="md-ellipsis">
+      Correlate Metrics
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#proactive-monitoring" class="md-nav__link">
+    <span class="md-ellipsis">
+      Proactive Monitoring
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#real-world-monitoring-examples" class="md-nav__link">
+    <span class="md-ellipsis">
+      Real-World Monitoring Examples
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Real-World Monitoring Examples">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#e-commerce-platform-monitoring" class="md-nav__link">
+    <span class="md-ellipsis">
+      E-commerce Platform Monitoring
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#analytics-dashboard-monitoring" class="md-nav__link">
+    <span class="md-ellipsis">
+      Analytics Dashboard Monitoring
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#troubleshooting-performance-issues" class="md-nav__link">
+    <span class="md-ellipsis">
+      Troubleshooting Performance Issues
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Troubleshooting Performance Issues">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#step-by-step-diagnosis" class="md-nav__link">
+    <span class="md-ellipsis">
+      Step-by-Step Diagnosis
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#common-diagnostic-commands" class="md-nav__link">
+    <span class="md-ellipsis">
+      Common Diagnostic Commands
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Common Diagnostic Commands">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#postgresql" class="md-nav__link">
+    <span class="md-ellipsis">
+      PostgreSQL
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#mysql" class="md-nav__link">
+    <span class="md-ellipsis">
+      MySQL
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#sqlite" class="md-nav__link">
+    <span class="md-ellipsis">
+      SQLite
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../deployment/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Deployment Strategies
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../testing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Testing Strategies
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../debugging/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Debugging Techniques
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#understanding-performance-metrics" class="md-nav__link">
+    <span class="md-ellipsis">
+      Understanding Performance Metrics
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Understanding Performance Metrics">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#key-performance-indicators" class="md-nav__link">
+    <span class="md-ellipsis">
+      Key Performance Indicators
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#built-in-logging-system" class="md-nav__link">
+    <span class="md-ellipsis">
+      Built-in Logging System
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Built-in Logging System">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#configuring-logging" class="md-nav__link">
+    <span class="md-ellipsis">
+      Configuring Logging
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#log-levels-and-their-meaning" class="md-nav__link">
+    <span class="md-ellipsis">
+      Log Levels and Their Meaning
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#sample-log-output" class="md-nav__link">
+    <span class="md-ellipsis">
+      Sample Log Output
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#query-performance-monitoring" class="md-nav__link">
+    <span class="md-ellipsis">
+      Query Performance Monitoring
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Query Performance Monitoring">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#tracking-query-execution-time" class="md-nav__link">
+    <span class="md-ellipsis">
+      Tracking Query Execution Time
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Tracking Query Execution Time">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#using-the-measure_time_async-decorator" class="md-nav__link">
+    <span class="md-ellipsis">
+      Using the measure_time_async Decorator
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#using-context-managers" class="md-nav__link">
+    <span class="md-ellipsis">
+      Using Context Managers
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#manual-timing" class="md-nav__link">
+    <span class="md-ellipsis">
+      Manual Timing
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#identifying-slow-queries" class="md-nav__link">
+    <span class="md-ellipsis">
+      Identifying Slow Queries
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#connection-pool-monitoring" class="md-nav__link">
+    <span class="md-ellipsis">
+      Connection Pool Monitoring
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Connection Pool Monitoring">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#viewing-connection-pool-status" class="md-nav__link">
+    <span class="md-ellipsis">
+      Viewing Connection Pool Status
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#monitoring-connection-usage-over-time" class="md-nav__link">
+    <span class="md-ellipsis">
+      Monitoring Connection Usage Over Time
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#connection-pool-tuning-parameters" class="md-nav__link">
+    <span class="md-ellipsis">
+      Connection Pool Tuning Parameters
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#query-analysis-tools" class="md-nav__link">
+    <span class="md-ellipsis">
+      Query Analysis Tools
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Query Analysis Tools">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#explain-plans" class="md-nav__link">
+    <span class="md-ellipsis">
+      EXPLAIN Plans
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="EXPLAIN Plans">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#interpreting-explain-output" class="md-nav__link">
+    <span class="md-ellipsis">
+      Interpreting EXPLAIN Output
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#query-profiling" class="md-nav__link">
+    <span class="md-ellipsis">
+      Query Profiling
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#tracking-query-counts" class="md-nav__link">
+    <span class="md-ellipsis">
+      Tracking Query Counts
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#monitoring-dashboard" class="md-nav__link">
+    <span class="md-ellipsis">
+      Monitoring Dashboard
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#database-specific-monitoring" class="md-nav__link">
+    <span class="md-ellipsis">
+      Database-Specific Monitoring
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Database-Specific Monitoring">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#postgresql-monitoring" class="md-nav__link">
+    <span class="md-ellipsis">
+      PostgreSQL Monitoring
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#mysql-monitoring" class="md-nav__link">
+    <span class="md-ellipsis">
+      MySQL Monitoring
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#sqlite-monitoring" class="md-nav__link">
+    <span class="md-ellipsis">
+      SQLite Monitoring
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#performance-analysis-techniques" class="md-nav__link">
+    <span class="md-ellipsis">
+      Performance Analysis Techniques
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Performance Analysis Techniques">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#identifying-n1-query-problems" class="md-nav__link">
+    <span class="md-ellipsis">
+      Identifying N+1 Query Problems
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#memory-usage-monitoring" class="md-nav__link">
+    <span class="md-ellipsis">
+      Memory Usage Monitoring
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#alerting-and-notification-systems" class="md-nav__link">
+    <span class="md-ellipsis">
+      Alerting and Notification Systems
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Alerting and Notification Systems">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#setting-up-performance-alerts" class="md-nav__link">
+    <span class="md-ellipsis">
+      Setting Up Performance Alerts
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#integrating-with-external-monitoring-services" class="md-nav__link">
+    <span class="md-ellipsis">
+      Integrating with External Monitoring Services
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#performance-optimization-checklist" class="md-nav__link">
+    <span class="md-ellipsis">
+      Performance Optimization Checklist
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Performance Optimization Checklist">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#daily-checks" class="md-nav__link">
+    <span class="md-ellipsis">
+      Daily Checks
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#weekly-checks" class="md-nav__link">
+    <span class="md-ellipsis">
+      Weekly Checks
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#monthly-checks" class="md-nav__link">
+    <span class="md-ellipsis">
+      Monthly Checks
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#common-performance-issues-and-solutions" class="md-nav__link">
+    <span class="md-ellipsis">
+      Common Performance Issues and Solutions
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Common Performance Issues and Solutions">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#issue-high-connection-usage" class="md-nav__link">
+    <span class="md-ellipsis">
+      Issue: High Connection Usage
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#issue-slow-queries" class="md-nav__link">
+    <span class="md-ellipsis">
+      Issue: Slow Queries
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#issue-n1-query-problem" class="md-nav__link">
+    <span class="md-ellipsis">
+      Issue: N+1 Query Problem
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#issue-memory-pressure" class="md-nav__link">
+    <span class="md-ellipsis">
+      Issue: Memory Pressure
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#best-practices-for-performance-monitoring" class="md-nav__link">
+    <span class="md-ellipsis">
+      Best Practices for Performance Monitoring
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Best Practices for Performance Monitoring">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#set-realistic-thresholds" class="md-nav__link">
+    <span class="md-ellipsis">
+      Set Realistic Thresholds
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#monitor-in-production" class="md-nav__link">
+    <span class="md-ellipsis">
+      Monitor in Production
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#correlate-metrics" class="md-nav__link">
+    <span class="md-ellipsis">
+      Correlate Metrics
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#proactive-monitoring" class="md-nav__link">
+    <span class="md-ellipsis">
+      Proactive Monitoring
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#real-world-monitoring-examples" class="md-nav__link">
+    <span class="md-ellipsis">
+      Real-World Monitoring Examples
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Real-World Monitoring Examples">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#e-commerce-platform-monitoring" class="md-nav__link">
+    <span class="md-ellipsis">
+      E-commerce Platform Monitoring
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#analytics-dashboard-monitoring" class="md-nav__link">
+    <span class="md-ellipsis">
+      Analytics Dashboard Monitoring
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#troubleshooting-performance-issues" class="md-nav__link">
+    <span class="md-ellipsis">
+      Troubleshooting Performance Issues
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Troubleshooting Performance Issues">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#step-by-step-diagnosis" class="md-nav__link">
+    <span class="md-ellipsis">
+      Step-by-Step Diagnosis
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#common-diagnostic-commands" class="md-nav__link">
+    <span class="md-ellipsis">
+      Common Diagnostic Commands
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Common Diagnostic Commands">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#postgresql" class="md-nav__link">
+    <span class="md-ellipsis">
+      PostgreSQL
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#mysql" class="md-nav__link">
+    <span class="md-ellipsis">
+      MySQL
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#sqlite" class="md-nav__link">
+    <span class="md-ellipsis">
+      SQLite
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+<h1 id="performance-monitoring-in-ormax">Performance Monitoring in Ormax<a class="headerlink" href="#performance-monitoring-in-ormax" title="Permanent link">&para;</a></h1>
+<p>Effective performance monitoring is crucial for maintaining a responsive and scalable application. Ormax provides comprehensive tools and techniques to monitor database performance, identify bottlenecks, and optimize your application's database interactions.</p>
+<h2 id="understanding-performance-metrics">Understanding Performance Metrics<a class="headerlink" href="#understanding-performance-metrics" title="Permanent link">&para;</a></h2>
+<p>Before diving into monitoring, it's essential to understand key performance metrics for database operations:</p>
+<h3 id="key-performance-indicators">Key Performance Indicators<a class="headerlink" href="#key-performance-indicators" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Metric</th>
+<th>Description</th>
+<th>Target Value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Query Execution Time</td>
+<td>Time taken to execute a query</td>
+<td>&lt; 100ms (simple), &lt; 500ms (complex)</td>
+</tr>
+<tr>
+<td>Connection Pool Usage</td>
+<td>Percentage of available connections in use</td>
+<td>&lt; 80% consistently</td>
+</tr>
+<tr>
+<td>Transaction Duration</td>
+<td>Time spent in a transaction</td>
+<td>As short as possible</td>
+</tr>
+<tr>
+<td>Query Count per Request</td>
+<td>Number of queries executed per HTTP request</td>
+<td>Minimize (N+1 queries are a common issue)</td>
+</tr>
+<tr>
+<td>Error Rate</td>
+<td>Percentage of failed queries</td>
+<td>&lt; 0.1%</td>
+</tr>
+</tbody>
+</table>
+<h2 id="built-in-logging-system">Built-in Logging System<a class="headerlink" href="#built-in-logging-system" title="Permanent link">&para;</a></h2>
+<p>Ormax includes a robust logging system that provides detailed insights into database operations.</p>
+<h3 id="configuring-logging">Configuring Logging<a class="headerlink" href="#configuring-logging" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><span class="kn">import</span> <span class="nn">logging</span>
+<span class="kn">from</span> <span class="nn">ormax.utils</span> <span class="kn">import</span> <span class="n">setup_logging</span>
+
+<span class="c1"># Configure logging with default settings</span>
+<span class="n">logger</span> <span class="o">=</span> <span class="n">setup_logging</span><span class="p">(</span><span class="n">level</span><span class="o">=</span><span class="s2">&quot;INFO&quot;</span><span class="p">)</span>
+
+<span class="c1"># Or customize logging configuration</span>
+<span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="s2">&quot;ormax&quot;</span><span class="p">)</span>
+<span class="n">logger</span><span class="o">.</span><span class="n">setLevel</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">DEBUG</span><span class="p">)</span>
+<span class="n">handler</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">FileHandler</span><span class="p">(</span><span class="s2">&quot;ormax_performance.log&quot;</span><span class="p">)</span>
+<span class="n">formatter</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">Formatter</span><span class="p">(</span>
+    <span class="s2">&quot;</span><span class="si">%(asctime)s</span><span class="s2"> - </span><span class="si">%(name)s</span><span class="s2"> - </span><span class="si">%(levelname)s</span><span class="s2"> - </span><span class="si">%(message)s</span><span class="s2">&quot;</span>
+<span class="p">)</span>
+<span class="n">handler</span><span class="o">.</span><span class="n">setFormatter</span><span class="p">(</span><span class="n">formatter</span><span class="p">)</span>
+<span class="n">logger</span><span class="o">.</span><span class="n">addHandler</span><span class="p">(</span><span class="n">handler</span><span class="p">)</span>
+</code></pre></div>
+<h3 id="log-levels-and-their-meaning">Log Levels and Their Meaning<a class="headerlink" href="#log-levels-and-their-meaning" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Level</th>
+<th>When to Use</th>
+<th>Example Use Case</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>DEBUG</code></td>
+<td>Development and detailed diagnostics</td>
+<td>Tracking individual query execution</td>
+</tr>
+<tr>
+<td><code>INFO</code></td>
+<td>General operational information</td>
+<td>Connection pool status, migrations</td>
+</tr>
+<tr>
+<td><code>WARNING</code></td>
+<td>Potential issues</td>
+<td>Slow queries, connection timeouts</td>
+</tr>
+<tr>
+<td><code>ERROR</code></td>
+<td>Recoverable errors</td>
+<td>Query failures, connection issues</td>
+</tr>
+<tr>
+<td><code>CRITICAL</code></td>
+<td>Severe errors</td>
+<td>Database unavailable, critical failures</td>
+</tr>
+</tbody>
+</table>
+<h3 id="sample-log-output">Sample Log Output<a class="headerlink" href="#sample-log-output" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code>2023-10-15 14:30:45 - ormax - INFO - Database connected successfully
+2023-10-15 14:30:46 - ormax - DEBUG - Table books created without foreign keys
+2023-10-15 14:30:47 - ormax - WARNING - Slow query detected (245ms): SELECT * FROM books WHERE pages &gt; 300
+2023-10-15 14:30:48 - ormax - ERROR - Failed to add foreign key constraint fk_books_author_id: column &quot;author_id&quot; is not in the table
+</code></pre></div>
+<h2 id="query-performance-monitoring">Query Performance Monitoring<a class="headerlink" href="#query-performance-monitoring" title="Permanent link">&para;</a></h2>
+<h3 id="tracking-query-execution-time">Tracking Query Execution Time<a class="headerlink" href="#tracking-query-execution-time" title="Permanent link">&para;</a></h3>
+<p>Ormax provides multiple ways to track query execution time:</p>
+<h4 id="using-the-measure_time_async-decorator">Using the <code>measure_time_async</code> Decorator<a class="headerlink" href="#using-the-measure_time_async-decorator" title="Permanent link">&para;</a></h4>
+<div class="highlight"><pre><span></span><code><span class="kn">from</span> <span class="nn">ormax.utils</span> <span class="kn">import</span> <span class="n">measure_time_async</span>
+
+<span class="nd">@measure_time_async</span>
+<span class="k">async</span> <span class="k">def</span> <span class="nf">get_popular_books</span><span class="p">():</span>
+    <span class="k">return</span> <span class="k">await</span> <span class="n">Book</span><span class="o">.</span><span class="n">objects</span><span class="p">()</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">pages__gt</span><span class="o">=</span><span class="mi">300</span><span class="p">)</span><span class="o">.</span><span class="n">all</span><span class="p">()</span>
+</code></pre></div>
+<p>This will log the execution time of the function:</p>
+<div class="highlight"><pre><span></span><code>2023-10-15 14:45:22 - ormax - INFO - get_popular_books executed in 187.45ms
+</code></pre></div>
+<h4 id="using-context-managers">Using Context Managers<a class="headerlink" href="#using-context-managers" title="Permanent link">&para;</a></h4>
+<div class="highlight"><pre><span></span><code><span class="kn">from</span> <span class="nn">ormax.utils</span> <span class="kn">import</span> <span class="n">Timer</span>
+
+<span class="k">async</span> <span class="k">def</span> <span class="nf">process_books</span><span class="p">():</span>
+    <span class="k">with</span> <span class="n">Timer</span><span class="p">(</span><span class="s2">&quot;Book Processing&quot;</span><span class="p">):</span>
+        <span class="n">books</span> <span class="o">=</span> <span class="k">await</span> <span class="n">Book</span><span class="o">.</span><span class="n">objects</span><span class="p">()</span><span class="o">.</span><span class="n">all</span><span class="p">()</span>
+        <span class="c1"># Process books</span>
+</code></pre></div>
+<h4 id="manual-timing">Manual Timing<a class="headerlink" href="#manual-timing" title="Permanent link">&para;</a></h4>
+<div class="highlight"><pre><span></span><code><span class="kn">from</span> <span class="nn">datetime</span> <span class="kn">import</span> <span class="n">datetime</span>
+
+<span class="n">start_time</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span>
+<span class="n">books</span> <span class="o">=</span> <span class="k">await</span> <span class="n">Book</span><span class="o">.</span><span class="n">objects</span><span class="p">()</span><span class="o">.</span><span class="n">all</span><span class="p">()</span>
+<span class="n">duration</span> <span class="o">=</span> <span class="p">(</span><span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span> <span class="o">-</span> <span class="n">start_time</span><span class="p">)</span><span class="o">.</span><span class="n">total_seconds</span><span class="p">()</span>
+<span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Query executed in </span><span class="si">{</span><span class="n">duration</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2"> seconds&quot;</span><span class="p">)</span>
+</code></pre></div>
+<h3 id="identifying-slow-queries">Identifying Slow Queries<a class="headerlink" href="#identifying-slow-queries" title="Permanent link">&para;</a></h3>
+<p>Ormax can automatically flag slow queries:</p>
+<div class="highlight"><pre><span></span><code><span class="kn">from</span> <span class="nn">ormax.utils</span> <span class="kn">import</span> <span class="n">performance_monitor</span>
+
+<span class="k">def</span> <span class="nf">monitor_slow_queries</span><span class="p">(</span><span class="n">func</span><span class="p">):</span>
+    <span class="nd">@wraps</span><span class="p">(</span><span class="n">func</span><span class="p">)</span>
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">wrapper</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="n">start</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="k">await</span> <span class="n">func</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="n">duration</span> <span class="o">=</span> <span class="p">(</span><span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span> <span class="o">-</span> <span class="n">start</span><span class="p">)</span><span class="o">.</span><span class="n">total_seconds</span><span class="p">()</span>
+
+        <span class="c1"># Record for performance analysis</span>
+        <span class="n">performance_monitor</span><span class="o">.</span><span class="n">record</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">func</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">duration</span><span class="p">)</span>
+
+        <span class="c1"># Log slow queries</span>
+        <span class="k">if</span> <span class="n">duration</span> <span class="o">&gt;</span> <span class="mf">0.5</span><span class="p">:</span>  <span class="c1"># 500ms threshold</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;Slow query in </span><span class="si">{</span><span class="n">func</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">duration</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2"> seconds&quot;</span>
+            <span class="p">)</span>
+        <span class="k">return</span> <span class="n">result</span>
+    <span class="k">return</span> <span class="n">wrapper</span>
+
+<span class="nd">@monitor_slow_queries</span>
+<span class="k">async</span> <span class="k">def</span> <span class="nf">get_complex_data</span><span class="p">():</span>
+    <span class="k">return</span> <span class="k">await</span> <span class="n">Book</span><span class="o">.</span><span class="n">objects</span><span class="p">()</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">pages__gt</span><span class="o">=</span><span class="mi">300</span><span class="p">)</span><span class="o">.</span><span class="n">all</span><span class="p">()</span>
+</code></pre></div>
+<h2 id="connection-pool-monitoring">Connection Pool Monitoring<a class="headerlink" href="#connection-pool-monitoring" title="Permanent link">&para;</a></h2>
+<p>Connection pooling is critical for database performance. Ormax provides tools to monitor and tune your connection pool.</p>
+<h3 id="viewing-connection-pool-status">Viewing Connection Pool Status<a class="headerlink" href="#viewing-connection-pool-status" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><span class="k">async</span> <span class="k">def</span> <span class="nf">log_connection_pool_status</span><span class="p">():</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Log current connection pool status&quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">db</span><span class="p">,</span> <span class="s1">&#39;connection&#39;</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">db</span><span class="o">.</span><span class="n">connection</span><span class="p">,</span> <span class="s1">&#39;pool&#39;</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">db</span><span class="o">.</span><span class="n">connection</span><span class="o">.</span><span class="n">pool</span><span class="p">,</span> <span class="s1">&#39;size&#39;</span><span class="p">):</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;Connection pool: </span><span class="si">{</span><span class="n">db</span><span class="o">.</span><span class="n">connection</span><span class="o">.</span><span class="n">pool</span><span class="o">.</span><span class="n">size</span><span class="p">()</span><span class="si">}</span><span class="s2"> active, &quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">db</span><span class="o">.</span><span class="n">connection</span><span class="o">.</span><span class="n">pool</span><span class="o">.</span><span class="n">freesize</span><span class="p">()</span><span class="si">}</span><span class="s2"> free, &quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">db</span><span class="o">.</span><span class="n">connection</span><span class="o">.</span><span class="n">pool</span><span class="o">.</span><span class="n">size</span><span class="p">()</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">db</span><span class="o">.</span><span class="n">connection</span><span class="o">.</span><span class="n">pool</span><span class="o">.</span><span class="n">freesize</span><span class="p">()</span><span class="si">}</span><span class="s2"> used&quot;</span>
+            <span class="p">)</span>
+        <span class="k">elif</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">db</span><span class="o">.</span><span class="n">connection</span><span class="o">.</span><span class="n">pool</span><span class="p">,</span> <span class="s1">&#39;_maxsize&#39;</span><span class="p">):</span>
+            <span class="c1"># Different implementations have different APIs</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;Connection pool: max=</span><span class="si">{</span><span class="n">db</span><span class="o">.</span><span class="n">connection</span><span class="o">.</span><span class="n">pool</span><span class="o">.</span><span class="n">_maxsize</span><span class="si">}</span><span class="s2">, &quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;current=</span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">db</span><span class="o">.</span><span class="n">connection</span><span class="o">.</span><span class="n">pool</span><span class="o">.</span><span class="n">_queue</span><span class="o">.</span><span class="n">_get_heap</span><span class="p">())</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="p">)</span>
+</code></pre></div>
+<h3 id="monitoring-connection-usage-over-time">Monitoring Connection Usage Over Time<a class="headerlink" href="#monitoring-connection-usage-over-time" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><span class="kn">from</span> <span class="nn">ormax.utils</span> <span class="kn">import</span> <span class="n">Timer</span><span class="p">,</span> <span class="n">LRUCache</span>
+
+<span class="c1"># Cache to track connection usage</span>
+<span class="n">connection_usage</span> <span class="o">=</span> <span class="n">LRUCache</span><span class="p">(</span><span class="n">maxsize</span><span class="o">=</span><span class="mi">1000</span><span class="p">)</span>
+
+<span class="k">async</span> <span class="k">def</span> <span class="nf">monitor_connection_usage</span><span class="p">():</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Monitor connection usage patterns&quot;&quot;&quot;</span>
+    <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">db</span><span class="p">,</span> <span class="s1">&#39;connection&#39;</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">db</span><span class="o">.</span><span class="n">connection</span><span class="p">,</span> <span class="s1">&#39;pool&#39;</span><span class="p">):</span>
+                <span class="n">used</span> <span class="o">=</span> <span class="mi">0</span>
+                <span class="n">total</span> <span class="o">=</span> <span class="mi">0</span>
+
+                <span class="c1"># Handle different pool implementations</span>
+                <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">db</span><span class="o">.</span><span class="n">connection</span><span class="o">.</span><span class="n">pool</span><span class="p">,</span> <span class="s1">&#39;size&#39;</span><span class="p">):</span>
+                    <span class="n">total</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">connection</span><span class="o">.</span><span class="n">pool</span><span class="o">.</span><span class="n">size</span><span class="p">()</span>
+                    <span class="n">used</span> <span class="o">=</span> <span class="n">total</span> <span class="o">-</span> <span class="n">db</span><span class="o">.</span><span class="n">connection</span><span class="o">.</span><span class="n">pool</span><span class="o">.</span><span class="n">freesize</span><span class="p">()</span>
+                <span class="k">elif</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">db</span><span class="o">.</span><span class="n">connection</span><span class="o">.</span><span class="n">pool</span><span class="p">,</span> <span class="s1">&#39;_maxsize&#39;</span><span class="p">):</span>
+                    <span class="n">total</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">connection</span><span class="o">.</span><span class="n">pool</span><span class="o">.</span><span class="n">_maxsize</span>
+                    <span class="n">used</span> <span class="o">=</span> <span class="n">total</span> <span class="o">-</span> <span class="nb">len</span><span class="p">(</span><span class="n">db</span><span class="o">.</span><span class="n">connection</span><span class="o">.</span><span class="n">pool</span><span class="o">.</span><span class="n">_queue</span><span class="o">.</span><span class="n">_get_heap</span><span class="p">())</span>
+
+                <span class="c1"># Record usage</span>
+                <span class="n">timestamp</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s2">&quot;%Y-%m-</span><span class="si">%d</span><span class="s2"> %H:%M:%S&quot;</span><span class="p">)</span>
+                <span class="n">connection_usage</span><span class="o">.</span><span class="n">put</span><span class="p">(</span><span class="n">timestamp</span><span class="p">,</span> <span class="p">{</span><span class="s2">&quot;used&quot;</span><span class="p">:</span> <span class="n">used</span><span class="p">,</span> <span class="s2">&quot;total&quot;</span><span class="p">:</span> <span class="n">total</span><span class="p">})</span>
+
+                <span class="c1"># Log high usage</span>
+                <span class="k">if</span> <span class="n">used</span> <span class="o">&gt;</span> <span class="n">total</span> <span class="o">*</span> <span class="mf">0.8</span><span class="p">:</span>  <span class="c1"># 80% threshold</span>
+                    <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
+                        <span class="sa">f</span><span class="s2">&quot;High connection usage: </span><span class="si">{</span><span class="n">used</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="n">total</span><span class="si">}</span><span class="s2"> (</span><span class="si">{</span><span class="n">used</span><span class="o">/</span><span class="n">total</span><span class="si">:</span><span class="s2">.1%</span><span class="si">}</span><span class="s2">)&quot;</span>
+                    <span class="p">)</span>
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Error monitoring connection pool: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+        <span class="c1"># Check every 5 seconds</span>
+        <span class="k">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">5</span><span class="p">)</span>
+</code></pre></div>
+<h3 id="connection-pool-tuning-parameters">Connection Pool Tuning Parameters<a class="headerlink" href="#connection-pool-tuning-parameters" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Parameter</th>
+<th>Description</th>
+<th>Default</th>
+<th>Tuning Guidance</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>min_size</code></td>
+<td>Minimum connections in pool</td>
+<td>5</td>
+<td>Increase for consistent high load</td>
+</tr>
+<tr>
+<td><code>max_size</code></td>
+<td>Maximum connections in pool</td>
+<td>20</td>
+<td>Match to database server limits</td>
+</tr>
+<tr>
+<td><code>pool_recycle</code></td>
+<td>Time before recycling connections (seconds)</td>
+<td>3600</td>
+<td>Shorter for unstable networks</td>
+</tr>
+<tr>
+<td><code>command_timeout</code></td>
+<td>Query timeout (seconds)</td>
+<td>60</td>
+<td>Adjust based on query complexity</td>
+</tr>
+<tr>
+<td><code>connect_timeout</code></td>
+<td>Connection timeout (seconds)</td>
+<td>10</td>
+<td>Adjust for network conditions</td>
+</tr>
+</tbody>
+</table>
+<h2 id="query-analysis-tools">Query Analysis Tools<a class="headerlink" href="#query-analysis-tools" title="Permanent link">&para;</a></h2>
+<h3 id="explain-plans">EXPLAIN Plans<a class="headerlink" href="#explain-plans" title="Permanent link">&para;</a></h3>
+<p>Use the <code>explain()</code> method to understand how your queries execute:</p>
+<div class="highlight"><pre><span></span><code><span class="c1"># Get the execution plan for a query</span>
+<span class="n">plan</span> <span class="o">=</span> <span class="k">await</span> <span class="n">Book</span><span class="o">.</span><span class="n">objects</span><span class="p">()</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">pages__gt</span><span class="o">=</span><span class="mi">300</span><span class="p">)</span><span class="o">.</span><span class="n">explain</span><span class="p">()</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">plan</span><span class="p">)</span>
+
+<span class="c1"># For more detailed analysis</span>
+<span class="n">detailed_plan</span> <span class="o">=</span> <span class="k">await</span> <span class="n">Book</span><span class="o">.</span><span class="n">objects</span><span class="p">()</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">pages__gt</span><span class="o">=</span><span class="mi">300</span><span class="p">)</span><span class="o">.</span><span class="n">explain</span><span class="p">(</span><span class="n">analyze</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</code></pre></div>
+<h4 id="interpreting-explain-output">Interpreting EXPLAIN Output<a class="headerlink" href="#interpreting-explain-output" title="Permanent link">&para;</a></h4>
+<ul>
+<li><strong>Seq Scan</strong>: Sequential table scan (potentially slow)</li>
+<li><strong>Index Scan</strong>: Using an index (usually faster)</li>
+<li><strong>Hash Join</strong>: Efficient join method</li>
+<li><strong>Nested Loop</strong>: Can be slow with large datasets</li>
+<li><strong>Sort</strong>: Sorting operation (can be expensive)</li>
+</ul>
+<h3 id="query-profiling">Query Profiling<a class="headerlink" href="#query-profiling" title="Permanent link">&para;</a></h3>
+<p>Enable query profiling for detailed timing information:</p>
+<div class="highlight"><pre><span></span><code><span class="c1"># Enable query profiling</span>
+<span class="k">await</span> <span class="n">db</span><span class="o">.</span><span class="n">connection</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="s2">&quot;SET SESSION STATISTICS_TIMING = ON&quot;</span><span class="p">)</span>
+
+<span class="c1"># Run your queries</span>
+<span class="n">books</span> <span class="o">=</span> <span class="k">await</span> <span class="n">Book</span><span class="o">.</span><span class="n">objects</span><span class="p">()</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">pages__gt</span><span class="o">=</span><span class="mi">300</span><span class="p">)</span><span class="o">.</span><span class="n">all</span><span class="p">()</span>
+
+<span class="c1"># Get profiling information</span>
+<span class="n">profiles</span> <span class="o">=</span> <span class="k">await</span> <span class="n">db</span><span class="o">.</span><span class="n">connection</span><span class="o">.</span><span class="n">fetch_all</span><span class="p">(</span><span class="s2">&quot;SELECT * FROM pg_stat_statements&quot;</span><span class="p">)</span>
+</code></pre></div>
+<h3 id="tracking-query-counts">Tracking Query Counts<a class="headerlink" href="#tracking-query-counts" title="Permanent link">&para;</a></h3>
+<p>Monitor the number of queries per operation:</p>
+<div class="highlight"><pre><span></span><code><span class="kn">from</span> <span class="nn">ormax.utils</span> <span class="kn">import</span> <span class="n">setup_logging</span>
+<span class="kn">import</span> <span class="nn">logging</span>
+
+<span class="c1"># Configure a special logger for query counting</span>
+<span class="n">query_logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="s2">&quot;ormax.queries&quot;</span><span class="p">)</span>
+<span class="n">query_logger</span><span class="o">.</span><span class="n">setLevel</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">INFO</span><span class="p">)</span>
+<span class="n">query_logger</span><span class="o">.</span><span class="n">addHandler</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">FileHandler</span><span class="p">(</span><span class="s2">&quot;query_count.log&quot;</span><span class="p">))</span>
+
+<span class="k">def</span> <span class="nf">count_queries</span><span class="p">(</span><span class="n">func</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Decorator to count queries in a function&quot;&quot;&quot;</span>
+    <span class="nd">@wraps</span><span class="p">(</span><span class="n">func</span><span class="p">)</span>
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">wrapper</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="n">original_level</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="s2">&quot;ormax&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">getEffectiveLevel</span><span class="p">()</span>
+        <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="s2">&quot;ormax&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">setLevel</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">DEBUG</span><span class="p">)</span>
+
+        <span class="c1"># Clear previous logs</span>
+        <span class="kn">import</span> <span class="nn">io</span>
+        <span class="n">log_stream</span> <span class="o">=</span> <span class="n">io</span><span class="o">.</span><span class="n">StringIO</span><span class="p">()</span>
+        <span class="n">handler</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">StreamHandler</span><span class="p">(</span><span class="n">log_stream</span><span class="p">)</span>
+        <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="s2">&quot;ormax&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">addHandler</span><span class="p">(</span><span class="n">handler</span><span class="p">)</span>
+
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">result</span> <span class="o">=</span> <span class="k">await</span> <span class="n">func</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+            <span class="c1"># Count queries from logs</span>
+            <span class="n">log_content</span> <span class="o">=</span> <span class="n">log_stream</span><span class="o">.</span><span class="n">getvalue</span><span class="p">()</span>
+            <span class="n">query_count</span> <span class="o">=</span> <span class="n">log_content</span><span class="o">.</span><span class="n">count</span><span class="p">(</span><span class="s2">&quot;Executing query&quot;</span><span class="p">)</span>
+
+            <span class="c1"># Log the count</span>
+            <span class="n">query_logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">func</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">query_count</span><span class="si">}</span><span class="s2"> queries executed&quot;</span>
+            <span class="p">)</span>
+            <span class="k">return</span> <span class="n">result</span>
+        <span class="k">finally</span><span class="p">:</span>
+            <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="s2">&quot;ormax&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">setLevel</span><span class="p">(</span><span class="n">original_level</span><span class="p">)</span>
+            <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="s2">&quot;ormax&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">removeHandler</span><span class="p">(</span><span class="n">handler</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">wrapper</span>
+
+<span class="nd">@count_queries</span>
+<span class="k">async</span> <span class="k">def</span> <span class="nf">process_books</span><span class="p">():</span>
+    <span class="c1"># Function that executes multiple queries</span>
+    <span class="n">books</span> <span class="o">=</span> <span class="k">await</span> <span class="n">Book</span><span class="o">.</span><span class="n">objects</span><span class="p">()</span><span class="o">.</span><span class="n">all</span><span class="p">()</span>
+    <span class="k">for</span> <span class="n">book</span> <span class="ow">in</span> <span class="n">books</span><span class="p">:</span>
+        <span class="n">author</span> <span class="o">=</span> <span class="k">await</span> <span class="n">book</span><span class="o">.</span><span class="n">author</span>  <span class="c1"># This would trigger N+1 queries</span>
+</code></pre></div>
+<h2 id="monitoring-dashboard">Monitoring Dashboard<a class="headerlink" href="#monitoring-dashboard" title="Permanent link">&para;</a></h2>
+<p>Create a real-time monitoring dashboard for your database performance:</p>
+<div class="highlight"><pre><span></span><code><span class="kn">from</span> <span class="nn">fastapi</span> <span class="kn">import</span> <span class="n">APIRouter</span><span class="p">,</span> <span class="n">Depends</span>
+<span class="kn">from</span> <span class="nn">ormax.utils</span> <span class="kn">import</span> <span class="n">performance_monitor</span>
+
+<span class="n">router</span> <span class="o">=</span> <span class="n">APIRouter</span><span class="p">()</span>
+
+<span class="nd">@router</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;/monitoring/db&quot;</span><span class="p">)</span>
+<span class="k">async</span> <span class="k">def</span> <span class="nf">get_db_monitoring</span><span class="p">():</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Get database performance metrics&quot;&quot;&quot;</span>
+    <span class="c1"># Connection pool status</span>
+    <span class="n">pool_status</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;max&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s2">&quot;used&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s2">&quot;free&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">}</span>
+    <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">db</span><span class="p">,</span> <span class="s1">&#39;connection&#39;</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">db</span><span class="o">.</span><span class="n">connection</span><span class="p">,</span> <span class="s1">&#39;pool&#39;</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">db</span><span class="o">.</span><span class="n">connection</span><span class="o">.</span><span class="n">pool</span><span class="p">,</span> <span class="s1">&#39;size&#39;</span><span class="p">):</span>
+            <span class="n">pool_status</span><span class="p">[</span><span class="s2">&quot;max&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">connection</span><span class="o">.</span><span class="n">pool</span><span class="o">.</span><span class="n">size</span><span class="p">()</span>
+            <span class="n">pool_status</span><span class="p">[</span><span class="s2">&quot;used&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">pool_status</span><span class="p">[</span><span class="s2">&quot;max&quot;</span><span class="p">]</span> <span class="o">-</span> <span class="n">db</span><span class="o">.</span><span class="n">connection</span><span class="o">.</span><span class="n">pool</span><span class="o">.</span><span class="n">freesize</span><span class="p">()</span>
+            <span class="n">pool_status</span><span class="p">[</span><span class="s2">&quot;free&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">connection</span><span class="o">.</span><span class="n">pool</span><span class="o">.</span><span class="n">freesize</span><span class="p">()</span>
+        <span class="k">elif</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">db</span><span class="o">.</span><span class="n">connection</span><span class="o">.</span><span class="n">pool</span><span class="p">,</span> <span class="s1">&#39;_maxsize&#39;</span><span class="p">):</span>
+            <span class="n">pool_status</span><span class="p">[</span><span class="s2">&quot;max&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">connection</span><span class="o">.</span><span class="n">pool</span><span class="o">.</span><span class="n">_maxsize</span>
+            <span class="n">pool_status</span><span class="p">[</span><span class="s2">&quot;used&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">db</span><span class="o">.</span><span class="n">connection</span><span class="o">.</span><span class="n">pool</span><span class="o">.</span><span class="n">_queue</span><span class="o">.</span><span class="n">_get_heap</span><span class="p">())</span>
+            <span class="n">pool_status</span><span class="p">[</span><span class="s2">&quot;free&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">pool_status</span><span class="p">[</span><span class="s2">&quot;max&quot;</span><span class="p">]</span> <span class="o">-</span> <span class="n">pool_status</span><span class="p">[</span><span class="s2">&quot;used&quot;</span><span class="p">]</span>
+
+    <span class="c1"># Query performance stats</span>
+    <span class="n">query_stats</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="k">for</span> <span class="n">operation</span> <span class="ow">in</span> <span class="n">performance_monitor</span><span class="o">.</span><span class="n">metrics</span><span class="p">:</span>
+        <span class="n">stats</span> <span class="o">=</span> <span class="n">performance_monitor</span><span class="o">.</span><span class="n">get_stats</span><span class="p">(</span><span class="n">operation</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">stats</span><span class="p">:</span>
+            <span class="n">query_stats</span><span class="p">[</span><span class="n">operation</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span>
+                <span class="s2">&quot;count&quot;</span><span class="p">:</span> <span class="n">stats</span><span class="p">[</span><span class="s2">&quot;count&quot;</span><span class="p">],</span>
+                <span class="s2">&quot;avg_time&quot;</span><span class="p">:</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">stats</span><span class="p">[</span><span class="s1">&#39;average&#39;</span><span class="p">]</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;max_time&quot;</span><span class="p">:</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">stats</span><span class="p">[</span><span class="s1">&#39;max&#39;</span><span class="p">]</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="p">}</span>
+
+    <span class="c1"># Recent slow queries</span>
+    <span class="n">slow_queries</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">record</span> <span class="ow">in</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="s2">&quot;ormax&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">handlers</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">logs</span><span class="p">:</span>
+        <span class="k">if</span> <span class="s2">&quot;Slow query&quot;</span> <span class="ow">in</span> <span class="n">record</span><span class="o">.</span><span class="n">getMessage</span><span class="p">():</span>
+            <span class="n">slow_queries</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">record</span><span class="o">.</span><span class="n">getMessage</span><span class="p">())</span>
+
+    <span class="k">return</span> <span class="p">{</span>
+        <span class="s2">&quot;connection_pool&quot;</span><span class="p">:</span> <span class="n">pool_status</span><span class="p">,</span>
+        <span class="s2">&quot;query_performance&quot;</span><span class="p">:</span> <span class="n">query_stats</span><span class="p">,</span>
+        <span class="s2">&quot;slow_queries&quot;</span><span class="p">:</span> <span class="n">slow_queries</span><span class="p">[</span><span class="o">-</span><span class="mi">10</span><span class="p">:],</span>  <span class="c1"># Last 10 slow queries</span>
+        <span class="s2">&quot;timestamp&quot;</span><span class="p">:</span> <span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span><span class="o">.</span><span class="n">isoformat</span><span class="p">()</span>
+    <span class="p">}</span>
+</code></pre></div>
+<h2 id="database-specific-monitoring">Database-Specific Monitoring<a class="headerlink" href="#database-specific-monitoring" title="Permanent link">&para;</a></h2>
+<h3 id="postgresql-monitoring">PostgreSQL Monitoring<a class="headerlink" href="#postgresql-monitoring" title="Permanent link">&para;</a></h3>
+<p>PostgreSQL offers advanced monitoring capabilities:</p>
+<div class="highlight"><pre><span></span><code><span class="k">async</span> <span class="k">def</span> <span class="nf">monitor_postgresql</span><span class="p">():</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Monitor PostgreSQL-specific metrics&quot;&quot;&quot;</span>
+    <span class="c1"># Track long-running queries</span>
+    <span class="n">long_queries</span> <span class="o">=</span> <span class="k">await</span> <span class="n">db</span><span class="o">.</span><span class="n">connection</span><span class="o">.</span><span class="n">fetch_all</span><span class="p">(</span><span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">        SELECT pid, now() - query_start AS duration, query </span>
+<span class="s2">        FROM pg_stat_activity </span>
+<span class="s2">        WHERE state = &#39;active&#39; AND now() - query_start &gt; interval &#39;5 seconds&#39;</span>
+<span class="s2">        ORDER BY duration DESC</span>
+<span class="s2">    &quot;&quot;&quot;</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">long_queries</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">query</span> <span class="ow">in</span> <span class="n">long_queries</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;Long-running query (pid=</span><span class="si">{</span><span class="n">query</span><span class="p">[</span><span class="s1">&#39;pid&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">): &quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">query</span><span class="p">[</span><span class="s1">&#39;duration&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2"> - </span><span class="si">{</span><span class="n">query</span><span class="p">[</span><span class="s1">&#39;query&#39;</span><span class="p">][:</span><span class="mi">100</span><span class="p">]</span><span class="si">}</span><span class="s2">...&quot;</span>
+            <span class="p">)</span>
+
+    <span class="c1"># Track lock contention</span>
+    <span class="n">locks</span> <span class="o">=</span> <span class="k">await</span> <span class="n">db</span><span class="o">.</span><span class="n">connection</span><span class="o">.</span><span class="n">fetch_all</span><span class="p">(</span><span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">        SELECT </span>
+<span class="s2">            blocked_locks.pid AS blocked_pid,</span>
+<span class="s2">            blocking_locks.pid AS blocking_pid,</span>
+<span class="s2">            blocked_activity.query AS blocked_query,</span>
+<span class="s2">            blocking_activity.query AS blocking_query</span>
+<span class="s2">        FROM pg_catalog.pg_locks blocked_locks</span>
+<span class="s2">        JOIN pg_catalog.pg_stat_activity blocked_activity </span>
+<span class="s2">            ON blocked_activity.pid = blocked_locks.pid</span>
+<span class="s2">        JOIN pg_catalog.pg_locks blocking_locks </span>
+<span class="s2">            ON blocking_locks.locktype = blocked_locks.locktype</span>
+<span class="s2">            AND blocking_locks.DATABASE IS NOT DISTINCT FROM blocked_locks.DATABASE</span>
+<span class="s2">            AND blocking_locks.relation IS NOT DISTINCT FROM blocked_locks.relation</span>
+<span class="s2">            AND blocking_locks.page IS NOT DISTINCT FROM blocked_locks.page</span>
+<span class="s2">            AND blocking_locks.tuple IS NOT DISTINCT FROM blocked_locks.tuple</span>
+<span class="s2">            AND blocking_locks.virtualxid IS NOT DISTINCT FROM blocked_locks.virtualxid</span>
+<span class="s2">            AND blocking_locks.transactionid IS NOT DISTINCT FROM blocked_locks.transactionid</span>
+<span class="s2">            AND blocking_locks.classid IS NOT DISTINCT FROM blocked_locks.classid</span>
+<span class="s2">            AND blocking_locks.objid IS NOT DISTINCT FROM blocked_locks.objid</span>
+<span class="s2">            AND blocking_locks.objsubid IS NOT DISTINCT FROM blocked_locks.objsubid</span>
+<span class="s2">            AND blocking_locks.pid != blocked_locks.pid</span>
+<span class="s2">        JOIN pg_catalog.pg_stat_activity blocking_activity </span>
+<span class="s2">            ON blocking_activity.pid = blocking_locks.pid</span>
+<span class="s2">        WHERE NOT blocked_locks.GRANTED</span>
+<span class="s2">    &quot;&quot;&quot;</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">locks</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">lock</span> <span class="ow">in</span> <span class="n">locks</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;Deadlock detected: PID </span><span class="si">{</span><span class="n">lock</span><span class="p">[</span><span class="s1">&#39;blocking_pid&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2"> blocking &quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;PID </span><span class="si">{</span><span class="n">lock</span><span class="p">[</span><span class="s1">&#39;blocked_pid&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="p">)</span>
+</code></pre></div>
+<h3 id="mysql-monitoring">MySQL Monitoring<a class="headerlink" href="#mysql-monitoring" title="Permanent link">&para;</a></h3>
+<p>MySQL-specific monitoring queries:</p>
+<div class="highlight"><pre><span></span><code><span class="k">async</span> <span class="k">def</span> <span class="nf">monitor_mysql</span><span class="p">():</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Monitor MySQL-specific metrics&quot;&quot;&quot;</span>
+    <span class="c1"># Track slow queries</span>
+    <span class="n">slow_queries</span> <span class="o">=</span> <span class="k">await</span> <span class="n">db</span><span class="o">.</span><span class="n">connection</span><span class="o">.</span><span class="n">fetch_all</span><span class="p">(</span><span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">        SELECT </span>
+<span class="s2">            id, time, info </span>
+<span class="s2">        FROM information_schema.processlist </span>
+<span class="s2">        WHERE time &gt; 5</span>
+<span class="s2">        ORDER BY time DESC</span>
+<span class="s2">    &quot;&quot;&quot;</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">slow_queries</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">query</span> <span class="ow">in</span> <span class="n">slow_queries</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;Slow MySQL query (id=</span><span class="si">{</span><span class="n">query</span><span class="p">[</span><span class="s1">&#39;id&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">): &quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">query</span><span class="p">[</span><span class="s1">&#39;time&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">s - </span><span class="si">{</span><span class="n">query</span><span class="p">[</span><span class="s1">&#39;info&#39;</span><span class="p">][:</span><span class="mi">100</span><span class="p">]</span><span class="si">}</span><span class="s2">...&quot;</span>
+            <span class="p">)</span>
+
+    <span class="c1"># Track connection usage</span>
+    <span class="n">connections</span> <span class="o">=</span> <span class="k">await</span> <span class="n">db</span><span class="o">.</span><span class="n">connection</span><span class="o">.</span><span class="n">fetch_one</span><span class="p">(</span><span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">        SHOW STATUS LIKE &#39;Threads_connected&#39;</span>
+<span class="s2">    &quot;&quot;&quot;</span><span class="p">)</span>
+    <span class="n">max_connections</span> <span class="o">=</span> <span class="k">await</span> <span class="n">db</span><span class="o">.</span><span class="n">connection</span><span class="o">.</span><span class="n">fetch_one</span><span class="p">(</span><span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">        SHOW VARIABLES LIKE &#39;max_connections&#39;</span>
+<span class="s2">    &quot;&quot;&quot;</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">connections</span> <span class="ow">and</span> <span class="n">max_connections</span><span class="p">:</span>
+        <span class="n">usage</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">connections</span><span class="p">[</span><span class="s1">&#39;Value&#39;</span><span class="p">])</span> <span class="o">/</span> <span class="nb">int</span><span class="p">(</span><span class="n">max_connections</span><span class="p">[</span><span class="s1">&#39;Value&#39;</span><span class="p">])</span>
+        <span class="k">if</span> <span class="n">usage</span> <span class="o">&gt;</span> <span class="mf">0.8</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;High MySQL connection usage: &quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">connections</span><span class="p">[</span><span class="s1">&#39;Value&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="n">max_connections</span><span class="p">[</span><span class="s1">&#39;Value&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2"> (</span><span class="si">{</span><span class="n">usage</span><span class="si">:</span><span class="s2">.1%</span><span class="si">}</span><span class="s2">)&quot;</span>
+            <span class="p">)</span>
+</code></pre></div>
+<h3 id="sqlite-monitoring">SQLite Monitoring<a class="headerlink" href="#sqlite-monitoring" title="Permanent link">&para;</a></h3>
+<p>SQLite-specific monitoring (more limited):</p>
+<div class="highlight"><pre><span></span><code><span class="k">async</span> <span class="k">def</span> <span class="nf">monitor_sqlite</span><span class="p">():</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Monitor SQLite-specific metrics&quot;&quot;&quot;</span>
+    <span class="c1"># Track database size</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="kn">import</span> <span class="nn">os</span>
+        <span class="n">db_path</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">connection_string</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;sqlite:///&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span>
+        <span class="n">size</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">getsize</span><span class="p">(</span><span class="n">db_path</span><span class="p">)</span>
+        <span class="n">size_mb</span> <span class="o">=</span> <span class="n">size</span> <span class="o">/</span> <span class="p">(</span><span class="mi">1024</span> <span class="o">*</span> <span class="mi">1024</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">size_mb</span> <span class="o">&gt;</span> <span class="mi">100</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;SQLite database size: </span><span class="si">{</span><span class="n">size_mb</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2"> MB&quot;</span><span class="p">)</span>
+
+        <span class="c1"># Track WAL file size</span>
+        <span class="n">wal_path</span> <span class="o">=</span> <span class="n">db_path</span> <span class="o">+</span> <span class="s2">&quot;-wal&quot;</span>
+        <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">wal_path</span><span class="p">):</span>
+            <span class="n">wal_size</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">getsize</span><span class="p">(</span><span class="n">wal_path</span><span class="p">)</span>
+            <span class="n">wal_size_mb</span> <span class="o">=</span> <span class="n">wal_size</span> <span class="o">/</span> <span class="p">(</span><span class="mi">1024</span> <span class="o">*</span> <span class="mi">1024</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">wal_size_mb</span> <span class="o">&gt;</span> <span class="mi">50</span><span class="p">:</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;SQLite WAL file size: </span><span class="si">{</span><span class="n">wal_size_mb</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2"> MB&quot;</span><span class="p">)</span>
+    <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Error monitoring SQLite: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</code></pre></div>
+<h2 id="performance-analysis-techniques">Performance Analysis Techniques<a class="headerlink" href="#performance-analysis-techniques" title="Permanent link">&para;</a></h2>
+<h3 id="identifying-n1-query-problems">Identifying N+1 Query Problems<a class="headerlink" href="#identifying-n1-query-problems" title="Permanent link">&para;</a></h3>
+<p>N+1 queries are a common performance issue where a single query triggers N additional queries:</p>
+<div class="highlight"><pre><span></span><code><span class="k">async</span> <span class="k">def</span> <span class="nf">detect_n_plus_one</span><span class="p">():</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Detect potential N+1 query patterns&quot;&quot;&quot;</span>
+    <span class="c1"># Track query patterns</span>
+    <span class="n">query_patterns</span> <span class="o">=</span> <span class="p">{}</span>
+
+    <span class="c1"># Configure logger to capture queries</span>
+    <span class="n">log_stream</span> <span class="o">=</span> <span class="n">io</span><span class="o">.</span><span class="n">StringIO</span><span class="p">()</span>
+    <span class="n">handler</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">StreamHandler</span><span class="p">(</span><span class="n">log_stream</span><span class="p">)</span>
+    <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="s2">&quot;ormax&quot;</span><span class="p">)</span>
+    <span class="n">logger</span><span class="o">.</span><span class="n">addHandler</span><span class="p">(</span><span class="n">handler</span><span class="p">)</span>
+
+    <span class="k">try</span><span class="p">:</span>
+        <span class="c1"># Run common operations</span>
+        <span class="n">books</span> <span class="o">=</span> <span class="k">await</span> <span class="n">Book</span><span class="o">.</span><span class="n">objects</span><span class="p">()</span><span class="o">.</span><span class="n">all</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">book</span> <span class="ow">in</span> <span class="n">books</span><span class="p">:</span>
+            <span class="k">await</span> <span class="n">book</span><span class="o">.</span><span class="n">author</span>  <span class="c1"># This would trigger N+1 queries</span>
+
+        <span class="c1"># Analyze logs</span>
+        <span class="n">log_content</span> <span class="o">=</span> <span class="n">log_stream</span><span class="o">.</span><span class="n">getvalue</span><span class="p">()</span>
+        <span class="n">queries</span> <span class="o">=</span> <span class="p">[</span><span class="n">line</span> <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">log_content</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span> 
+                  <span class="k">if</span> <span class="s2">&quot;Executing query&quot;</span> <span class="ow">in</span> <span class="n">line</span><span class="p">]</span>
+
+        <span class="c1"># Look for similar queries with different parameters</span>
+        <span class="n">pattern_counts</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">for</span> <span class="n">query</span> <span class="ow">in</span> <span class="n">queries</span><span class="p">:</span>
+            <span class="c1"># Extract the base query without parameters</span>
+            <span class="n">base_query</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;\?.*?FROM&#39;</span><span class="p">,</span> <span class="s1">&#39; ? FROM&#39;</span><span class="p">,</span> <span class="n">query</span><span class="p">)</span>
+            <span class="n">base_query</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;WHERE .*? = &#39;</span><span class="p">,</span> <span class="s1">&#39;WHERE ? = &#39;</span><span class="p">,</span> <span class="n">base_query</span><span class="p">)</span>
+
+            <span class="n">pattern_counts</span><span class="p">[</span><span class="n">base_query</span><span class="p">]</span> <span class="o">=</span> <span class="n">pattern_counts</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">base_query</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span>
+
+        <span class="c1"># Flag potential N+1 queries</span>
+        <span class="k">for</span> <span class="n">pattern</span><span class="p">,</span> <span class="n">count</span> <span class="ow">in</span> <span class="n">pattern_counts</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="k">if</span> <span class="n">count</span> <span class="o">&gt;</span> <span class="mi">10</span><span class="p">:</span>  <span class="c1"># Threshold for potential N+1</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
+                    <span class="sa">f</span><span class="s2">&quot;Potential N+1 query pattern detected (</span><span class="si">{</span><span class="n">count</span><span class="si">}</span><span class="s2"> occurrences): </span><span class="si">{</span><span class="n">pattern</span><span class="si">}</span><span class="s2">&quot;</span>
+                <span class="p">)</span>
+    <span class="k">finally</span><span class="p">:</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">removeHandler</span><span class="p">(</span><span class="n">handler</span><span class="p">)</span>
+</code></pre></div>
+<h3 id="memory-usage-monitoring">Memory Usage Monitoring<a class="headerlink" href="#memory-usage-monitoring" title="Permanent link">&para;</a></h3>
+<p>Track memory usage related to database operations:</p>
+<div class="highlight"><pre><span></span><code><span class="kn">import</span> <span class="nn">tracemalloc</span>
+<span class="kn">from</span> <span class="nn">ormax.utils</span> <span class="kn">import</span> <span class="n">Timer</span>
+
+<span class="k">async</span> <span class="k">def</span> <span class="nf">monitor_memory_usage</span><span class="p">():</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Monitor memory usage of database operations&quot;&quot;&quot;</span>
+    <span class="n">tracemalloc</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
+
+    <span class="c1"># Take initial snapshot</span>
+    <span class="n">initial_snapshot</span> <span class="o">=</span> <span class="n">tracemalloc</span><span class="o">.</span><span class="n">take_snapshot</span><span class="p">()</span>
+
+    <span class="c1"># Run operation to monitor</span>
+    <span class="k">with</span> <span class="n">Timer</span><span class="p">(</span><span class="s2">&quot;Memory Test&quot;</span><span class="p">):</span>
+        <span class="n">books</span> <span class="o">=</span> <span class="k">await</span> <span class="n">Book</span><span class="o">.</span><span class="n">objects</span><span class="p">()</span><span class="o">.</span><span class="n">all</span><span class="p">()</span>
+        <span class="c1"># Process books to simulate real usage</span>
+        <span class="n">processed</span> <span class="o">=</span> <span class="p">[</span><span class="n">book</span><span class="o">.</span><span class="n">title</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span> <span class="k">for</span> <span class="n">book</span> <span class="ow">in</span> <span class="n">books</span><span class="p">]</span>
+
+    <span class="c1"># Take final snapshot</span>
+    <span class="n">final_snapshot</span> <span class="o">=</span> <span class="n">tracemalloc</span><span class="o">.</span><span class="n">take_snapshot</span><span class="p">()</span>
+
+    <span class="c1"># Compare snapshots</span>
+    <span class="n">top_stats</span> <span class="o">=</span> <span class="n">final_snapshot</span><span class="o">.</span><span class="n">compare_to</span><span class="p">(</span><span class="n">initial_snapshot</span><span class="p">,</span> <span class="s1">&#39;lineno&#39;</span><span class="p">)</span>
+
+    <span class="c1"># Log top memory consumers</span>
+    <span class="k">for</span> <span class="n">stat</span> <span class="ow">in</span> <span class="n">top_stats</span><span class="p">[:</span><span class="mi">5</span><span class="p">]:</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Memory usage: </span><span class="si">{</span><span class="n">stat</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+    <span class="c1"># Check for memory leaks</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">top_stats</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="n">largest_diff</span> <span class="o">=</span> <span class="n">top_stats</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">largest_diff</span><span class="o">.</span><span class="n">size_diff</span> <span class="o">&gt;</span> <span class="mi">1024</span> <span class="o">*</span> <span class="mi">1024</span><span class="p">:</span>  <span class="c1"># 1MB threshold</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;Potential memory issue: </span><span class="si">{</span><span class="n">largest_diff</span><span class="o">.</span><span class="n">size_diff</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="mi">1024</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2"> KB &quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;in </span><span class="si">{</span><span class="n">largest_diff</span><span class="o">.</span><span class="n">traceback</span><span class="o">.</span><span class="n">format</span><span class="p">()</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="p">)</span>
+
+    <span class="n">tracemalloc</span><span class="o">.</span><span class="n">stop</span><span class="p">()</span>
+</code></pre></div>
+<h2 id="alerting-and-notification-systems">Alerting and Notification Systems<a class="headerlink" href="#alerting-and-notification-systems" title="Permanent link">&para;</a></h2>
+<h3 id="setting-up-performance-alerts">Setting Up Performance Alerts<a class="headerlink" href="#setting-up-performance-alerts" title="Permanent link">&para;</a></h3>
+<p>Create alerts for critical performance issues:</p>
+<div class="highlight"><pre><span></span><code><span class="kn">from</span> <span class="nn">ormax.utils</span> <span class="kn">import</span> <span class="n">Timer</span>
+<span class="kn">import</span> <span class="nn">smtplib</span>
+<span class="kn">from</span> <span class="nn">email.mime.text</span> <span class="kn">import</span> <span class="n">MIMEText</span>
+
+<span class="k">class</span> <span class="nc">PerformanceMonitor</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Monitor performance and send alerts when thresholds are exceeded&quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">thresholds</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s2">&quot;query_time&quot;</span><span class="p">:</span> <span class="mf">1.0</span><span class="p">,</span>  <span class="c1"># 1 second</span>
+            <span class="s2">&quot;connection_usage&quot;</span><span class="p">:</span> <span class="mf">0.9</span><span class="p">,</span>  <span class="c1"># 90%</span>
+            <span class="s2">&quot;error_rate&quot;</span><span class="p">:</span> <span class="mf">0.05</span>  <span class="c1"># 5%</span>
+        <span class="p">}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">alert_history</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">check_query_time</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">func_name</span><span class="p">,</span> <span class="n">duration</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Check if query time exceeds threshold&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">duration</span> <span class="o">&gt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">thresholds</span><span class="p">[</span><span class="s2">&quot;query_time&quot;</span><span class="p">]:</span>
+            <span class="n">alert_key</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;query_time_</span><span class="si">{</span><span class="n">func_name</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="k">if</span> <span class="n">alert_key</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">alert_history</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">send_alert</span><span class="p">(</span>
+                    <span class="s2">&quot;High Query Time&quot;</span><span class="p">,</span>
+                    <span class="sa">f</span><span class="s2">&quot;Query </span><span class="si">{</span><span class="n">func_name</span><span class="si">}</span><span class="s2"> took </span><span class="si">{</span><span class="n">duration</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">s (threshold: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">thresholds</span><span class="p">[</span><span class="s1">&#39;query_time&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">s)&quot;</span>
+                <span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">alert_history</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">alert_key</span><span class="p">)</span>
+                <span class="c1"># Reset alert after 5 minutes</span>
+                <span class="n">asyncio</span><span class="o">.</span><span class="n">create_task</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">reset_alert</span><span class="p">(</span><span class="n">alert_key</span><span class="p">,</span> <span class="mi">300</span><span class="p">))</span>
+
+    <span class="k">def</span> <span class="nf">check_connection_usage</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">used</span><span class="p">,</span> <span class="n">total</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Check if connection usage exceeds threshold&quot;&quot;&quot;</span>
+        <span class="n">usage</span> <span class="o">=</span> <span class="n">used</span> <span class="o">/</span> <span class="n">total</span> <span class="k">if</span> <span class="n">total</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="k">else</span> <span class="mi">0</span>
+        <span class="k">if</span> <span class="n">usage</span> <span class="o">&gt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">thresholds</span><span class="p">[</span><span class="s2">&quot;connection_usage&quot;</span><span class="p">]:</span>
+            <span class="n">alert_key</span> <span class="o">=</span> <span class="s2">&quot;connection_usage&quot;</span>
+            <span class="k">if</span> <span class="n">alert_key</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">alert_history</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">send_alert</span><span class="p">(</span>
+                    <span class="s2">&quot;High Connection Usage&quot;</span><span class="p">,</span>
+                    <span class="sa">f</span><span class="s2">&quot;Database connection usage: </span><span class="si">{</span><span class="n">usage</span><span class="si">:</span><span class="s2">.1%</span><span class="si">}</span><span class="s2"> (threshold: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">thresholds</span><span class="p">[</span><span class="s1">&#39;connection_usage&#39;</span><span class="p">]</span><span class="si">:</span><span class="s2">.0%</span><span class="si">}</span><span class="s2">)&quot;</span>
+                <span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">alert_history</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">alert_key</span><span class="p">)</span>
+                <span class="n">asyncio</span><span class="o">.</span><span class="n">create_task</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">reset_alert</span><span class="p">(</span><span class="n">alert_key</span><span class="p">,</span> <span class="mi">300</span><span class="p">))</span>
+
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">reset_alert</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">alert_key</span><span class="p">,</span> <span class="n">delay</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Reset alert after specified delay&quot;&quot;&quot;</span>
+        <span class="k">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="n">delay</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">alert_history</span><span class="o">.</span><span class="n">discard</span><span class="p">(</span><span class="n">alert_key</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">send_alert</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">subject</span><span class="p">,</span> <span class="n">message</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Send alert via email&quot;&quot;&quot;</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">msg</span> <span class="o">=</span> <span class="n">MIMEText</span><span class="p">(</span><span class="n">message</span><span class="p">)</span>
+            <span class="n">msg</span><span class="p">[</span><span class="s1">&#39;Subject&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;[ALERT] </span><span class="si">{</span><span class="n">subject</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="n">msg</span><span class="p">[</span><span class="s1">&#39;From&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;monitoring@yourapp.com&quot;</span>
+            <span class="n">msg</span><span class="p">[</span><span class="s1">&#39;To&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;admin@yourapp.com&quot;</span>
+
+            <span class="k">with</span> <span class="n">smtplib</span><span class="o">.</span><span class="n">SMTP</span><span class="p">(</span><span class="s1">&#39;localhost&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">server</span><span class="p">:</span>
+                <span class="n">server</span><span class="o">.</span><span class="n">send_message</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Sent alert: </span><span class="si">{</span><span class="n">subject</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Failed to send alert: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<span class="c1"># Usage</span>
+<span class="n">monitor</span> <span class="o">=</span> <span class="n">PerformanceMonitor</span><span class="p">()</span>
+
+<span class="nd">@measure_time_async</span>
+<span class="k">async</span> <span class="k">def</span> <span class="nf">get_popular_books</span><span class="p">():</span>
+    <span class="n">result</span> <span class="o">=</span> <span class="k">await</span> <span class="n">Book</span><span class="o">.</span><span class="n">objects</span><span class="p">()</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">pages__gt</span><span class="o">=</span><span class="mi">300</span><span class="p">)</span><span class="o">.</span><span class="n">all</span><span class="p">()</span>
+    <span class="c1"># Check performance after execution</span>
+    <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">get_popular_books</span><span class="p">,</span> <span class="s1">&#39;execution_time&#39;</span><span class="p">):</span>
+        <span class="n">monitor</span><span class="o">.</span><span class="n">check_query_time</span><span class="p">(</span><span class="s2">&quot;get_popular_books&quot;</span><span class="p">,</span> <span class="n">get_popular_books</span><span class="o">.</span><span class="n">execution_time</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">result</span>
+</code></pre></div>
+<h3 id="integrating-with-external-monitoring-services">Integrating with External Monitoring Services<a class="headerlink" href="#integrating-with-external-monitoring-services" title="Permanent link">&para;</a></h3>
+<p>Connect to popular monitoring services:</p>
+<div class="highlight"><pre><span></span><code><span class="c1"># Datadog integration</span>
+<span class="k">try</span><span class="p">:</span>
+    <span class="kn">from</span> <span class="nn">datadog</span> <span class="kn">import</span> <span class="n">initialize</span><span class="p">,</span> <span class="n">statsd</span>
+    <span class="n">initialize</span><span class="p">(</span><span class="n">statsd_host</span><span class="o">=</span><span class="s2">&quot;localhost&quot;</span><span class="p">,</span> <span class="n">statsd_port</span><span class="o">=</span><span class="mi">8125</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">track_performance</span><span class="p">(</span><span class="n">func</span><span class="p">):</span>
+        <span class="nd">@wraps</span><span class="p">(</span><span class="n">func</span><span class="p">)</span>
+        <span class="k">async</span> <span class="k">def</span> <span class="nf">wrapper</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+            <span class="n">start</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="k">return</span> <span class="k">await</span> <span class="n">func</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+            <span class="k">finally</span><span class="p">:</span>
+                <span class="n">duration</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span> <span class="o">-</span> <span class="n">start</span>
+                <span class="n">statsd</span><span class="o">.</span><span class="n">timing</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;ormax.query.</span><span class="si">{</span><span class="n">func</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">duration</span> <span class="o">*</span> <span class="mi">1000</span><span class="p">)</span>
+                <span class="n">statsd</span><span class="o">.</span><span class="n">increment</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;ormax.query.</span><span class="si">{</span><span class="n">func</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">.count&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">wrapper</span>
+
+<span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
+    <span class="k">def</span> <span class="nf">track_performance</span><span class="p">(</span><span class="n">func</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">func</span>
+
+<span class="c1"># Usage</span>
+<span class="nd">@track_performance</span>
+<span class="k">async</span> <span class="k">def</span> <span class="nf">get_books</span><span class="p">():</span>
+    <span class="k">return</span> <span class="k">await</span> <span class="n">Book</span><span class="o">.</span><span class="n">objects</span><span class="p">()</span><span class="o">.</span><span class="n">all</span><span class="p">()</span>
+</code></pre></div>
+<h2 id="performance-optimization-checklist">Performance Optimization Checklist<a class="headerlink" href="#performance-optimization-checklist" title="Permanent link">&para;</a></h2>
+<p>Use this checklist to maintain optimal performance:</p>
+<h3 id="daily-checks">Daily Checks<a class="headerlink" href="#daily-checks" title="Permanent link">&para;</a></h3>
+<ul>
+<li>[ ] Review slow query logs</li>
+<li>[ ] Check connection pool usage</li>
+<li>[ ] Verify no new N+1 query patterns</li>
+<li>[ ] Monitor error rates</li>
+</ul>
+<h3 id="weekly-checks">Weekly Checks<a class="headerlink" href="#weekly-checks" title="Permanent link">&para;</a></h3>
+<ul>
+<li>[ ] Analyze query execution plans for critical queries</li>
+<li>[ ] Review index usage and effectiveness</li>
+<li>[ ] Check for memory usage trends</li>
+<li>[ ] Validate connection pool settings</li>
+</ul>
+<h3 id="monthly-checks">Monthly Checks<a class="headerlink" href="#monthly-checks" title="Permanent link">&para;</a></h3>
+<ul>
+<li>[ ] Benchmark critical operations</li>
+<li>[ ] Review and optimize expensive queries</li>
+<li>[ ] Check database statistics and run ANALYZE/VACUUM</li>
+<li>[ ] Validate monitoring thresholds</li>
+</ul>
+<h2 id="common-performance-issues-and-solutions">Common Performance Issues and Solutions<a class="headerlink" href="#common-performance-issues-and-solutions" title="Permanent link">&para;</a></h2>
+<h3 id="issue-high-connection-usage">Issue: High Connection Usage<a class="headerlink" href="#issue-high-connection-usage" title="Permanent link">&para;</a></h3>
+<p><strong>Symptoms</strong>:
+- Frequent "Too many connections" errors
+- Slow response times during peak usage
+- Connection timeouts</p>
+<p><strong>Solutions</strong>:
+- Increase <code>max_size</code> in connection pool configuration
+- Ensure transactions are kept short
+- Implement connection recycling
+- Identify and fix connection leaks</p>
+<h3 id="issue-slow-queries">Issue: Slow Queries<a class="headerlink" href="#issue-slow-queries" title="Permanent link">&para;</a></h3>
+<p><strong>Symptoms</strong>:
+- Individual queries taking &gt; 500ms
+- High CPU usage on database server
+- Slow application response times</p>
+<p><strong>Solutions</strong>:
+- Add appropriate indexes
+- Optimize query patterns (use <code>select_related</code>/<code>prefetch_related</code>)
+- Break down complex queries
+- Consider denormalization for critical paths</p>
+<h3 id="issue-n1-query-problem">Issue: N+1 Query Problem<a class="headerlink" href="#issue-n1-query-problem" title="Permanent link">&para;</a></h3>
+<p><strong>Symptoms</strong>:
+- Many similar queries with different parameters
+- Performance degrades with larger datasets
+- High query count per request</p>
+<p><strong>Solutions</strong>:
+- Use <code>select_related</code> for single-valued relationships
+- Use <code>prefetch_related</code> for multi-valued relationships
+- Consider using <code>values()</code> or <code>values_list()</code> for simpler data needs
+- Implement batch loading patterns</p>
+<h3 id="issue-memory-pressure">Issue: Memory Pressure<a class="headerlink" href="#issue-memory-pressure" title="Permanent link">&para;</a></h3>
+<p><strong>Symptoms</strong>:
+- High memory usage during query execution
+- Process restarts due to OOM (Out of Memory)
+- Slow garbage collection</p>
+<p><strong>Solutions</strong>:
+- Use pagination for large result sets
+- Process data in batches
+- Use <code>only()</code> or <code>defer()</code> to load only necessary fields
+- Consider streaming results for very large datasets</p>
+<h2 id="best-practices-for-performance-monitoring">Best Practices for Performance Monitoring<a class="headerlink" href="#best-practices-for-performance-monitoring" title="Permanent link">&para;</a></h2>
+<h3 id="set-realistic-thresholds">Set Realistic Thresholds<a class="headerlink" href="#set-realistic-thresholds" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Base thresholds on your specific workload and requirements</li>
+<li>Start with conservative thresholds and adjust based on historical data</li>
+<li>Differentiate between development, staging, and production environments</li>
+</ul>
+<h3 id="monitor-in-production">Monitor in Production<a class="headerlink" href="#monitor-in-production" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Development environment performance often differs significantly from production</li>
+<li>Implement monitoring early in the development cycle</li>
+<li>Use staging environments to simulate production loads</li>
+</ul>
+<h3 id="correlate-metrics">Correlate Metrics<a class="headerlink" href="#correlate-metrics" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Don't look at metrics in isolation (e.g., query time + connection usage)</li>
+<li>Correlate database metrics with application metrics</li>
+<li>Consider the full request lifecycle</li>
+</ul>
+<h3 id="proactive-monitoring">Proactive Monitoring<a class="headerlink" href="#proactive-monitoring" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Set up alerts for early warning signs, not just critical issues</li>
+<li>Monitor trends over time to identify gradual degradation</li>
+<li>Implement synthetic transactions to verify performance</li>
+</ul>
+<h2 id="real-world-monitoring-examples">Real-World Monitoring Examples<a class="headerlink" href="#real-world-monitoring-examples" title="Permanent link">&para;</a></h2>
+<h3 id="e-commerce-platform-monitoring">E-commerce Platform Monitoring<a class="headerlink" href="#e-commerce-platform-monitoring" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><span class="k">async</span> <span class="k">def</span> <span class="nf">monitor_ecommerce_platform</span><span class="p">():</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Comprehensive monitoring for e-commerce platform&quot;&quot;&quot;</span>
+    <span class="c1"># Check critical operations</span>
+    <span class="n">checks</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s2">&quot;product_search&quot;</span><span class="p">:</span> <span class="k">lambda</span><span class="p">:</span> <span class="n">Product</span><span class="o">.</span><span class="n">objects</span><span class="p">()</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="s2">&quot;laptop&quot;</span><span class="p">),</span>
+        <span class="s2">&quot;cart_processing&quot;</span><span class="p">:</span> <span class="k">lambda</span><span class="p">:</span> <span class="n">Cart</span><span class="o">.</span><span class="n">process_open_carts</span><span class="p">(),</span>
+        <span class="s2">&quot;order_creation&quot;</span><span class="p">:</span> <span class="k">lambda</span><span class="p">:</span> <span class="n">Order</span><span class="o">.</span><span class="n">create_sample_order</span><span class="p">(),</span>
+        <span class="s2">&quot;inventory_update&quot;</span><span class="p">:</span> <span class="k">lambda</span><span class="p">:</span> <span class="n">Inventory</span><span class="o">.</span><span class="n">update_stock_levels</span><span class="p">()</span>
+    <span class="p">}</span>
+
+    <span class="n">results</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">func</span> <span class="ow">in</span> <span class="n">checks</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">start</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span>
+            <span class="k">await</span> <span class="n">func</span><span class="p">()</span>
+            <span class="n">duration</span> <span class="o">=</span> <span class="p">(</span><span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span> <span class="o">-</span> <span class="n">start</span><span class="p">)</span><span class="o">.</span><span class="n">total_seconds</span><span class="p">()</span>
+            <span class="n">results</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;status&quot;</span><span class="p">:</span> <span class="s2">&quot;OK&quot;</span><span class="p">,</span> <span class="s2">&quot;duration&quot;</span><span class="p">:</span> <span class="n">duration</span><span class="p">}</span>
+
+            <span class="c1"># Record for performance monitoring</span>
+            <span class="n">performance_monitor</span><span class="o">.</span><span class="n">record</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">duration</span><span class="p">)</span>
+
+            <span class="c1"># Alert on slow performance</span>
+            <span class="k">if</span> <span class="n">duration</span> <span class="o">&gt;</span> <span class="mf">2.0</span><span class="p">:</span>  <span class="c1"># 2 seconds threshold</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Slow </span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2"> operation: </span><span class="si">{</span><span class="n">duration</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">s&quot;</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="n">results</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;status&quot;</span><span class="p">:</span> <span class="s2">&quot;ERROR&quot;</span><span class="p">,</span> <span class="s2">&quot;error&quot;</span><span class="p">:</span> <span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">)}</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2"> check failed: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+    <span class="c1"># Check database health</span>
+    <span class="n">db_health</span> <span class="o">=</span> <span class="k">await</span> <span class="n">check_database_health</span><span class="p">()</span>
+
+    <span class="c1"># Generate summary</span>
+    <span class="n">summary</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s2">&quot;timestamp&quot;</span><span class="p">:</span> <span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span><span class="o">.</span><span class="n">isoformat</span><span class="p">(),</span>
+        <span class="s2">&quot;operation_status&quot;</span><span class="p">:</span> <span class="n">results</span><span class="p">,</span>
+        <span class="s2">&quot;database_health&quot;</span><span class="p">:</span> <span class="n">db_health</span><span class="p">,</span>
+        <span class="s2">&quot;connection_pool&quot;</span><span class="p">:</span> <span class="n">get_connection_pool_status</span><span class="p">()</span>
+    <span class="p">}</span>
+
+    <span class="c1"># Log summary</span>
+    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Platform health check: </span><span class="si">{</span><span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">summary</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+    <span class="c1"># Send alerts for critical issues</span>
+    <span class="k">if</span> <span class="nb">any</span><span class="p">(</span><span class="n">status</span><span class="p">[</span><span class="s2">&quot;status&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;ERROR&quot;</span> <span class="k">for</span> <span class="n">status</span> <span class="ow">in</span> <span class="n">results</span><span class="o">.</span><span class="n">values</span><span class="p">()):</span>
+        <span class="n">send_critical_alert</span><span class="p">(</span><span class="s2">&quot;E-commerce platform health check failure&quot;</span><span class="p">,</span> <span class="n">summary</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">summary</span>
+
+<span class="k">async</span> <span class="k">def</span> <span class="nf">check_database_health</span><span class="p">():</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Check database-specific health metrics&quot;&quot;&quot;</span>
+    <span class="c1"># Check replication lag (PostgreSQL)</span>
+    <span class="k">if</span> <span class="s2">&quot;postgresql&quot;</span> <span class="ow">in</span> <span class="n">db</span><span class="o">.</span><span class="n">connection_string</span><span class="p">:</span>
+        <span class="n">lag</span> <span class="o">=</span> <span class="k">await</span> <span class="n">db</span><span class="o">.</span><span class="n">connection</span><span class="o">.</span><span class="n">fetch_one</span><span class="p">(</span>
+            <span class="s2">&quot;SELECT pg_wal_lsn_diff(pg_current_wal_lsn(), replay_lsn) AS lag &quot;</span>
+            <span class="s2">&quot;FROM pg_stat_replication&quot;</span>
+        <span class="p">)</span>
+        <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;replication_lag&quot;</span><span class="p">:</span> <span class="n">lag</span><span class="p">[</span><span class="s2">&quot;lag&quot;</span><span class="p">]</span> <span class="k">if</span> <span class="n">lag</span> <span class="k">else</span> <span class="mi">0</span><span class="p">}</span>
+
+    <span class="c1"># Check other database-specific metrics</span>
+    <span class="c1"># ...</span>
+
+    <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;status&quot;</span><span class="p">:</span> <span class="s2">&quot;OK&quot;</span><span class="p">}</span>
+</code></pre></div>
+<h3 id="analytics-dashboard-monitoring">Analytics Dashboard Monitoring<a class="headerlink" href="#analytics-dashboard-monitoring" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><span class="k">async</span> <span class="k">def</span> <span class="nf">monitor_analytics_dashboard</span><span class="p">():</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Monitor performance of analytics dashboard queries&quot;&quot;&quot;</span>
+    <span class="c1"># Define critical analytics queries</span>
+    <span class="n">analytics_queries</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="p">(</span><span class="s2">&quot;monthly_sales&quot;</span><span class="p">,</span> <span class="s2">&quot;SELECT * FROM monthly_sales&quot;</span><span class="p">),</span>
+        <span class="p">(</span><span class="s2">&quot;user_engagement&quot;</span><span class="p">,</span> <span class="s2">&quot;SELECT * FROM user_engagement&quot;</span><span class="p">),</span>
+        <span class="p">(</span><span class="s2">&quot;product_trends&quot;</span><span class="p">,</span> <span class="s2">&quot;SELECT * FROM product_trends&quot;</span><span class="p">),</span>
+        <span class="p">(</span><span class="s2">&quot;geographic_data&quot;</span><span class="p">,</span> <span class="s2">&quot;SELECT * FROM geographic_data&quot;</span><span class="p">)</span>
+    <span class="p">]</span>
+
+    <span class="n">results</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">query</span> <span class="ow">in</span> <span class="n">analytics_queries</span><span class="p">:</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">start</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span>
+            <span class="k">await</span> <span class="n">db</span><span class="o">.</span><span class="n">connection</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">query</span><span class="p">)</span>
+            <span class="n">duration</span> <span class="o">=</span> <span class="p">(</span><span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span> <span class="o">-</span> <span class="n">start</span><span class="p">)</span><span class="o">.</span><span class="n">total_seconds</span><span class="p">()</span>
+            <span class="n">results</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;status&quot;</span><span class="p">:</span> <span class="s2">&quot;OK&quot;</span><span class="p">,</span> <span class="s2">&quot;duration&quot;</span><span class="p">:</span> <span class="n">duration</span><span class="p">}</span>
+
+            <span class="c1"># Record for performance monitoring</span>
+            <span class="n">performance_monitor</span><span class="o">.</span><span class="n">record</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;analytics.</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">duration</span><span class="p">)</span>
+
+            <span class="c1"># Alert on slow performance</span>
+            <span class="k">if</span> <span class="n">duration</span> <span class="o">&gt;</span> <span class="mf">5.0</span><span class="p">:</span>  <span class="c1"># 5 seconds threshold for analytics</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Slow analytics query </span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">duration</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">s&quot;</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="n">results</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;status&quot;</span><span class="p">:</span> <span class="s2">&quot;ERROR&quot;</span><span class="p">,</span> <span class="s2">&quot;error&quot;</span><span class="p">:</span> <span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">)}</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Analytics query </span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2"> failed: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+    <span class="c1"># Check for data freshness</span>
+    <span class="n">last_update</span> <span class="o">=</span> <span class="k">await</span> <span class="n">db</span><span class="o">.</span><span class="n">connection</span><span class="o">.</span><span class="n">fetch_one</span><span class="p">(</span>
+        <span class="s2">&quot;SELECT MAX(updated_at) as last_update FROM analytics_data&quot;</span>
+    <span class="p">)</span>
+    <span class="k">if</span> <span class="n">last_update</span> <span class="ow">and</span> <span class="n">last_update</span><span class="p">[</span><span class="s2">&quot;last_update&quot;</span><span class="p">]:</span>
+        <span class="n">age</span> <span class="o">=</span> <span class="p">(</span><span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span> <span class="o">-</span> <span class="n">last_update</span><span class="p">[</span><span class="s2">&quot;last_update&quot;</span><span class="p">])</span><span class="o">.</span><span class="n">total_seconds</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">age</span> <span class="o">&gt;</span> <span class="mi">3600</span><span class="p">:</span>  <span class="c1"># 1 hour</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Analytics data is </span><span class="si">{</span><span class="n">age</span><span class="o">/</span><span class="mi">60</span><span class="si">:</span><span class="s2">.1f</span><span class="si">}</span><span class="s2"> minutes old&quot;</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="p">{</span>
+        <span class="s2">&quot;timestamp&quot;</span><span class="p">:</span> <span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span><span class="o">.</span><span class="n">isoformat</span><span class="p">(),</span>
+        <span class="s2">&quot;query_performance&quot;</span><span class="p">:</span> <span class="n">results</span><span class="p">,</span>
+        <span class="s2">&quot;data_freshness&quot;</span><span class="p">:</span> <span class="n">last_update</span><span class="p">[</span><span class="s2">&quot;last_update&quot;</span><span class="p">]</span> <span class="k">if</span> <span class="n">last_update</span> <span class="k">else</span> <span class="kc">None</span>
+    <span class="p">}</span>
+</code></pre></div>
+<h2 id="troubleshooting-performance-issues">Troubleshooting Performance Issues<a class="headerlink" href="#troubleshooting-performance-issues" title="Permanent link">&para;</a></h2>
+<h3 id="step-by-step-diagnosis">Step-by-Step Diagnosis<a class="headerlink" href="#step-by-step-diagnosis" title="Permanent link">&para;</a></h3>
+<p>When facing performance issues, follow this systematic approach:</p>
+<ol>
+<li><strong>Identify the symptom</strong></li>
+<li>Is it slow response times?</li>
+<li>High error rates?</li>
+<li>
+<p>Resource exhaustion?</p>
+</li>
+<li>
+<p><strong>Narrow down the scope</strong></p>
+</li>
+<li>Is it affecting all operations or specific ones?</li>
+<li>Is it database-specific or application-wide?</li>
+<li>
+<p>When did the issue start?</p>
+</li>
+<li>
+<p><strong>Collect evidence</strong></p>
+</li>
+<li>Query logs</li>
+<li>Connection pool statistics</li>
+<li>System resource usage (CPU, memory, I/O)</li>
+<li>
+<p>Database-specific metrics</p>
+</li>
+<li>
+<p><strong>Formulate hypotheses</strong></p>
+</li>
+<li>Missing index?</li>
+<li>Connection leak?</li>
+<li>
+<p>Inefficient query pattern?</p>
+</li>
+<li>
+<p><strong>Test and validate</strong></p>
+</li>
+<li>Implement potential fixes</li>
+<li>Measure impact</li>
+<li>Verify resolution</li>
+</ol>
+<h3 id="common-diagnostic-commands">Common Diagnostic Commands<a class="headerlink" href="#common-diagnostic-commands" title="Permanent link">&para;</a></h3>
+<h4 id="postgresql">PostgreSQL<a class="headerlink" href="#postgresql" title="Permanent link">&para;</a></h4>
+<div class="highlight"><pre><span></span><code><span class="c1">-- Long-running queries</span>
+<span class="k">SELECT</span><span class="w"> </span><span class="n">pid</span><span class="p">,</span><span class="w"> </span><span class="n">now</span><span class="p">()</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">query_start</span><span class="w"> </span><span class="k">AS</span><span class="w"> </span><span class="n">duration</span><span class="p">,</span><span class="w"> </span><span class="n">query</span><span class="w"> </span>
+<span class="k">FROM</span><span class="w"> </span><span class="n">pg_stat_activity</span><span class="w"> </span>
+<span class="k">WHERE</span><span class="w"> </span><span class="k">state</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s1">&#39;active&#39;</span><span class="w"> </span><span class="k">AND</span><span class="w"> </span><span class="n">now</span><span class="p">()</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">query_start</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="nb">interval</span><span class="w"> </span><span class="s1">&#39;5 seconds&#39;</span><span class="p">;</span>
+
+<span class="c1">-- Lock contention</span>
+<span class="k">SELECT</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="k">FROM</span><span class="w"> </span><span class="n">pg_locks</span><span class="w"> </span><span class="k">WHERE</span><span class="w"> </span><span class="k">granted</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">false</span><span class="p">;</span>
+
+<span class="c1">-- Index usage</span>
+<span class="k">SELECT</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="k">FROM</span><span class="w"> </span><span class="n">pg_stat_user_indexes</span><span class="p">;</span>
+</code></pre></div>
+<h4 id="mysql">MySQL<a class="headerlink" href="#mysql" title="Permanent link">&para;</a></h4>
+<div class="highlight"><pre><span></span><code><span class="c1">-- Slow queries</span>
+<span class="k">SHOW</span><span class="w"> </span><span class="k">FULL</span><span class="w"> </span><span class="n">PROCESSLIST</span><span class="p">;</span>
+
+<span class="c1">-- Connection usage</span>
+<span class="k">SHOW</span><span class="w"> </span><span class="n">STATUS</span><span class="w"> </span><span class="k">LIKE</span><span class="w"> </span><span class="s1">&#39;Threads_connected&#39;</span><span class="p">;</span>
+<span class="k">SHOW</span><span class="w"> </span><span class="n">VARIABLES</span><span class="w"> </span><span class="k">LIKE</span><span class="w"> </span><span class="s1">&#39;max_connections&#39;</span><span class="p">;</span>
+
+<span class="c1">-- Query execution plans</span>
+<span class="k">EXPLAIN</span><span class="w"> </span><span class="k">SELECT</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="k">FROM</span><span class="w"> </span><span class="n">books</span><span class="w"> </span><span class="k">WHERE</span><span class="w"> </span><span class="n">pages</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="mi">300</span><span class="p">;</span>
+</code></pre></div>
+<h4 id="sqlite">SQLite<a class="headerlink" href="#sqlite" title="Permanent link">&para;</a></h4>
+<div class="highlight"><pre><span></span><code><span class="c1">-- Database statistics</span>
+<span class="n">PRAGMA</span><span class="w"> </span><span class="n">stats</span><span class="p">;</span>
+<span class="n">PRAGMA</span><span class="w"> </span><span class="n">index_list</span><span class="p">(</span><span class="s1">&#39;books&#39;</span><span class="p">);</span>
+<span class="n">PRAGMA</span><span class="w"> </span><span class="n">index_info</span><span class="p">(</span><span class="s1">&#39;books_title_idx&#39;</span><span class="p">);</span>
+</code></pre></div>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+  <script>var tabs=__md_get("__tabs");if(Array.isArray(tabs))e:for(var set of document.querySelectorAll(".tabbed-set")){var labels=set.querySelector(".tabbed-labels");for(var tab of tabs)for(var label of labels.getElementsByTagName("label"))if(label.innerText.trim()===tab){var input=document.getElementById(label.htmlFor);input.checked=!0;continue e}}</script>
+
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+    
+      
+      <nav class="md-footer__inner md-grid" aria-label="Footer" >
+        
+          
+          <a href="../custom-models/" class="md-footer__link md-footer__link--prev" aria-label="Previous: Custom Model Patterns">
+            <div class="md-footer__button md-icon">
+              
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+            </div>
+            <div class="md-footer__title">
+              <span class="md-footer__direction">
+                Previous
+              </span>
+              <div class="md-ellipsis">
+                Custom Model Patterns
+              </div>
+            </div>
+          </a>
+        
+        
+          
+          <a href="../deployment/" class="md-footer__link md-footer__link--next" aria-label="Next: Deployment Strategies">
+            <div class="md-footer__title">
+              <span class="md-footer__direction">
+                Next
+              </span>
+              <div class="md-ellipsis">
+                Deployment Strategies
+              </div>
+            </div>
+            <div class="md-footer__button md-icon">
+              
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M4 11v2h12l-5.5 5.5 1.42 1.42L19.84 12l-7.92-7.92L10.5 5.5 16 11z"/></svg>
+            </div>
+          </a>
+        
+      </nav>
+    
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      <script id="__config" type="application/json">{"base": "../..", "features": ["search.suggest", "search.highlight", "content.tabs.link", "navigation.footer", "content.code.copy", "navigation.instant", "navigation.sections", "navigation.expand"], "search": "../../assets/javascripts/workers/search.973d3a69.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.92b07e13.min.js"></script>
+      
+        <script src="../../js/termynal.js"></script>
+      
+        <script src="../../js/custom.js"></script>
+      
+        <script src="../../&lt;script type=&#34;application/ld+json&#34;&gt;
+{
+  &#34;@context&#34;: &#34;https:/schema.org&#34;,
+  &#34;@type&#34;: &#34;SoftwareApplication&#34;,
+  &#34;name&#34;: &#34;Ormax ORM&#34;,
+  &#34;applicationCategory&#34;: &#34;DeveloperLibrary&#34;,
+  &#34;operatingSystem&#34;: &#34;Any&#34;,
+  &#34;url&#34;: &#34;https:/ormax.shayan-heidari.ir/&#34;,
+  &#34;logo&#34;: &#34;https:/raw.githubusercontent.com/shayanheidari01/ormax/master/icon.png&#34;,
+  &#34;author&#34;: {
+    &#34;@type&#34;: &#34;Person&#34;,
+    &#34;name&#34;: &#34;Shayan Heidari&#34;
+  },
+  &#34;description&#34;: &#34;Ormax ORM: A lightweight and async ORM for Python with simple models, transactions, relations, and performance monitoring.&#34;
+}
+&lt;/script&gt;
+"></script>
+      
+    
+  </body>
+</html>
