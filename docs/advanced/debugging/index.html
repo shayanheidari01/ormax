@@ -1,0 +1,4011 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Ormax Python ORM Documents">
+      
+      
+        <meta name="author" content="Shayan Heidari">
+      
+      
+        <link rel="canonical" href="https://ormax.shayan-heidari.ir/advanced/debugging/">
+      
+      
+        <link rel="prev" href="../testing/">
+      
+      
+      
+      <link rel="icon" href="../../assets/logo.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.6.17">
+    
+    
+      
+        <title>Debugging Techniques - Ormax Python ORM</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.7e37652d.min.css">
+      
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.06af60db.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Vazirmatn:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Vazirmatn";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../../css/termynal.css">
+    
+      <link rel="stylesheet" href="../../css/custom.css">
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="white" data-md-color-accent="amber">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#debugging-techniques-for-ormax-applications" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../.." title="Ormax Python ORM" class="md-header__button md-logo" aria-label="Ormax Python ORM" data-md-component="logo">
+      
+  <img src="../../assets/logo.png" alt="logo">
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            Ormax Python ORM
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Debugging Techniques
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="default" data-md-color-primary="white" data-md-color-accent="amber"  aria-label="Dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 7a5 5 0 0 1 5 5 5 5 0 0 1-5 5 5 5 0 0 1-5-5 5 5 0 0 1 5-5m0 2a3 3 0 0 0-3 3 3 3 0 0 0 3 3 3 3 0 0 0 3-3 3 3 0 0 0-3-3m0-7 2.39 3.42C13.65 5.15 12.84 5 12 5s-1.65.15-2.39.42zM3.34 7l4.16-.35A7.2 7.2 0 0 0 5.94 8.5c-.44.74-.69 1.5-.83 2.29zm.02 10 1.76-3.77a7.131 7.131 0 0 0 2.38 4.14zM20.65 7l-1.77 3.79a7.02 7.02 0 0 0-2.38-4.15zm-.01 10-4.14.36c.59-.51 1.12-1.14 1.54-1.86.42-.73.69-1.5.83-2.29zM12 22l-2.41-3.44c.74.27 1.55.44 2.41.44.82 0 1.63-.17 2.37-.44z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="slate" data-md-color-primary="white" data-md-color-accent="amber"  aria-label="Light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="m17.75 4.09-2.53 1.94.91 3.06-2.63-1.81-2.63 1.81.91-3.06-2.53-1.94L12.44 4l1.06-3 1.06 3zm3.5 6.91-1.64 1.25.59 1.98-1.7-1.17-1.7 1.17.59-1.98L15.75 11l2.06-.05L18.5 9l.69 1.95zm-2.28 4.95c.83-.08 1.72 1.1 1.19 1.85-.32.45-.66.87-1.08 1.27C15.17 23 8.84 23 4.94 19.07c-3.91-3.9-3.91-10.24 0-14.14.4-.4.82-.76 1.27-1.08.75-.53 1.93.36 1.85 1.19-.27 2.86.69 5.83 2.89 8.02a9.96 9.96 0 0 0 8.02 2.89m-1.64 2.02a12.08 12.08 0 0 1-7.8-3.47c-2.17-2.19-3.33-5-3.49-7.82-2.81 3.14-2.7 7.96.31 10.98 3.02 3.01 7.84 3.12 10.98.31"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/shayanheidari01/ormax/" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.0.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path fill="currentColor" d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    GitHub
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="Ormax Python ORM" class="md-nav__button md-logo" aria-label="Ormax Python ORM" data-md-component="logo">
+      
+  <img src="../../assets/logo.png" alt="logo">
+
+    </a>
+    Ormax Python ORM
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/shayanheidari01/ormax/" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.0.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path fill="currentColor" d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    GitHub
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Home
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    Getting Started
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            Getting Started
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../getting-started/installation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Installation
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../getting-started/models/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Basic Model Definition
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    Querying Data
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            Querying Data
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../querying/queryset/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    QuerySet API
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    Relationships
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            Relationships
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../relationships/overview/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Overview
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    Advanced Features
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            Advanced Features
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../transactions/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Transactions
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../query-optimization/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Query Optimization
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../custom-models/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Custom Model Patterns
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../performance-monitoring/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Performance Monitoring
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../deployment/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Deployment Strategies
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../testing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Testing Strategies
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    Debugging Techniques
+    
+  </span>
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    Debugging Techniques
+    
+  </span>
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#understanding-ormax-error-types" class="md-nav__link">
+    <span class="md-ellipsis">
+      Understanding Ormax Error Types
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Understanding Ormax Error Types">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#common-error-categories" class="md-nav__link">
+    <span class="md-ellipsis">
+      Common Error Categories
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#decoding-error-messages" class="md-nav__link">
+    <span class="md-ellipsis">
+      Decoding Error Messages
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#debugging-query-issues" class="md-nav__link">
+    <span class="md-ellipsis">
+      Debugging Query Issues
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Debugging Query Issues">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#viewing-executed-queries" class="md-nav__link">
+    <span class="md-ellipsis">
+      Viewing Executed Queries
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Viewing Executed Queries">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#method-1-enable-debug-logging" class="md-nav__link">
+    <span class="md-ellipsis">
+      Method 1: Enable Debug Logging
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#method-2-using-the-explain-method" class="md-nav__link">
+    <span class="md-ellipsis">
+      Method 2: Using the explain() Method
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#method-3-manual-query-inspection" class="md-nav__link">
+    <span class="md-ellipsis">
+      Method 3: Manual Query Inspection
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#common-query-issues-and-solutions" class="md-nav__link">
+    <span class="md-ellipsis">
+      Common Query Issues and Solutions
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Common Query Issues and Solutions">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#issue-incorrect-where-clause" class="md-nav__link">
+    <span class="md-ellipsis">
+      Issue: Incorrect WHERE Clause
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#issue-n1-query-problem" class="md-nav__link">
+    <span class="md-ellipsis">
+      Issue: N+1 Query Problem
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#issue-incorrect-joins" class="md-nav__link">
+    <span class="md-ellipsis">
+      Issue: Incorrect JOINs
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#debugging-connection-issues" class="md-nav__link">
+    <span class="md-ellipsis">
+      Debugging Connection Issues
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Debugging Connection Issues">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#diagnosing-connection-problems" class="md-nav__link">
+    <span class="md-ellipsis">
+      Diagnosing Connection Problems
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Diagnosing Connection Problems">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#step-1-verify-connection-string" class="md-nav__link">
+    <span class="md-ellipsis">
+      Step 1: Verify Connection String
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-2-test-basic-connection" class="md-nav__link">
+    <span class="md-ellipsis">
+      Step 2: Test Basic Connection
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-3-check-connection-pool-status" class="md-nav__link">
+    <span class="md-ellipsis">
+      Step 3: Check Connection Pool Status
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#common-connection-issues-and-solutions" class="md-nav__link">
+    <span class="md-ellipsis">
+      Common Connection Issues and Solutions
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Common Connection Issues and Solutions">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#issue-connection-timeout" class="md-nav__link">
+    <span class="md-ellipsis">
+      Issue: Connection Timeout
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#issue-too-many-connections" class="md-nav__link">
+    <span class="md-ellipsis">
+      Issue: Too Many Connections
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#issue-authentication-failure" class="md-nav__link">
+    <span class="md-ellipsis">
+      Issue: Authentication Failure
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#debugging-relationship-issues" class="md-nav__link">
+    <span class="md-ellipsis">
+      Debugging Relationship Issues
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Debugging Relationship Issues">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#diagnosing-relationship-problems" class="md-nav__link">
+    <span class="md-ellipsis">
+      Diagnosing Relationship Problems
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Diagnosing Relationship Problems">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#step-1-verify-relationship-definitions" class="md-nav__link">
+    <span class="md-ellipsis">
+      Step 1: Verify Relationship Definitions
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-2-inspect-relationship-data" class="md-nav__link">
+    <span class="md-ellipsis">
+      Step 2: Inspect Relationship Data
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#common-relationship-issues-and-solutions" class="md-nav__link">
+    <span class="md-ellipsis">
+      Common Relationship Issues and Solutions
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Common Relationship Issues and Solutions">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#issue-foreign-key-constraint-violation" class="md-nav__link">
+    <span class="md-ellipsis">
+      Issue: Foreign Key Constraint Violation
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#issue-accessing-relationship-returns-none" class="md-nav__link">
+    <span class="md-ellipsis">
+      Issue: Accessing Relationship Returns None
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#issue-reverse-relationship-not-working" class="md-nav__link">
+    <span class="md-ellipsis">
+      Issue: Reverse Relationship Not Working
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#debugging-transactions" class="md-nav__link">
+    <span class="md-ellipsis">
+      Debugging Transactions
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Debugging Transactions">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#diagnosing-transaction-issues" class="md-nav__link">
+    <span class="md-ellipsis">
+      Diagnosing Transaction Issues
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Diagnosing Transaction Issues">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#step-1-verify-transaction-state" class="md-nav__link">
+    <span class="md-ellipsis">
+      Step 1: Verify Transaction State
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-2-monitor-transaction-execution" class="md-nav__link">
+    <span class="md-ellipsis">
+      Step 2: Monitor Transaction Execution
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#common-transaction-issues-and-solutions" class="md-nav__link">
+    <span class="md-ellipsis">
+      Common Transaction Issues and Solutions
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Common Transaction Issues and Solutions">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#issue-transaction-not-rolling-back" class="md-nav__link">
+    <span class="md-ellipsis">
+      Issue: Transaction Not Rolling Back
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#issue-deadlocks" class="md-nav__link">
+    <span class="md-ellipsis">
+      Issue: Deadlocks
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#issue-nested-transaction-problems" class="md-nav__link">
+    <span class="md-ellipsis">
+      Issue: Nested Transaction Problems
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#advanced-debugging-techniques" class="md-nav__link">
+    <span class="md-ellipsis">
+      Advanced Debugging Techniques
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Advanced Debugging Techniques">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#using-a-debugger-with-async-code" class="md-nav__link">
+    <span class="md-ellipsis">
+      Using a Debugger with Async Code
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Using a Debugger with Async Code">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#vs-code-configuration" class="md-nav__link">
+    <span class="md-ellipsis">
+      VS Code Configuration
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#common-debugger-commands-for-async" class="md-nav__link">
+    <span class="md-ellipsis">
+      Common Debugger Commands for Async
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#debugging-tips" class="md-nav__link">
+    <span class="md-ellipsis">
+      Debugging Tips
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#database-specific-debugging" class="md-nav__link">
+    <span class="md-ellipsis">
+      Database-Specific Debugging
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Database-Specific Debugging">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#postgresql-debugging" class="md-nav__link">
+    <span class="md-ellipsis">
+      PostgreSQL Debugging
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#mysql-debugging" class="md-nav__link">
+    <span class="md-ellipsis">
+      MySQL Debugging
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#sqlite-debugging" class="md-nav__link">
+    <span class="md-ellipsis">
+      SQLite Debugging
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#debugging-performance-issues" class="md-nav__link">
+    <span class="md-ellipsis">
+      Debugging Performance Issues
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Debugging Performance Issues">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#identifying-slow-queries" class="md-nav__link">
+    <span class="md-ellipsis">
+      Identifying Slow Queries
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Identifying Slow Queries">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#method-1-query-timing" class="md-nav__link">
+    <span class="md-ellipsis">
+      Method 1: Query Timing
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#method-2-query-profiling" class="md-nav__link">
+    <span class="md-ellipsis">
+      Method 2: Query Profiling
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#memory-usage-debugging" class="md-nav__link">
+    <span class="md-ellipsis">
+      Memory Usage Debugging
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Memory Usage Debugging">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#tracking-memory-usage" class="md-nav__link">
+    <span class="md-ellipsis">
+      Tracking Memory Usage
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#identifying-memory-leaks" class="md-nav__link">
+    <span class="md-ellipsis">
+      Identifying Memory Leaks
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#debugging-migration-issues" class="md-nav__link">
+    <span class="md-ellipsis">
+      Debugging Migration Issues
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Debugging Migration Issues">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#diagnosing-migration-problems" class="md-nav__link">
+    <span class="md-ellipsis">
+      Diagnosing Migration Problems
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Diagnosing Migration Problems">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#step-1-verify-migration-status" class="md-nav__link">
+    <span class="md-ellipsis">
+      Step 1: Verify Migration Status
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-2-inspect-migration-scripts" class="md-nav__link">
+    <span class="md-ellipsis">
+      Step 2: Inspect Migration Scripts
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#common-migration-issues-and-solutions" class="md-nav__link">
+    <span class="md-ellipsis">
+      Common Migration Issues and Solutions
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Common Migration Issues and Solutions">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#issue-migration-already-applied" class="md-nav__link">
+    <span class="md-ellipsis">
+      Issue: Migration Already Applied
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#issue-foreign-key-constraint-violation-during-migration" class="md-nav__link">
+    <span class="md-ellipsis">
+      Issue: Foreign Key Constraint Violation During Migration
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#issue-migration-rollback-failure" class="md-nav__link">
+    <span class="md-ellipsis">
+      Issue: Migration Rollback Failure
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#debugging-with-real-world-examples" class="md-nav__link">
+    <span class="md-ellipsis">
+      Debugging with Real-World Examples
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Debugging with Real-World Examples">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#debugging-an-n1-query-problem" class="md-nav__link">
+    <span class="md-ellipsis">
+      Debugging an N+1 Query Problem
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#debugging-a-transaction-deadlock" class="md-nav__link">
+    <span class="md-ellipsis">
+      Debugging a Transaction Deadlock
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#best-practices-for-debugging-ormax-applications" class="md-nav__link">
+    <span class="md-ellipsis">
+      Best Practices for Debugging Ormax Applications
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Best Practices for Debugging Ormax Applications">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#use-structured-logging" class="md-nav__link">
+    <span class="md-ellipsis">
+      Use Structured Logging
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#implement-debug-endpoints" class="md-nav__link">
+    <span class="md-ellipsis">
+      Implement Debug Endpoints
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#create-debugging-utilities" class="md-nav__link">
+    <span class="md-ellipsis">
+      Create Debugging Utilities
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#troubleshooting-common-debugging-issues" class="md-nav__link">
+    <span class="md-ellipsis">
+      Troubleshooting Common Debugging Issues
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Troubleshooting Common Debugging Issues">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#issue-debugger-doesnt-stop-at-breakpoints" class="md-nav__link">
+    <span class="md-ellipsis">
+      Issue: Debugger Doesn't Stop at Breakpoints
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#issue-logging-doesnt-show-queries" class="md-nav__link">
+    <span class="md-ellipsis">
+      Issue: Logging Doesn't Show Queries
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#issue-memory-profiling-shows-false-positives" class="md-nav__link">
+    <span class="md-ellipsis">
+      Issue: Memory Profiling Shows False Positives
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#issue-transaction-state-is-confusing" class="md-nav__link">
+    <span class="md-ellipsis">
+      Issue: Transaction State is Confusing
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#debugging-checklist" class="md-nav__link">
+    <span class="md-ellipsis">
+      Debugging Checklist
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Debugging Checklist">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#initial-diagnosis" class="md-nav__link">
+    <span class="md-ellipsis">
+      Initial Diagnosis
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#query-issues" class="md-nav__link">
+    <span class="md-ellipsis">
+      Query Issues
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#connection-issues" class="md-nav__link">
+    <span class="md-ellipsis">
+      Connection Issues
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#relationship-issues" class="md-nav__link">
+    <span class="md-ellipsis">
+      Relationship Issues
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#transaction-issues" class="md-nav__link">
+    <span class="md-ellipsis">
+      Transaction Issues
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#performance-issues" class="md-nav__link">
+    <span class="md-ellipsis">
+      Performance Issues
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#advanced-debugging-tools" class="md-nav__link">
+    <span class="md-ellipsis">
+      Advanced Debugging Tools
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Advanced Debugging Tools">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#database-monitoring-tools" class="md-nav__link">
+    <span class="md-ellipsis">
+      Database Monitoring Tools
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Database Monitoring Tools">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#postgresql" class="md-nav__link">
+    <span class="md-ellipsis">
+      PostgreSQL
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#mysql" class="md-nav__link">
+    <span class="md-ellipsis">
+      MySQL
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#sqlite" class="md-nav__link">
+    <span class="md-ellipsis">
+      SQLite
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#python-debugging-tools" class="md-nav__link">
+    <span class="md-ellipsis">
+      Python Debugging Tools
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Python Debugging Tools">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#asyncio-debugging" class="md-nav__link">
+    <span class="md-ellipsis">
+      Asyncio Debugging
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#memory-profiling" class="md-nav__link">
+    <span class="md-ellipsis">
+      Memory Profiling
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#performance-profiling" class="md-nav__link">
+    <span class="md-ellipsis">
+      Performance Profiling
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#real-world-debugging-scenarios" class="md-nav__link">
+    <span class="md-ellipsis">
+      Real-World Debugging Scenarios
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Real-World Debugging Scenarios">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#scenario-intermittent-unique-constraint-violation" class="md-nav__link">
+    <span class="md-ellipsis">
+      Scenario: Intermittent Unique Constraint Violation
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#scenario-slow-dashboard-queries" class="md-nav__link">
+    <span class="md-ellipsis">
+      Scenario: Slow Dashboard Queries
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#understanding-ormax-error-types" class="md-nav__link">
+    <span class="md-ellipsis">
+      Understanding Ormax Error Types
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Understanding Ormax Error Types">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#common-error-categories" class="md-nav__link">
+    <span class="md-ellipsis">
+      Common Error Categories
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#decoding-error-messages" class="md-nav__link">
+    <span class="md-ellipsis">
+      Decoding Error Messages
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#debugging-query-issues" class="md-nav__link">
+    <span class="md-ellipsis">
+      Debugging Query Issues
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Debugging Query Issues">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#viewing-executed-queries" class="md-nav__link">
+    <span class="md-ellipsis">
+      Viewing Executed Queries
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Viewing Executed Queries">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#method-1-enable-debug-logging" class="md-nav__link">
+    <span class="md-ellipsis">
+      Method 1: Enable Debug Logging
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#method-2-using-the-explain-method" class="md-nav__link">
+    <span class="md-ellipsis">
+      Method 2: Using the explain() Method
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#method-3-manual-query-inspection" class="md-nav__link">
+    <span class="md-ellipsis">
+      Method 3: Manual Query Inspection
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#common-query-issues-and-solutions" class="md-nav__link">
+    <span class="md-ellipsis">
+      Common Query Issues and Solutions
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Common Query Issues and Solutions">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#issue-incorrect-where-clause" class="md-nav__link">
+    <span class="md-ellipsis">
+      Issue: Incorrect WHERE Clause
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#issue-n1-query-problem" class="md-nav__link">
+    <span class="md-ellipsis">
+      Issue: N+1 Query Problem
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#issue-incorrect-joins" class="md-nav__link">
+    <span class="md-ellipsis">
+      Issue: Incorrect JOINs
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#debugging-connection-issues" class="md-nav__link">
+    <span class="md-ellipsis">
+      Debugging Connection Issues
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Debugging Connection Issues">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#diagnosing-connection-problems" class="md-nav__link">
+    <span class="md-ellipsis">
+      Diagnosing Connection Problems
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Diagnosing Connection Problems">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#step-1-verify-connection-string" class="md-nav__link">
+    <span class="md-ellipsis">
+      Step 1: Verify Connection String
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-2-test-basic-connection" class="md-nav__link">
+    <span class="md-ellipsis">
+      Step 2: Test Basic Connection
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-3-check-connection-pool-status" class="md-nav__link">
+    <span class="md-ellipsis">
+      Step 3: Check Connection Pool Status
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#common-connection-issues-and-solutions" class="md-nav__link">
+    <span class="md-ellipsis">
+      Common Connection Issues and Solutions
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Common Connection Issues and Solutions">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#issue-connection-timeout" class="md-nav__link">
+    <span class="md-ellipsis">
+      Issue: Connection Timeout
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#issue-too-many-connections" class="md-nav__link">
+    <span class="md-ellipsis">
+      Issue: Too Many Connections
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#issue-authentication-failure" class="md-nav__link">
+    <span class="md-ellipsis">
+      Issue: Authentication Failure
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#debugging-relationship-issues" class="md-nav__link">
+    <span class="md-ellipsis">
+      Debugging Relationship Issues
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Debugging Relationship Issues">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#diagnosing-relationship-problems" class="md-nav__link">
+    <span class="md-ellipsis">
+      Diagnosing Relationship Problems
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Diagnosing Relationship Problems">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#step-1-verify-relationship-definitions" class="md-nav__link">
+    <span class="md-ellipsis">
+      Step 1: Verify Relationship Definitions
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-2-inspect-relationship-data" class="md-nav__link">
+    <span class="md-ellipsis">
+      Step 2: Inspect Relationship Data
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#common-relationship-issues-and-solutions" class="md-nav__link">
+    <span class="md-ellipsis">
+      Common Relationship Issues and Solutions
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Common Relationship Issues and Solutions">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#issue-foreign-key-constraint-violation" class="md-nav__link">
+    <span class="md-ellipsis">
+      Issue: Foreign Key Constraint Violation
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#issue-accessing-relationship-returns-none" class="md-nav__link">
+    <span class="md-ellipsis">
+      Issue: Accessing Relationship Returns None
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#issue-reverse-relationship-not-working" class="md-nav__link">
+    <span class="md-ellipsis">
+      Issue: Reverse Relationship Not Working
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#debugging-transactions" class="md-nav__link">
+    <span class="md-ellipsis">
+      Debugging Transactions
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Debugging Transactions">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#diagnosing-transaction-issues" class="md-nav__link">
+    <span class="md-ellipsis">
+      Diagnosing Transaction Issues
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Diagnosing Transaction Issues">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#step-1-verify-transaction-state" class="md-nav__link">
+    <span class="md-ellipsis">
+      Step 1: Verify Transaction State
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-2-monitor-transaction-execution" class="md-nav__link">
+    <span class="md-ellipsis">
+      Step 2: Monitor Transaction Execution
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#common-transaction-issues-and-solutions" class="md-nav__link">
+    <span class="md-ellipsis">
+      Common Transaction Issues and Solutions
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Common Transaction Issues and Solutions">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#issue-transaction-not-rolling-back" class="md-nav__link">
+    <span class="md-ellipsis">
+      Issue: Transaction Not Rolling Back
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#issue-deadlocks" class="md-nav__link">
+    <span class="md-ellipsis">
+      Issue: Deadlocks
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#issue-nested-transaction-problems" class="md-nav__link">
+    <span class="md-ellipsis">
+      Issue: Nested Transaction Problems
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#advanced-debugging-techniques" class="md-nav__link">
+    <span class="md-ellipsis">
+      Advanced Debugging Techniques
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Advanced Debugging Techniques">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#using-a-debugger-with-async-code" class="md-nav__link">
+    <span class="md-ellipsis">
+      Using a Debugger with Async Code
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Using a Debugger with Async Code">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#vs-code-configuration" class="md-nav__link">
+    <span class="md-ellipsis">
+      VS Code Configuration
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#common-debugger-commands-for-async" class="md-nav__link">
+    <span class="md-ellipsis">
+      Common Debugger Commands for Async
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#debugging-tips" class="md-nav__link">
+    <span class="md-ellipsis">
+      Debugging Tips
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#database-specific-debugging" class="md-nav__link">
+    <span class="md-ellipsis">
+      Database-Specific Debugging
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Database-Specific Debugging">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#postgresql-debugging" class="md-nav__link">
+    <span class="md-ellipsis">
+      PostgreSQL Debugging
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#mysql-debugging" class="md-nav__link">
+    <span class="md-ellipsis">
+      MySQL Debugging
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#sqlite-debugging" class="md-nav__link">
+    <span class="md-ellipsis">
+      SQLite Debugging
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#debugging-performance-issues" class="md-nav__link">
+    <span class="md-ellipsis">
+      Debugging Performance Issues
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Debugging Performance Issues">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#identifying-slow-queries" class="md-nav__link">
+    <span class="md-ellipsis">
+      Identifying Slow Queries
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Identifying Slow Queries">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#method-1-query-timing" class="md-nav__link">
+    <span class="md-ellipsis">
+      Method 1: Query Timing
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#method-2-query-profiling" class="md-nav__link">
+    <span class="md-ellipsis">
+      Method 2: Query Profiling
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#memory-usage-debugging" class="md-nav__link">
+    <span class="md-ellipsis">
+      Memory Usage Debugging
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Memory Usage Debugging">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#tracking-memory-usage" class="md-nav__link">
+    <span class="md-ellipsis">
+      Tracking Memory Usage
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#identifying-memory-leaks" class="md-nav__link">
+    <span class="md-ellipsis">
+      Identifying Memory Leaks
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#debugging-migration-issues" class="md-nav__link">
+    <span class="md-ellipsis">
+      Debugging Migration Issues
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Debugging Migration Issues">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#diagnosing-migration-problems" class="md-nav__link">
+    <span class="md-ellipsis">
+      Diagnosing Migration Problems
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Diagnosing Migration Problems">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#step-1-verify-migration-status" class="md-nav__link">
+    <span class="md-ellipsis">
+      Step 1: Verify Migration Status
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-2-inspect-migration-scripts" class="md-nav__link">
+    <span class="md-ellipsis">
+      Step 2: Inspect Migration Scripts
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#common-migration-issues-and-solutions" class="md-nav__link">
+    <span class="md-ellipsis">
+      Common Migration Issues and Solutions
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Common Migration Issues and Solutions">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#issue-migration-already-applied" class="md-nav__link">
+    <span class="md-ellipsis">
+      Issue: Migration Already Applied
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#issue-foreign-key-constraint-violation-during-migration" class="md-nav__link">
+    <span class="md-ellipsis">
+      Issue: Foreign Key Constraint Violation During Migration
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#issue-migration-rollback-failure" class="md-nav__link">
+    <span class="md-ellipsis">
+      Issue: Migration Rollback Failure
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#debugging-with-real-world-examples" class="md-nav__link">
+    <span class="md-ellipsis">
+      Debugging with Real-World Examples
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Debugging with Real-World Examples">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#debugging-an-n1-query-problem" class="md-nav__link">
+    <span class="md-ellipsis">
+      Debugging an N+1 Query Problem
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#debugging-a-transaction-deadlock" class="md-nav__link">
+    <span class="md-ellipsis">
+      Debugging a Transaction Deadlock
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#best-practices-for-debugging-ormax-applications" class="md-nav__link">
+    <span class="md-ellipsis">
+      Best Practices for Debugging Ormax Applications
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Best Practices for Debugging Ormax Applications">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#use-structured-logging" class="md-nav__link">
+    <span class="md-ellipsis">
+      Use Structured Logging
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#implement-debug-endpoints" class="md-nav__link">
+    <span class="md-ellipsis">
+      Implement Debug Endpoints
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#create-debugging-utilities" class="md-nav__link">
+    <span class="md-ellipsis">
+      Create Debugging Utilities
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#troubleshooting-common-debugging-issues" class="md-nav__link">
+    <span class="md-ellipsis">
+      Troubleshooting Common Debugging Issues
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Troubleshooting Common Debugging Issues">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#issue-debugger-doesnt-stop-at-breakpoints" class="md-nav__link">
+    <span class="md-ellipsis">
+      Issue: Debugger Doesn't Stop at Breakpoints
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#issue-logging-doesnt-show-queries" class="md-nav__link">
+    <span class="md-ellipsis">
+      Issue: Logging Doesn't Show Queries
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#issue-memory-profiling-shows-false-positives" class="md-nav__link">
+    <span class="md-ellipsis">
+      Issue: Memory Profiling Shows False Positives
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#issue-transaction-state-is-confusing" class="md-nav__link">
+    <span class="md-ellipsis">
+      Issue: Transaction State is Confusing
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#debugging-checklist" class="md-nav__link">
+    <span class="md-ellipsis">
+      Debugging Checklist
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Debugging Checklist">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#initial-diagnosis" class="md-nav__link">
+    <span class="md-ellipsis">
+      Initial Diagnosis
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#query-issues" class="md-nav__link">
+    <span class="md-ellipsis">
+      Query Issues
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#connection-issues" class="md-nav__link">
+    <span class="md-ellipsis">
+      Connection Issues
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#relationship-issues" class="md-nav__link">
+    <span class="md-ellipsis">
+      Relationship Issues
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#transaction-issues" class="md-nav__link">
+    <span class="md-ellipsis">
+      Transaction Issues
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#performance-issues" class="md-nav__link">
+    <span class="md-ellipsis">
+      Performance Issues
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#advanced-debugging-tools" class="md-nav__link">
+    <span class="md-ellipsis">
+      Advanced Debugging Tools
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Advanced Debugging Tools">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#database-monitoring-tools" class="md-nav__link">
+    <span class="md-ellipsis">
+      Database Monitoring Tools
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Database Monitoring Tools">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#postgresql" class="md-nav__link">
+    <span class="md-ellipsis">
+      PostgreSQL
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#mysql" class="md-nav__link">
+    <span class="md-ellipsis">
+      MySQL
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#sqlite" class="md-nav__link">
+    <span class="md-ellipsis">
+      SQLite
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#python-debugging-tools" class="md-nav__link">
+    <span class="md-ellipsis">
+      Python Debugging Tools
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Python Debugging Tools">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#asyncio-debugging" class="md-nav__link">
+    <span class="md-ellipsis">
+      Asyncio Debugging
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#memory-profiling" class="md-nav__link">
+    <span class="md-ellipsis">
+      Memory Profiling
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#performance-profiling" class="md-nav__link">
+    <span class="md-ellipsis">
+      Performance Profiling
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#real-world-debugging-scenarios" class="md-nav__link">
+    <span class="md-ellipsis">
+      Real-World Debugging Scenarios
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Real-World Debugging Scenarios">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#scenario-intermittent-unique-constraint-violation" class="md-nav__link">
+    <span class="md-ellipsis">
+      Scenario: Intermittent Unique Constraint Violation
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#scenario-slow-dashboard-queries" class="md-nav__link">
+    <span class="md-ellipsis">
+      Scenario: Slow Dashboard Queries
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+<h1 id="debugging-techniques-for-ormax-applications">Debugging Techniques for Ormax Applications<a class="headerlink" href="#debugging-techniques-for-ormax-applications" title="Permanent link">&para;</a></h1>
+<p>Debugging database-driven applications requires specialized techniques to understand what's happening under the hood. This guide covers comprehensive debugging strategies specifically designed for Ormax-based applications.</p>
+<h2 id="understanding-ormax-error-types">Understanding Ormax Error Types<a class="headerlink" href="#understanding-ormax-error-types" title="Permanent link">&para;</a></h2>
+<p>Before debugging, it's important to understand the different error types Ormax can raise:</p>
+<h3 id="common-error-categories">Common Error Categories<a class="headerlink" href="#common-error-categories" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Error Type</th>
+<th>When It Occurs</th>
+<th>Typical Causes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>DatabaseError</code></td>
+<td>General database issues</td>
+<td>Connection problems, syntax errors</td>
+</tr>
+<tr>
+<td><code>ValidationError</code></td>
+<td>Data validation fails</td>
+<td>Invalid field values, constraint violations</td>
+</tr>
+<tr>
+<td><code>DoesNotExist</code></td>
+<td>Record not found</td>
+<td><code>get()</code> called with no matching records</td>
+</tr>
+<tr>
+<td><code>MultipleObjectsReturned</code></td>
+<td>Multiple records found</td>
+<td><code>get()</code> called with multiple matches</td>
+</tr>
+<tr>
+<td><code>IntegrityError</code></td>
+<td>Database integrity violation</td>
+<td>Foreign key constraints, unique constraints</td>
+</tr>
+<tr>
+<td><code>TransactionRollbackError</code></td>
+<td>Transaction failure</td>
+<td>Deadlocks, serialization failures</td>
+</tr>
+</tbody>
+</table>
+<h3 id="decoding-error-messages">Decoding Error Messages<a class="headerlink" href="#decoding-error-messages" title="Permanent link">&para;</a></h3>
+<p>Ormax error messages contain valuable information:</p>
+<div class="highlight"><pre><span></span><code>DatabaseError: (sqlite3.IntegrityError) UNIQUE constraint failed: books.title
+[SQL: INSERT INTO books (title, pages) VALUES (?, ?)]
+[parameters: (&#39;Duplicate Title&#39;, 200)]
+</code></pre></div>
+<p>This tells us:
+- The error type (<code>DatabaseError</code>)
+- The underlying database error (<code>sqlite3.IntegrityError</code>)
+- The specific constraint that failed (<code>UNIQUE constraint failed: books.title</code>)
+- The SQL query that caused the error
+- The parameters used in the query</p>
+<h2 id="debugging-query-issues">Debugging Query Issues<a class="headerlink" href="#debugging-query-issues" title="Permanent link">&para;</a></h2>
+<h3 id="viewing-executed-queries">Viewing Executed Queries<a class="headerlink" href="#viewing-executed-queries" title="Permanent link">&para;</a></h3>
+<p>The most fundamental debugging technique is seeing what SQL is being executed:</p>
+<h4 id="method-1-enable-debug-logging">Method 1: Enable Debug Logging<a class="headerlink" href="#method-1-enable-debug-logging" title="Permanent link">&para;</a></h4>
+<div class="highlight"><pre><span></span><code><span class="kn">import</span> <span class="nn">logging</span>
+
+<span class="c1"># Configure logging to show queries</span>
+<span class="n">logging</span><span class="o">.</span><span class="n">basicConfig</span><span class="p">(</span><span class="n">level</span><span class="o">=</span><span class="n">logging</span><span class="o">.</span><span class="n">DEBUG</span><span class="p">)</span>
+<span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="s2">&quot;ormax&quot;</span><span class="p">)</span>
+<span class="n">logger</span><span class="o">.</span><span class="n">setLevel</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">DEBUG</span><span class="p">)</span>
+</code></pre></div>
+<p>This will log all queries to the console:</p>
+<div class="highlight"><pre><span></span><code>DEBUG:ormax:Executing query: SELECT * FROM books WHERE pages &gt; ?
+DEBUG:ormax:Parameters: (300,)
+</code></pre></div>
+<h4 id="method-2-using-the-explain-method">Method 2: Using the <code>explain()</code> Method<a class="headerlink" href="#method-2-using-the-explain-method" title="Permanent link">&para;</a></h4>
+<p>Get database-specific execution plans:</p>
+<div class="highlight"><pre><span></span><code><span class="c1"># Get query execution plan</span>
+<span class="n">plan</span> <span class="o">=</span> <span class="k">await</span> <span class="n">Book</span><span class="o">.</span><span class="n">objects</span><span class="p">()</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">pages__gt</span><span class="o">=</span><span class="mi">300</span><span class="p">)</span><span class="o">.</span><span class="n">explain</span><span class="p">()</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">plan</span><span class="p">)</span>
+
+<span class="c1"># For more detailed analysis (PostgreSQL)</span>
+<span class="n">detailed_plan</span> <span class="o">=</span> <span class="k">await</span> <span class="n">Book</span><span class="o">.</span><span class="n">objects</span><span class="p">()</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">pages__gt</span><span class="o">=</span><span class="mi">300</span><span class="p">)</span><span class="o">.</span><span class="n">explain</span><span class="p">(</span><span class="n">analyze</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</code></pre></div>
+<h4 id="method-3-manual-query-inspection">Method 3: Manual Query Inspection<a class="headerlink" href="#method-3-manual-query-inspection" title="Permanent link">&para;</a></h4>
+<div class="highlight"><pre><span></span><code><span class="c1"># Get the raw SQL query</span>
+<span class="n">query</span><span class="p">,</span> <span class="n">params</span> <span class="o">=</span> <span class="n">Book</span><span class="o">.</span><span class="n">objects</span><span class="p">()</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">pages__gt</span><span class="o">=</span><span class="mi">300</span><span class="p">)</span><span class="o">.</span><span class="n">_build_select_query</span><span class="p">()</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;SQL: </span><span class="si">{</span><span class="n">query</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Parameters: </span><span class="si">{</span><span class="n">params</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</code></pre></div>
+<h3 id="common-query-issues-and-solutions">Common Query Issues and Solutions<a class="headerlink" href="#common-query-issues-and-solutions" title="Permanent link">&para;</a></h3>
+<h4 id="issue-incorrect-where-clause">Issue: Incorrect WHERE Clause<a class="headerlink" href="#issue-incorrect-where-clause" title="Permanent link">&para;</a></h4>
+<p><strong>Symptoms</strong>:
+- Unexpected results
+- Missing records
+- Extra records</p>
+<p><strong>Diagnosis</strong>:
+- Check the generated WHERE clause
+- Verify parameter values</p>
+<p><strong>Solution</strong>:
+<div class="highlight"><pre><span></span><code><span class="c1"># Check the query</span>
+<span class="n">qs</span> <span class="o">=</span> <span class="n">Book</span><span class="o">.</span><span class="n">objects</span><span class="p">()</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">title__contains</span><span class="o">=</span><span class="s2">&quot;sun&quot;</span><span class="p">,</span> <span class="n">pages__gt</span><span class="o">=</span><span class="mi">300</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">qs</span><span class="o">.</span><span class="n">_build_select_query</span><span class="p">())</span>
+
+<span class="c1"># Fix by using correct field lookups</span>
+<span class="n">qs</span> <span class="o">=</span> <span class="n">Book</span><span class="o">.</span><span class="n">objects</span><span class="p">()</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">title__icontains</span><span class="o">=</span><span class="s2">&quot;sun&quot;</span><span class="p">,</span> <span class="n">pages__gt</span><span class="o">=</span><span class="mi">300</span><span class="p">)</span>
+</code></pre></div></p>
+<h4 id="issue-n1-query-problem">Issue: N+1 Query Problem<a class="headerlink" href="#issue-n1-query-problem" title="Permanent link">&para;</a></h4>
+<p><strong>Symptoms</strong>:
+- Many similar queries with different parameters
+- Performance degrades with larger datasets</p>
+<p><strong>Diagnosis</strong>:
+- Look for repeated queries in logs
+- Check if relationship fields are being accessed in loops</p>
+<p><strong>Solution</strong>:
+<div class="highlight"><pre><span></span><code><span class="c1"># BAD: N+1 queries</span>
+<span class="n">books</span> <span class="o">=</span> <span class="k">await</span> <span class="n">Book</span><span class="o">.</span><span class="n">objects</span><span class="p">()</span><span class="o">.</span><span class="n">all</span><span class="p">()</span>
+<span class="k">for</span> <span class="n">book</span> <span class="ow">in</span> <span class="n">books</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">book</span><span class="o">.</span><span class="n">author</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>  <span class="c1"># Triggers a query per book</span>
+
+<span class="c1"># GOOD: Use select_related</span>
+<span class="n">books</span> <span class="o">=</span> <span class="k">await</span> <span class="n">Book</span><span class="o">.</span><span class="n">objects</span><span class="p">()</span><span class="o">.</span><span class="n">select_related</span><span class="p">(</span><span class="s2">&quot;author&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">all</span><span class="p">()</span>
+<span class="k">for</span> <span class="n">book</span> <span class="ow">in</span> <span class="n">books</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">book</span><span class="o">.</span><span class="n">author</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>  <span class="c1"># No additional queries</span>
+</code></pre></div></p>
+<h4 id="issue-incorrect-joins">Issue: Incorrect JOINs<a class="headerlink" href="#issue-incorrect-joins" title="Permanent link">&para;</a></h4>
+<p><strong>Symptoms</strong>:
+- Missing related data
+- Duplicate records
+- Incorrect results with <code>prefetch_related</code></p>
+<p><strong>Diagnosis</strong>:
+- Check the generated JOIN clauses
+- Verify relationship definitions</p>
+<p><strong>Solution</strong>:
+<div class="highlight"><pre><span></span><code><span class="c1"># Check the query</span>
+<span class="n">qs</span> <span class="o">=</span> <span class="n">Book</span><span class="o">.</span><span class="n">objects</span><span class="p">()</span><span class="o">.</span><span class="n">select_related</span><span class="p">(</span><span class="s2">&quot;author&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">qs</span><span class="o">.</span><span class="n">_build_select_query</span><span class="p">())</span>
+
+<span class="c1"># Verify relationship definition</span>
+<span class="k">class</span> <span class="nc">Book</span><span class="p">(</span><span class="n">Model</span><span class="p">):</span>
+    <span class="n">author</span> <span class="o">=</span> <span class="n">ForeignKeyField</span><span class="p">(</span><span class="n">Author</span><span class="p">,</span> <span class="n">related_name</span><span class="o">=</span><span class="s2">&quot;books&quot;</span><span class="p">)</span>
+</code></pre></div></p>
+<h2 id="debugging-connection-issues">Debugging Connection Issues<a class="headerlink" href="#debugging-connection-issues" title="Permanent link">&para;</a></h2>
+<h3 id="diagnosing-connection-problems">Diagnosing Connection Problems<a class="headerlink" href="#diagnosing-connection-problems" title="Permanent link">&para;</a></h3>
+<h4 id="step-1-verify-connection-string">Step 1: Verify Connection String<a class="headerlink" href="#step-1-verify-connection-string" title="Permanent link">&para;</a></h4>
+<div class="highlight"><pre><span></span><code><span class="c1"># Print connection string (with passwords masked)</span>
+<span class="k">def</span> <span class="nf">mask_password</span><span class="p">(</span><span class="n">url</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;:(.*?)(@|/)&#39;</span><span class="p">,</span> <span class="sa">r</span><span class="s1">&#39;:***\2&#39;</span><span class="p">,</span> <span class="n">url</span><span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Connection URL: </span><span class="si">{</span><span class="n">mask_password</span><span class="p">(</span><span class="n">db</span><span class="o">.</span><span class="n">connection_string</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</code></pre></div>
+<h4 id="step-2-test-basic-connection">Step 2: Test Basic Connection<a class="headerlink" href="#step-2-test-basic-connection" title="Permanent link">&para;</a></h4>
+<div class="highlight"><pre><span></span><code><span class="k">async</span> <span class="k">def</span> <span class="nf">test_connection</span><span class="p">():</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="k">await</span> <span class="n">db</span><span class="o">.</span><span class="n">connect</span><span class="p">()</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Connection successful&quot;</span><span class="p">)</span>
+        <span class="c1"># Test a simple query</span>
+        <span class="k">await</span> <span class="n">db</span><span class="o">.</span><span class="n">connection</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="s2">&quot;SELECT 1&quot;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Simple query successful&quot;</span><span class="p">)</span>
+    <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Connection failed: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</code></pre></div>
+<h4 id="step-3-check-connection-pool-status">Step 3: Check Connection Pool Status<a class="headerlink" href="#step-3-check-connection-pool-status" title="Permanent link">&para;</a></h4>
+<div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">print_connection_pool_status</span><span class="p">():</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Print current connection pool status&quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">db</span><span class="p">,</span> <span class="s1">&#39;connection&#39;</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">db</span><span class="o">.</span><span class="n">connection</span><span class="p">,</span> <span class="s1">&#39;pool&#39;</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">db</span><span class="o">.</span><span class="n">connection</span><span class="o">.</span><span class="n">pool</span><span class="p">,</span> <span class="s1">&#39;size&#39;</span><span class="p">):</span>
+            <span class="nb">print</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;Connection pool: </span><span class="si">{</span><span class="n">db</span><span class="o">.</span><span class="n">connection</span><span class="o">.</span><span class="n">pool</span><span class="o">.</span><span class="n">size</span><span class="p">()</span><span class="si">}</span><span class="s2"> active, &quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">db</span><span class="o">.</span><span class="n">connection</span><span class="o">.</span><span class="n">pool</span><span class="o">.</span><span class="n">freesize</span><span class="p">()</span><span class="si">}</span><span class="s2"> free, &quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">db</span><span class="o">.</span><span class="n">connection</span><span class="o">.</span><span class="n">pool</span><span class="o">.</span><span class="n">size</span><span class="p">()</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">db</span><span class="o">.</span><span class="n">connection</span><span class="o">.</span><span class="n">pool</span><span class="o">.</span><span class="n">freesize</span><span class="p">()</span><span class="si">}</span><span class="s2"> used&quot;</span>
+            <span class="p">)</span>
+        <span class="k">elif</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">db</span><span class="o">.</span><span class="n">connection</span><span class="o">.</span><span class="n">pool</span><span class="p">,</span> <span class="s1">&#39;_maxsize&#39;</span><span class="p">):</span>
+            <span class="nb">print</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;Connection pool: max=</span><span class="si">{</span><span class="n">db</span><span class="o">.</span><span class="n">connection</span><span class="o">.</span><span class="n">pool</span><span class="o">.</span><span class="n">_maxsize</span><span class="si">}</span><span class="s2">, &quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;current=</span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">db</span><span class="o">.</span><span class="n">connection</span><span class="o">.</span><span class="n">pool</span><span class="o">.</span><span class="n">_queue</span><span class="o">.</span><span class="n">_get_heap</span><span class="p">())</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="p">)</span>
+</code></pre></div>
+<h3 id="common-connection-issues-and-solutions">Common Connection Issues and Solutions<a class="headerlink" href="#common-connection-issues-and-solutions" title="Permanent link">&para;</a></h3>
+<h4 id="issue-connection-timeout">Issue: Connection Timeout<a class="headerlink" href="#issue-connection-timeout" title="Permanent link">&para;</a></h4>
+<p><strong>Symptoms</strong>:
+- <code>OperationalError: Connection timeout</code>
+- Application hangs during database operations</p>
+<p><strong>Solutions</strong>:
+- Increase connection timeout: <code>Database(url, connect_timeout=15.0)</code>
+- Check network connectivity
+- Verify database server is running
+- Reduce application load</p>
+<h4 id="issue-too-many-connections">Issue: Too Many Connections<a class="headerlink" href="#issue-too-many-connections" title="Permanent link">&para;</a></h4>
+<p><strong>Symptoms</strong>:
+- <code>OperationalError: Too many connections</code>
+- Application fails to connect during peak times</p>
+<p><strong>Solutions</strong>:
+- Increase database connection limit
+- Optimize connection pool settings:
+  <div class="highlight"><pre><span></span><code><span class="n">db</span> <span class="o">=</span> <span class="n">Database</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">min_size</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">max_size</span><span class="o">=</span><span class="mi">25</span><span class="p">)</span>
+</code></pre></div>
+- Ensure connections are properly closed
+- Implement connection recycling</p>
+<h4 id="issue-authentication-failure">Issue: Authentication Failure<a class="headerlink" href="#issue-authentication-failure" title="Permanent link">&para;</a></h4>
+<p><strong>Symptoms</strong>:
+- <code>OperationalError: Authentication failed</code>
+- <code>Access denied for user</code></p>
+<p><strong>Solutions</strong>:
+- Verify username and password
+- Check database user permissions
+- Ensure correct database name
+- Test credentials with database client</p>
+<h2 id="debugging-relationship-issues">Debugging Relationship Issues<a class="headerlink" href="#debugging-relationship-issues" title="Permanent link">&para;</a></h2>
+<h3 id="diagnosing-relationship-problems">Diagnosing Relationship Problems<a class="headerlink" href="#diagnosing-relationship-problems" title="Permanent link">&para;</a></h3>
+<h4 id="step-1-verify-relationship-definitions">Step 1: Verify Relationship Definitions<a class="headerlink" href="#step-1-verify-relationship-definitions" title="Permanent link">&para;</a></h4>
+<div class="highlight"><pre><span></span><code><span class="c1"># Check forward relationship</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">Book</span><span class="o">.</span><span class="n">_fields</span><span class="p">[</span><span class="s1">&#39;author&#39;</span><span class="p">])</span>  <span class="c1"># Should be a ForeignKeyField</span>
+
+<span class="c1"># Check reverse relationship</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">Author</span><span class="o">.</span><span class="n">_relationships</span><span class="o">.</span><span class="n">get_reverse_manager</span><span class="p">(</span><span class="s1">&#39;books&#39;</span><span class="p">))</span>
+</code></pre></div>
+<h4 id="step-2-inspect-relationship-data">Step 2: Inspect Relationship Data<a class="headerlink" href="#step-2-inspect-relationship-data" title="Permanent link">&para;</a></h4>
+<div class="highlight"><pre><span></span><code><span class="c1"># Get book with author</span>
+<span class="n">book</span> <span class="o">=</span> <span class="k">await</span> <span class="n">Book</span><span class="o">.</span><span class="n">objects</span><span class="p">()</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+
+<span class="c1"># Check raw foreign key value</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Author ID: </span><span class="si">{</span><span class="n">book</span><span class="o">.</span><span class="n">author_id</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<span class="c1"># Attempt to access related object</span>
+<span class="k">try</span><span class="p">:</span>
+    <span class="n">author</span> <span class="o">=</span> <span class="k">await</span> <span class="n">book</span><span class="o">.</span><span class="n">author</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Author name: </span><span class="si">{</span><span class="n">author</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Error accessing author: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</code></pre></div>
+<h3 id="common-relationship-issues-and-solutions">Common Relationship Issues and Solutions<a class="headerlink" href="#common-relationship-issues-and-solutions" title="Permanent link">&para;</a></h3>
+<h4 id="issue-foreign-key-constraint-violation">Issue: Foreign Key Constraint Violation<a class="headerlink" href="#issue-foreign-key-constraint-violation" title="Permanent link">&para;</a></h4>
+<p><strong>Symptoms</strong>:
+- <code>IntegrityError: FOREIGN KEY constraint failed</code>
+- Cannot save model with relationship</p>
+<p><strong>Diagnosis</strong>:
+- Check if related object exists
+- Verify primary key values
+- Check database schema</p>
+<p><strong>Solution</strong>:
+<div class="highlight"><pre><span></span><code><span class="c1"># Verify related object exists</span>
+<span class="n">author</span> <span class="o">=</span> <span class="k">await</span> <span class="n">Author</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="n">author_id</span><span class="p">)</span>
+<span class="k">if</span> <span class="ow">not</span> <span class="n">author</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Author with ID </span><span class="si">{</span><span class="n">author_id</span><span class="si">}</span><span class="s2"> does not exist&quot;</span><span class="p">)</span>
+
+<span class="c1"># Ensure related object is saved before assignment</span>
+<span class="n">new_author</span> <span class="o">=</span> <span class="n">Author</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;New Author&quot;</span><span class="p">)</span>
+<span class="k">await</span> <span class="n">new_author</span><span class="o">.</span><span class="n">save</span><span class="p">()</span>  <span class="c1"># Save first</span>
+<span class="n">book</span><span class="o">.</span><span class="n">author</span> <span class="o">=</span> <span class="n">new_author</span>  <span class="c1"># Then assign</span>
+</code></pre></div></p>
+<h4 id="issue-accessing-relationship-returns-none">Issue: Accessing Relationship Returns None<a class="headerlink" href="#issue-accessing-relationship-returns-none" title="Permanent link">&para;</a></h4>
+<p><strong>Symptoms</strong>:
+- <code>await book.author</code> returns None when it shouldn't
+- Relationship appears broken</p>
+<p><strong>Diagnosis</strong>:
+- Check if foreign key field is None
+- Verify relationship was properly assigned</p>
+<p><strong>Solution</strong>:
+<div class="highlight"><pre><span></span><code><span class="c1"># Check foreign key value</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">book</span><span class="o">.</span><span class="n">author_id</span><span class="p">)</span>  <span class="c1"># If None, relationship isn&#39;t set</span>
+
+<span class="c1"># Properly assign relationship</span>
+<span class="n">author</span> <span class="o">=</span> <span class="k">await</span> <span class="n">Author</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+<span class="n">book</span><span class="o">.</span><span class="n">author</span> <span class="o">=</span> <span class="n">author</span>
+<span class="k">await</span> <span class="n">book</span><span class="o">.</span><span class="n">save</span><span class="p">()</span>
+</code></pre></div></p>
+<h4 id="issue-reverse-relationship-not-working">Issue: Reverse Relationship Not Working<a class="headerlink" href="#issue-reverse-relationship-not-working" title="Permanent link">&para;</a></h4>
+<p><strong>Symptoms</strong>:
+- <code>await author.books.all()</code> returns empty list
+- Reverse relationship seems broken</p>
+<p><strong>Diagnosis</strong>:
+- Check relationship name
+- Verify related_name is correct</p>
+<p><strong>Solution</strong>:
+<div class="highlight"><pre><span></span><code><span class="c1"># Check how the relationship is defined</span>
+<span class="k">class</span> <span class="nc">Book</span><span class="p">(</span><span class="n">Model</span><span class="p">):</span>
+    <span class="n">author</span> <span class="o">=</span> <span class="n">ForeignKeyField</span><span class="p">(</span><span class="n">Author</span><span class="p">,</span> <span class="n">related_name</span><span class="o">=</span><span class="s2">&quot;books&quot;</span><span class="p">)</span>
+
+<span class="c1"># Correct usage</span>
+<span class="n">books</span> <span class="o">=</span> <span class="k">await</span> <span class="n">author</span><span class="o">.</span><span class="n">books</span><span class="o">.</span><span class="n">all</span><span class="p">()</span>
+
+<span class="c1"># If related_name wasn&#39;t specified</span>
+<span class="n">books</span> <span class="o">=</span> <span class="k">await</span> <span class="n">author</span><span class="o">.</span><span class="n">book_set</span><span class="o">.</span><span class="n">all</span><span class="p">()</span>
+</code></pre></div></p>
+<h2 id="debugging-transactions">Debugging Transactions<a class="headerlink" href="#debugging-transactions" title="Permanent link">&para;</a></h2>
+<h3 id="diagnosing-transaction-issues">Diagnosing Transaction Issues<a class="headerlink" href="#diagnosing-transaction-issues" title="Permanent link">&para;</a></h3>
+<h4 id="step-1-verify-transaction-state">Step 1: Verify Transaction State<a class="headerlink" href="#step-1-verify-transaction-state" title="Permanent link">&para;</a></h4>
+<div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">print_transaction_status</span><span class="p">():</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Print current transaction status&quot;&quot;&quot;</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Current transaction: </span><span class="si">{</span><span class="n">db</span><span class="o">.</span><span class="n">_current_transaction</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Transaction level: </span><span class="si">{</span><span class="nb">getattr</span><span class="p">(</span><span class="n">db</span><span class="p">,</span><span class="w"> </span><span class="s1">&#39;_transaction_level&#39;</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</code></pre></div>
+<h4 id="step-2-monitor-transaction-execution">Step 2: Monitor Transaction Execution<a class="headerlink" href="#step-2-monitor-transaction-execution" title="Permanent link">&para;</a></h4>
+<div class="highlight"><pre><span></span><code><span class="k">async</span> <span class="k">def</span> <span class="nf">monitored_transaction</span><span class="p">():</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Starting transaction...&quot;</span><span class="p">)</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="k">async</span> <span class="k">with</span> <span class="n">db</span><span class="o">.</span><span class="n">transaction</span><span class="p">():</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Transaction active&quot;</span><span class="p">)</span>
+            <span class="c1"># Perform operations</span>
+            <span class="k">await</span> <span class="n">Book</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="n">title</span><span class="o">=</span><span class="s2">&quot;Transaction Book&quot;</span><span class="p">,</span> <span class="n">pages</span><span class="o">=</span><span class="mi">200</span><span class="p">)</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Book created&quot;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Transaction committed&quot;</span><span class="p">)</span>
+    <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Transaction rolled back: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">raise</span>
+</code></pre></div>
+<h3 id="common-transaction-issues-and-solutions">Common Transaction Issues and Solutions<a class="headerlink" href="#common-transaction-issues-and-solutions" title="Permanent link">&para;</a></h3>
+<h4 id="issue-transaction-not-rolling-back">Issue: Transaction Not Rolling Back<a class="headerlink" href="#issue-transaction-not-rolling-back" title="Permanent link">&para;</a></h4>
+<p><strong>Symptoms</strong>:
+- Changes persist after exception
+- Data inconsistency</p>
+<p><strong>Diagnosis</strong>:
+- Verify exception is not being caught and ignored
+- Check if transaction context is properly exited</p>
+<p><strong>Solution</strong>:
+<div class="highlight"><pre><span></span><code><span class="c1"># CORRECT: Transaction rolls back on exception</span>
+<span class="k">async</span> <span class="k">with</span> <span class="n">db</span><span class="o">.</span><span class="n">transaction</span><span class="p">():</span>
+    <span class="k">await</span> <span class="n">Book</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="n">title</span><span class="o">=</span><span class="s2">&quot;Test&quot;</span><span class="p">,</span> <span class="n">pages</span><span class="o">=</span><span class="mi">100</span><span class="p">)</span>
+    <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Force rollback&quot;</span><span class="p">)</span>
+
+<span class="c1"># INCORRECT: Exception caught, transaction not rolled back</span>
+<span class="k">try</span><span class="p">:</span>
+    <span class="k">async</span> <span class="k">with</span> <span class="n">db</span><span class="o">.</span><span class="n">transaction</span><span class="p">():</span>
+        <span class="k">await</span> <span class="n">Book</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="n">title</span><span class="o">=</span><span class="s2">&quot;Test&quot;</span><span class="p">,</span> <span class="n">pages</span><span class="o">=</span><span class="mi">100</span><span class="p">)</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Force rollback&quot;</span><span class="p">)</span>
+<span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
+    <span class="k">pass</span>  <span class="c1"># Transaction still active!</span>
+</code></pre></div></p>
+<h4 id="issue-deadlocks">Issue: Deadlocks<a class="headerlink" href="#issue-deadlocks" title="Permanent link">&para;</a></h4>
+<p><strong>Symptoms</strong>:
+- <code>TransactionRollbackError: deadlock detected</code>
+- Intermittent failures</p>
+<p><strong>Diagnosis</strong>:
+- Check query execution order
+- Monitor lock contention</p>
+<p><strong>Solution</strong>:
+<div class="highlight"><pre><span></span><code><span class="c1"># Always access tables in consistent order</span>
+<span class="k">async</span> <span class="k">with</span> <span class="n">db</span><span class="o">.</span><span class="n">transaction</span><span class="p">():</span>
+    <span class="c1"># Always access authors before books</span>
+    <span class="n">author</span> <span class="o">=</span> <span class="k">await</span> <span class="n">Author</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+    <span class="n">book</span> <span class="o">=</span> <span class="k">await</span> <span class="n">Book</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+
+    <span class="c1"># Update in consistent order</span>
+    <span class="k">await</span> <span class="n">author</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="o">...</span><span class="p">)</span>
+    <span class="k">await</span> <span class="n">book</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="o">...</span><span class="p">)</span>
+</code></pre></div></p>
+<h4 id="issue-nested-transaction-problems">Issue: Nested Transaction Problems<a class="headerlink" href="#issue-nested-transaction-problems" title="Permanent link">&para;</a></h4>
+<p><strong>Symptoms</strong>:
+- Unexpected rollbacks
+- Data not committed</p>
+<p><strong>Diagnosis</strong>:
+- Check savepoint usage
+- Verify database supports nested transactions</p>
+<p><strong>Solution</strong>:
+<div class="highlight"><pre><span></span><code><span class="k">async</span> <span class="k">with</span> <span class="n">db</span><span class="o">.</span><span class="n">transaction</span><span class="p">():</span>
+    <span class="k">await</span> <span class="n">Book</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="n">title</span><span class="o">=</span><span class="s2">&quot;Outer&quot;</span><span class="p">,</span> <span class="n">pages</span><span class="o">=</span><span class="mi">100</span><span class="p">)</span>
+
+    <span class="k">try</span><span class="p">:</span>
+        <span class="k">async</span> <span class="k">with</span> <span class="n">db</span><span class="o">.</span><span class="n">transaction</span><span class="p">():</span>
+            <span class="k">await</span> <span class="n">Book</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="n">title</span><span class="o">=</span><span class="s2">&quot;Inner&quot;</span><span class="p">,</span> <span class="n">pages</span><span class="o">=</span><span class="mi">200</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Force inner rollback&quot;</span><span class="p">)</span>
+    <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
+        <span class="k">pass</span>  <span class="c1"># Inner transaction rolled back, outer continues</span>
+
+    <span class="k">await</span> <span class="n">Book</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="n">title</span><span class="o">=</span><span class="s2">&quot;Another Outer&quot;</span><span class="p">,</span> <span class="n">pages</span><span class="o">=</span><span class="mi">300</span><span class="p">)</span>
+</code></pre></div></p>
+<h2 id="advanced-debugging-techniques">Advanced Debugging Techniques<a class="headerlink" href="#advanced-debugging-techniques" title="Permanent link">&para;</a></h2>
+<h3 id="using-a-debugger-with-async-code">Using a Debugger with Async Code<a class="headerlink" href="#using-a-debugger-with-async-code" title="Permanent link">&para;</a></h3>
+<p>Debugging async code requires special considerations:</p>
+<h4 id="vs-code-configuration">VS Code Configuration<a class="headerlink" href="#vs-code-configuration" title="Permanent link">&para;</a></h4>
+<div class="highlight"><pre><span></span><code><span class="p">{</span>
+<span class="w">    </span><span class="nt">&quot;version&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;0.2.0&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;configurations&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">        </span><span class="p">{</span>
+<span class="w">            </span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Python: Ormax Debug&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;python&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="nt">&quot;request&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;launch&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="nt">&quot;module&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;pytest&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="nt">&quot;args&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">                </span><span class="s2">&quot;tests/test_debug.py&quot;</span><span class="p">,</span>
+<span class="w">                </span><span class="s2">&quot;-s&quot;</span>
+<span class="w">            </span><span class="p">],</span>
+<span class="w">            </span><span class="nt">&quot;env&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">                </span><span class="nt">&quot;PYTHONASYNCIODEBUG&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;1&quot;</span>
+<span class="w">            </span><span class="p">},</span>
+<span class="w">            </span><span class="nt">&quot;justMyCode&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">false</span>
+<span class="w">        </span><span class="p">}</span>
+<span class="w">    </span><span class="p">]</span>
+<span class="p">}</span>
+</code></pre></div>
+<h4 id="common-debugger-commands-for-async">Common Debugger Commands for Async<a class="headerlink" href="#common-debugger-commands-for-async" title="Permanent link">&para;</a></h4>
+<ul>
+<li><code>asyncio.coroutines.coro_scheduling</code> - Show coroutine scheduling</li>
+<li><code>asyncio.tasks.all_tasks()</code> - List all running tasks</li>
+<li><code>asyncio.current_task()</code> - Get current task</li>
+</ul>
+<h4 id="debugging-tips">Debugging Tips<a class="headerlink" href="#debugging-tips" title="Permanent link">&para;</a></h4>
+<ol>
+<li>Set breakpoints before async operations</li>
+<li>Use "Step Over" carefully with async/await</li>
+<li>Inspect task states when paused</li>
+<li>Watch for pending futures</li>
+</ol>
+<h3 id="database-specific-debugging">Database-Specific Debugging<a class="headerlink" href="#database-specific-debugging" title="Permanent link">&para;</a></h3>
+<h4 id="postgresql-debugging">PostgreSQL Debugging<a class="headerlink" href="#postgresql-debugging" title="Permanent link">&para;</a></h4>
+<div class="highlight"><pre><span></span><code><span class="k">async</span> <span class="k">def</span> <span class="nf">debug_postgresql</span><span class="p">():</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Get PostgreSQL-specific debug information&quot;&quot;&quot;</span>
+    <span class="c1"># Active queries</span>
+    <span class="n">active_queries</span> <span class="o">=</span> <span class="k">await</span> <span class="n">db</span><span class="o">.</span><span class="n">connection</span><span class="o">.</span><span class="n">fetch_all</span><span class="p">(</span><span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">        SELECT pid, now() - query_start AS duration, query </span>
+<span class="s2">        FROM pg_stat_activity </span>
+<span class="s2">        WHERE state = &#39;active&#39;</span>
+<span class="s2">    &quot;&quot;&quot;</span><span class="p">)</span>
+
+    <span class="c1"># Locks</span>
+    <span class="n">locks</span> <span class="o">=</span> <span class="k">await</span> <span class="n">db</span><span class="o">.</span><span class="n">connection</span><span class="o">.</span><span class="n">fetch_all</span><span class="p">(</span><span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">        SELECT * FROM pg_locks WHERE granted = false</span>
+<span class="s2">    &quot;&quot;&quot;</span><span class="p">)</span>
+
+    <span class="c1"># Replication status</span>
+    <span class="n">replication</span> <span class="o">=</span> <span class="k">await</span> <span class="n">db</span><span class="o">.</span><span class="n">connection</span><span class="o">.</span><span class="n">fetch_all</span><span class="p">(</span><span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">        SELECT * FROM pg_stat_replication</span>
+<span class="s2">    &quot;&quot;&quot;</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="p">{</span>
+        <span class="s2">&quot;active_queries&quot;</span><span class="p">:</span> <span class="n">active_queries</span><span class="p">,</span>
+        <span class="s2">&quot;locks&quot;</span><span class="p">:</span> <span class="n">locks</span><span class="p">,</span>
+        <span class="s2">&quot;replication&quot;</span><span class="p">:</span> <span class="n">replication</span>
+    <span class="p">}</span>
+</code></pre></div>
+<h4 id="mysql-debugging">MySQL Debugging<a class="headerlink" href="#mysql-debugging" title="Permanent link">&para;</a></h4>
+<div class="highlight"><pre><span></span><code><span class="k">async</span> <span class="k">def</span> <span class="nf">debug_mysql</span><span class="p">():</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Get MySQL-specific debug information&quot;&quot;&quot;</span>
+    <span class="c1"># Process list</span>
+    <span class="n">process_list</span> <span class="o">=</span> <span class="k">await</span> <span class="n">db</span><span class="o">.</span><span class="n">connection</span><span class="o">.</span><span class="n">fetch_all</span><span class="p">(</span><span class="s2">&quot;SHOW FULL PROCESSLIST&quot;</span><span class="p">)</span>
+
+    <span class="c1"># InnoDB status</span>
+    <span class="n">innodb_status</span> <span class="o">=</span> <span class="k">await</span> <span class="n">db</span><span class="o">.</span><span class="n">connection</span><span class="o">.</span><span class="n">fetch_val</span><span class="p">(</span><span class="s2">&quot;SHOW ENGINE INNODB STATUS&quot;</span><span class="p">)</span>
+
+    <span class="c1"># Connection statistics</span>
+    <span class="n">connection_stats</span> <span class="o">=</span> <span class="k">await</span> <span class="n">db</span><span class="o">.</span><span class="n">connection</span><span class="o">.</span><span class="n">fetch_all</span><span class="p">(</span><span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">        SHOW STATUS LIKE &#39;Threads_%&#39;</span>
+<span class="s2">    &quot;&quot;&quot;</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="p">{</span>
+        <span class="s2">&quot;process_list&quot;</span><span class="p">:</span> <span class="n">process_list</span><span class="p">,</span>
+        <span class="s2">&quot;innodb_status&quot;</span><span class="p">:</span> <span class="n">innodb_status</span><span class="p">,</span>
+        <span class="s2">&quot;connection_stats&quot;</span><span class="p">:</span> <span class="n">connection_stats</span>
+    <span class="p">}</span>
+</code></pre></div>
+<h4 id="sqlite-debugging">SQLite Debugging<a class="headerlink" href="#sqlite-debugging" title="Permanent link">&para;</a></h4>
+<div class="highlight"><pre><span></span><code><span class="k">async</span> <span class="k">def</span> <span class="nf">debug_sqlite</span><span class="p">():</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Get SQLite-specific debug information&quot;&quot;&quot;</span>
+    <span class="c1"># Database statistics</span>
+    <span class="n">stats</span> <span class="o">=</span> <span class="k">await</span> <span class="n">db</span><span class="o">.</span><span class="n">connection</span><span class="o">.</span><span class="n">fetch_all</span><span class="p">(</span><span class="s2">&quot;PRAGMA stats&quot;</span><span class="p">)</span>
+
+    <span class="c1"># Table information</span>
+    <span class="n">table_info</span> <span class="o">=</span> <span class="k">await</span> <span class="n">db</span><span class="o">.</span><span class="n">connection</span><span class="o">.</span><span class="n">fetch_all</span><span class="p">(</span><span class="s2">&quot;PRAGMA table_info(books)&quot;</span><span class="p">)</span>
+
+    <span class="c1"># Index list</span>
+    <span class="n">index_list</span> <span class="o">=</span> <span class="k">await</span> <span class="n">db</span><span class="o">.</span><span class="n">connection</span><span class="o">.</span><span class="n">fetch_all</span><span class="p">(</span><span class="s2">&quot;PRAGMA index_list(books)&quot;</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="p">{</span>
+        <span class="s2">&quot;stats&quot;</span><span class="p">:</span> <span class="n">stats</span><span class="p">,</span>
+        <span class="s2">&quot;table_info&quot;</span><span class="p">:</span> <span class="n">table_info</span><span class="p">,</span>
+        <span class="s2">&quot;index_list&quot;</span><span class="p">:</span> <span class="n">index_list</span>
+    <span class="p">}</span>
+</code></pre></div>
+<h2 id="debugging-performance-issues">Debugging Performance Issues<a class="headerlink" href="#debugging-performance-issues" title="Permanent link">&para;</a></h2>
+<h3 id="identifying-slow-queries">Identifying Slow Queries<a class="headerlink" href="#identifying-slow-queries" title="Permanent link">&para;</a></h3>
+<h4 id="method-1-query-timing">Method 1: Query Timing<a class="headerlink" href="#method-1-query-timing" title="Permanent link">&para;</a></h4>
+<div class="highlight"><pre><span></span><code><span class="kn">from</span> <span class="nn">datetime</span> <span class="kn">import</span> <span class="n">datetime</span>
+
+<span class="k">async</span> <span class="k">def</span> <span class="nf">time_query</span><span class="p">():</span>
+    <span class="n">start</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span>
+    <span class="n">books</span> <span class="o">=</span> <span class="k">await</span> <span class="n">Book</span><span class="o">.</span><span class="n">objects</span><span class="p">()</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">pages__gt</span><span class="o">=</span><span class="mi">300</span><span class="p">)</span><span class="o">.</span><span class="n">all</span><span class="p">()</span>
+    <span class="n">duration</span> <span class="o">=</span> <span class="p">(</span><span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span> <span class="o">-</span> <span class="n">start</span><span class="p">)</span><span class="o">.</span><span class="n">total_seconds</span><span class="p">()</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Query took </span><span class="si">{</span><span class="n">duration</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2"> seconds&quot;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">books</span>
+</code></pre></div>
+<h4 id="method-2-query-profiling">Method 2: Query Profiling<a class="headerlink" href="#method-2-query-profiling" title="Permanent link">&para;</a></h4>
+<div class="highlight"><pre><span></span><code><span class="k">async</span> <span class="k">def</span> <span class="nf">profile_query</span><span class="p">():</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Profile a query for detailed timing information&quot;&quot;&quot;</span>
+    <span class="c1"># Enable profiling</span>
+    <span class="k">await</span> <span class="n">db</span><span class="o">.</span><span class="n">connection</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="s2">&quot;SET SESSION PROFILING = 1&quot;</span><span class="p">)</span>
+
+    <span class="c1"># Run query</span>
+    <span class="n">books</span> <span class="o">=</span> <span class="k">await</span> <span class="n">Book</span><span class="o">.</span><span class="n">objects</span><span class="p">()</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">pages__gt</span><span class="o">=</span><span class="mi">300</span><span class="p">)</span><span class="o">.</span><span class="n">all</span><span class="p">()</span>
+
+    <span class="c1"># Get profiling data</span>
+    <span class="n">profiles</span> <span class="o">=</span> <span class="k">await</span> <span class="n">db</span><span class="o">.</span><span class="n">connection</span><span class="o">.</span><span class="n">fetch_all</span><span class="p">(</span><span class="s2">&quot;SHOW PROFILES&quot;</span><span class="p">)</span>
+    <span class="n">profile_data</span> <span class="o">=</span> <span class="k">await</span> <span class="n">db</span><span class="o">.</span><span class="n">connection</span><span class="o">.</span><span class="n">fetch_all</span><span class="p">(</span>
+        <span class="sa">f</span><span class="s2">&quot;SHOW PROFILE FOR QUERY </span><span class="si">{</span><span class="n">profiles</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="s1">&#39;Query_ID&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span>
+    <span class="p">)</span>
+
+    <span class="c1"># Disable profiling</span>
+    <span class="k">await</span> <span class="n">db</span><span class="o">.</span><span class="n">connection</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="s2">&quot;SET SESSION PROFILING = 0&quot;</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="p">{</span>
+        <span class="s2">&quot;books&quot;</span><span class="p">:</span> <span class="n">books</span><span class="p">,</span>
+        <span class="s2">&quot;profile_data&quot;</span><span class="p">:</span> <span class="n">profile_data</span>
+    <span class="p">}</span>
+</code></pre></div>
+<h3 id="memory-usage-debugging">Memory Usage Debugging<a class="headerlink" href="#memory-usage-debugging" title="Permanent link">&para;</a></h3>
+<h4 id="tracking-memory-usage">Tracking Memory Usage<a class="headerlink" href="#tracking-memory-usage" title="Permanent link">&para;</a></h4>
+<div class="highlight"><pre><span></span><code><span class="kn">import</span> <span class="nn">tracemalloc</span>
+<span class="kn">from</span> <span class="nn">ormax.utils</span> <span class="kn">import</span> <span class="n">Timer</span>
+
+<span class="k">async</span> <span class="k">def</span> <span class="nf">debug_memory_usage</span><span class="p">():</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Track memory usage during database operations&quot;&quot;&quot;</span>
+    <span class="n">tracemalloc</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
+
+    <span class="c1"># Take initial snapshot</span>
+    <span class="n">initial_snapshot</span> <span class="o">=</span> <span class="n">tracemalloc</span><span class="o">.</span><span class="n">take_snapshot</span><span class="p">()</span>
+
+    <span class="c1"># Run operation to monitor</span>
+    <span class="k">with</span> <span class="n">Timer</span><span class="p">(</span><span class="s2">&quot;Memory Test&quot;</span><span class="p">):</span>
+        <span class="n">books</span> <span class="o">=</span> <span class="k">await</span> <span class="n">Book</span><span class="o">.</span><span class="n">objects</span><span class="p">()</span><span class="o">.</span><span class="n">all</span><span class="p">()</span>
+        <span class="c1"># Process books to simulate real usage</span>
+        <span class="n">processed</span> <span class="o">=</span> <span class="p">[</span><span class="n">book</span><span class="o">.</span><span class="n">title</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span> <span class="k">for</span> <span class="n">book</span> <span class="ow">in</span> <span class="n">books</span><span class="p">]</span>
+
+    <span class="c1"># Take final snapshot</span>
+    <span class="n">final_snapshot</span> <span class="o">=</span> <span class="n">tracemalloc</span><span class="o">.</span><span class="n">take_snapshot</span><span class="p">()</span>
+
+    <span class="c1"># Compare snapshots</span>
+    <span class="n">top_stats</span> <span class="o">=</span> <span class="n">final_snapshot</span><span class="o">.</span><span class="n">compare_to</span><span class="p">(</span><span class="n">initial_snapshot</span><span class="p">,</span> <span class="s1">&#39;lineno&#39;</span><span class="p">)</span>
+
+    <span class="c1"># Print top memory consumers</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;[ Top 10 memory consumers ]&quot;</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">stat</span> <span class="ow">in</span> <span class="n">top_stats</span><span class="p">[:</span><span class="mi">10</span><span class="p">]:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="n">stat</span><span class="p">)</span>
+
+    <span class="n">tracemalloc</span><span class="o">.</span><span class="n">stop</span><span class="p">()</span>
+</code></pre></div>
+<h4 id="identifying-memory-leaks">Identifying Memory Leaks<a class="headerlink" href="#identifying-memory-leaks" title="Permanent link">&para;</a></h4>
+<div class="highlight"><pre><span></span><code><span class="k">async</span> <span class="k">def</span> <span class="nf">check_for_memory_leaks</span><span class="p">():</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Check for memory leaks in database operations&quot;&quot;&quot;</span>
+    <span class="kn">import</span> <span class="nn">gc</span>
+
+    <span class="c1"># Run garbage collection</span>
+    <span class="n">gc</span><span class="o">.</span><span class="n">collect</span><span class="p">()</span>
+
+    <span class="c1"># Get initial memory usage</span>
+    <span class="n">initial</span> <span class="o">=</span> <span class="n">tracemalloc</span><span class="o">.</span><span class="n">take_snapshot</span><span class="p">()</span>
+
+    <span class="c1"># Perform operations multiple times</span>
+    <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">10</span><span class="p">):</span>
+        <span class="n">books</span> <span class="o">=</span> <span class="k">await</span> <span class="n">Book</span><span class="o">.</span><span class="n">objects</span><span class="p">()</span><span class="o">.</span><span class="n">all</span><span class="p">()</span>
+        <span class="c1"># Process books</span>
+        <span class="p">[</span><span class="n">book</span><span class="o">.</span><span class="n">title</span> <span class="k">for</span> <span class="n">book</span> <span class="ow">in</span> <span class="n">books</span><span class="p">]</span>
+
+    <span class="c1"># Run garbage collection again</span>
+    <span class="n">gc</span><span class="o">.</span><span class="n">collect</span><span class="p">()</span>
+
+    <span class="c1"># Get final memory usage</span>
+    <span class="n">final</span> <span class="o">=</span> <span class="n">tracemalloc</span><span class="o">.</span><span class="n">take_snapshot</span><span class="p">()</span>
+
+    <span class="c1"># Compare snapshots</span>
+    <span class="n">stats</span> <span class="o">=</span> <span class="n">final</span><span class="o">.</span><span class="n">compare_to</span><span class="p">(</span><span class="n">initial</span><span class="p">,</span> <span class="s1">&#39;lineno&#39;</span><span class="p">)</span>
+
+    <span class="c1"># Check for significant memory growth</span>
+    <span class="k">if</span> <span class="n">stats</span> <span class="ow">and</span> <span class="n">stats</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">size_diff</span> <span class="o">&gt;</span> <span class="mi">1024</span> <span class="o">*</span> <span class="mi">1024</span><span class="p">:</span>  <span class="c1"># 1MB</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Potential memory leak detected:&quot;</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">stat</span> <span class="ow">in</span> <span class="n">stats</span><span class="p">[:</span><span class="mi">5</span><span class="p">]:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  </span><span class="si">{</span><span class="n">stat</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;No significant memory leak detected&quot;</span><span class="p">)</span>
+</code></pre></div>
+<h2 id="debugging-migration-issues">Debugging Migration Issues<a class="headerlink" href="#debugging-migration-issues" title="Permanent link">&para;</a></h2>
+<h3 id="diagnosing-migration-problems">Diagnosing Migration Problems<a class="headerlink" href="#diagnosing-migration-problems" title="Permanent link">&para;</a></h3>
+<h4 id="step-1-verify-migration-status">Step 1: Verify Migration Status<a class="headerlink" href="#step-1-verify-migration-status" title="Permanent link">&para;</a></h4>
+<div class="highlight"><pre><span></span><code><span class="k">async</span> <span class="k">def</span> <span class="nf">check_migration_status</span><span class="p">():</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Check current migration status&quot;&quot;&quot;</span>
+    <span class="c1"># Check if migrations table exists</span>
+    <span class="n">exists</span> <span class="o">=</span> <span class="k">await</span> <span class="n">db</span><span class="o">.</span><span class="n">connection</span><span class="o">.</span><span class="n">fetch_val</span><span class="p">(</span>
+        <span class="s2">&quot;SELECT 1 FROM sqlite_master WHERE type=&#39;table&#39; AND name=&#39;migrations&#39;&quot;</span>
+    <span class="p">)</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">exists</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Migrations table does not exist&quot;</span><span class="p">)</span>
+        <span class="k">return</span>
+
+    <span class="c1"># Get applied migrations</span>
+    <span class="n">applied</span> <span class="o">=</span> <span class="k">await</span> <span class="n">db</span><span class="o">.</span><span class="n">connection</span><span class="o">.</span><span class="n">fetch_all</span><span class="p">(</span><span class="s2">&quot;SELECT * FROM migrations&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Applied migrations (</span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">applied</span><span class="p">)</span><span class="si">}</span><span class="s2">):&quot;</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">migration</span> <span class="ow">in</span> <span class="n">applied</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  - </span><span class="si">{</span><span class="n">migration</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</code></pre></div>
+<h4 id="step-2-inspect-migration-scripts">Step 2: Inspect Migration Scripts<a class="headerlink" href="#step-2-inspect-migration-scripts" title="Permanent link">&para;</a></h4>
+<div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">inspect_migration_script</span><span class="p">(</span><span class="n">migration_name</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Inspect a migration script without executing it&quot;&quot;&quot;</span>
+    <span class="kn">import</span> <span class="nn">importlib.util</span>
+    <span class="kn">import</span> <span class="nn">os</span>
+
+    <span class="n">migration_path</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;migrations/</span><span class="si">{</span><span class="n">migration_name</span><span class="si">}</span><span class="s2">.py&quot;</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">migration_path</span><span class="p">):</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Migration </span><span class="si">{</span><span class="n">migration_name</span><span class="si">}</span><span class="s2"> not found&quot;</span><span class="p">)</span>
+        <span class="k">return</span>
+
+    <span class="c1"># Load the module without executing</span>
+    <span class="n">spec</span> <span class="o">=</span> <span class="n">importlib</span><span class="o">.</span><span class="n">util</span><span class="o">.</span><span class="n">spec_from_file_location</span><span class="p">(</span>
+        <span class="n">migration_name</span><span class="p">,</span> <span class="n">migration_path</span>
+    <span class="p">)</span>
+    <span class="n">module</span> <span class="o">=</span> <span class="n">importlib</span><span class="o">.</span><span class="n">util</span><span class="o">.</span><span class="n">module_from_spec</span><span class="p">(</span><span class="n">spec</span><span class="p">)</span>
+    <span class="n">spec</span><span class="o">.</span><span class="n">loader</span><span class="o">.</span><span class="n">exec_module</span><span class="p">(</span><span class="n">module</span><span class="p">)</span>
+
+    <span class="c1"># Print up and down functions</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Migration: </span><span class="si">{</span><span class="n">migration_name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Up function:&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">inspect</span><span class="o">.</span><span class="n">getsource</span><span class="p">(</span><span class="n">module</span><span class="o">.</span><span class="n">up</span><span class="p">))</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Down function:&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">inspect</span><span class="o">.</span><span class="n">getsource</span><span class="p">(</span><span class="n">module</span><span class="o">.</span><span class="n">down</span><span class="p">))</span>
+</code></pre></div>
+<h3 id="common-migration-issues-and-solutions">Common Migration Issues and Solutions<a class="headerlink" href="#common-migration-issues-and-solutions" title="Permanent link">&para;</a></h3>
+<h4 id="issue-migration-already-applied">Issue: Migration Already Applied<a class="headerlink" href="#issue-migration-already-applied" title="Permanent link">&para;</a></h4>
+<p><strong>Symptoms</strong>:
+- <code>DatabaseError: Migration already applied</code>
+- Duplicate entry errors</p>
+<p><strong>Diagnosis</strong>:
+- Check migrations table
+- Verify migration script idempotency</p>
+<p><strong>Solution</strong>:
+<div class="highlight"><pre><span></span><code><span class="c1"># Ensure migration is idempotent</span>
+<span class="k">async</span> <span class="k">def</span> <span class="nf">up</span><span class="p">(</span><span class="n">db</span><span class="p">):</span>
+    <span class="c1"># Check if column already exists</span>
+    <span class="n">columns</span> <span class="o">=</span> <span class="k">await</span> <span class="n">db</span><span class="o">.</span><span class="n">connection</span><span class="o">.</span><span class="n">fetch_all</span><span class="p">(</span>
+        <span class="s2">&quot;PRAGMA table_info(books)&quot;</span>
+    <span class="p">)</span>
+    <span class="k">if</span> <span class="s2">&quot;pages&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span><span class="n">col</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">]</span> <span class="k">for</span> <span class="n">col</span> <span class="ow">in</span> <span class="n">columns</span><span class="p">]:</span>
+        <span class="k">await</span> <span class="n">db</span><span class="o">.</span><span class="n">connection</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span>
+            <span class="s2">&quot;ALTER TABLE books ADD COLUMN pages INTEGER NOT NULL DEFAULT 100&quot;</span>
+        <span class="p">)</span>
+</code></pre></div></p>
+<h4 id="issue-foreign-key-constraint-violation-during-migration">Issue: Foreign Key Constraint Violation During Migration<a class="headerlink" href="#issue-foreign-key-constraint-violation-during-migration" title="Permanent link">&para;</a></h4>
+<p><strong>Symptoms</strong>:
+- <code>IntegrityError: FOREIGN KEY constraint failed</code>
+- Migration fails when adding foreign key</p>
+<p><strong>Diagnosis</strong>:
+- Check existing data
+- Verify referenced values exist</p>
+<p><strong>Solution</strong>:
+<div class="highlight"><pre><span></span><code><span class="k">async</span> <span class="k">def</span> <span class="nf">up</span><span class="p">(</span><span class="n">db</span><span class="p">):</span>
+    <span class="c1"># 1. Add column without constraint</span>
+    <span class="k">await</span> <span class="n">db</span><span class="o">.</span><span class="n">connection</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span>
+        <span class="s2">&quot;ALTER TABLE books ADD COLUMN author_id INTEGER&quot;</span>
+    <span class="p">)</span>
+
+    <span class="c1"># 2. Update existing data</span>
+    <span class="k">await</span> <span class="n">db</span><span class="o">.</span><span class="n">connection</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span>
+        <span class="s2">&quot;UPDATE books SET author_id = 1 WHERE author_id IS NULL&quot;</span>
+    <span class="p">)</span>
+
+    <span class="c1"># 3. Add foreign key constraint</span>
+    <span class="k">await</span> <span class="n">db</span><span class="o">.</span><span class="n">connection</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span>
+        <span class="s2">&quot;ALTER TABLE books ADD CONSTRAINT fk_author &quot;</span>
+        <span class="s2">&quot;FOREIGN KEY (author_id) REFERENCES authors(id)&quot;</span>
+    <span class="p">)</span>
+</code></pre></div></p>
+<h4 id="issue-migration-rollback-failure">Issue: Migration Rollback Failure<a class="headerlink" href="#issue-migration-rollback-failure" title="Permanent link">&para;</a></h4>
+<p><strong>Symptoms</strong>:
+- <code>DatabaseError: Cannot drop column used in foreign key constraint</code>
+- Rollback fails after partial migration</p>
+<p><strong>Diagnosis</strong>:
+- Check database-specific limitations
+- Verify rollback script</p>
+<p><strong>Solution</strong>:
+<div class="highlight"><pre><span></span><code><span class="k">async</span> <span class="k">def</span> <span class="nf">down</span><span class="p">(</span><span class="n">db</span><span class="p">):</span>
+    <span class="c1"># For PostgreSQL, need to drop constraints first</span>
+    <span class="k">if</span> <span class="s2">&quot;postgresql&quot;</span> <span class="ow">in</span> <span class="n">db</span><span class="o">.</span><span class="n">connection_string</span><span class="p">:</span>
+        <span class="k">await</span> <span class="n">db</span><span class="o">.</span><span class="n">connection</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span>
+            <span class="s2">&quot;ALTER TABLE books DROP CONSTRAINT IF EXISTS fk_author&quot;</span>
+        <span class="p">)</span>
+
+    <span class="c1"># Now drop the column</span>
+    <span class="k">await</span> <span class="n">db</span><span class="o">.</span><span class="n">connection</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span>
+        <span class="s2">&quot;ALTER TABLE books DROP COLUMN author_id&quot;</span>
+    <span class="p">)</span>
+</code></pre></div></p>
+<h2 id="debugging-with-real-world-examples">Debugging with Real-World Examples<a class="headerlink" href="#debugging-with-real-world-examples" title="Permanent link">&para;</a></h2>
+<h3 id="debugging-an-n1-query-problem">Debugging an N+1 Query Problem<a class="headerlink" href="#debugging-an-n1-query-problem" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><span class="kn">import</span> <span class="nn">logging</span>
+<span class="kn">from</span> <span class="nn">io</span> <span class="kn">import</span> <span class="n">StringIO</span>
+
+<span class="k">def</span> <span class="nf">detect_n_plus_one</span><span class="p">():</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Detect potential N+1 query patterns in logs&quot;&quot;&quot;</span>
+    <span class="c1"># Configure logger to capture queries</span>
+    <span class="n">log_stream</span> <span class="o">=</span> <span class="n">StringIO</span><span class="p">()</span>
+    <span class="n">handler</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">StreamHandler</span><span class="p">(</span><span class="n">log_stream</span><span class="p">)</span>
+    <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="s2">&quot;ormax&quot;</span><span class="p">)</span>
+    <span class="n">logger</span><span class="o">.</span><span class="n">addHandler</span><span class="p">(</span><span class="n">handler</span><span class="p">)</span>
+
+    <span class="k">try</span><span class="p">:</span>
+        <span class="c1"># Run the code that might have N+1 issues</span>
+        <span class="n">books</span> <span class="o">=</span> <span class="n">Book</span><span class="o">.</span><span class="n">objects</span><span class="p">()</span><span class="o">.</span><span class="n">all</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">book</span> <span class="ow">in</span> <span class="n">books</span><span class="p">:</span>
+            <span class="k">await</span> <span class="n">book</span><span class="o">.</span><span class="n">author</span>  <span class="c1"># This would trigger N+1 queries</span>
+
+        <span class="c1"># Analyze logs</span>
+        <span class="n">log_content</span> <span class="o">=</span> <span class="n">log_stream</span><span class="o">.</span><span class="n">getvalue</span><span class="p">()</span>
+        <span class="n">queries</span> <span class="o">=</span> <span class="p">[</span><span class="n">line</span> <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">log_content</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span> 
+                  <span class="k">if</span> <span class="s2">&quot;Executing query&quot;</span> <span class="ow">in</span> <span class="n">line</span><span class="p">]</span>
+
+        <span class="c1"># Look for similar queries with different parameters</span>
+        <span class="n">pattern_counts</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">for</span> <span class="n">query</span> <span class="ow">in</span> <span class="n">queries</span><span class="p">:</span>
+            <span class="c1"># Extract the base query without parameters</span>
+            <span class="n">base_query</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;\?.*?FROM&#39;</span><span class="p">,</span> <span class="s1">&#39; ? FROM&#39;</span><span class="p">,</span> <span class="n">query</span><span class="p">)</span>
+            <span class="n">base_query</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;WHERE .*? = &#39;</span><span class="p">,</span> <span class="s1">&#39;WHERE ? = &#39;</span><span class="p">,</span> <span class="n">base_query</span><span class="p">)</span>
+
+            <span class="n">pattern_counts</span><span class="p">[</span><span class="n">base_query</span><span class="p">]</span> <span class="o">=</span> <span class="n">pattern_counts</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">base_query</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span>
+
+        <span class="c1"># Flag potential N+1 queries</span>
+        <span class="n">n_plus_one_queries</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="p">(</span><span class="n">pattern</span><span class="p">,</span> <span class="n">count</span><span class="p">)</span> <span class="k">for</span> <span class="n">pattern</span><span class="p">,</span> <span class="n">count</span> <span class="ow">in</span> <span class="n">pattern_counts</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> 
+            <span class="k">if</span> <span class="n">count</span> <span class="o">&gt;</span> <span class="mi">5</span>  <span class="c1"># Threshold for potential N+1</span>
+        <span class="p">]</span>
+
+        <span class="k">if</span> <span class="n">n_plus_one_queries</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Potential N+1 query patterns detected:&quot;</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">pattern</span><span class="p">,</span> <span class="n">count</span> <span class="ow">in</span> <span class="n">n_plus_one_queries</span><span class="p">:</span>
+                <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  </span><span class="si">{</span><span class="n">count</span><span class="si">}</span><span class="s2"> occurrences of: </span><span class="si">{</span><span class="n">pattern</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="kc">True</span>
+        <span class="k">return</span> <span class="kc">False</span>
+    <span class="k">finally</span><span class="p">:</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">removeHandler</span><span class="p">(</span><span class="n">handler</span><span class="p">)</span>
+
+<span class="c1"># Usage</span>
+<span class="k">if</span> <span class="n">detect_n_plus_one</span><span class="p">():</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Consider using select_related or prefetch_related&quot;</span><span class="p">)</span>
+</code></pre></div>
+<h3 id="debugging-a-transaction-deadlock">Debugging a Transaction Deadlock<a class="headerlink" href="#debugging-a-transaction-deadlock" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><span class="k">async</span> <span class="k">def</span> <span class="nf">debug_deadlock</span><span class="p">():</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Debug a transaction deadlock scenario&quot;&quot;&quot;</span>
+    <span class="c1"># Setup test data</span>
+    <span class="n">author1</span> <span class="o">=</span> <span class="k">await</span> <span class="n">Author</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;Author 1&quot;</span><span class="p">)</span>
+    <span class="n">author2</span> <span class="o">=</span> <span class="k">await</span> <span class="n">Author</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;Author 2&quot;</span><span class="p">)</span>
+    <span class="n">book1</span> <span class="o">=</span> <span class="k">await</span> <span class="n">Book</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="n">title</span><span class="o">=</span><span class="s2">&quot;Book 1&quot;</span><span class="p">,</span> <span class="n">author</span><span class="o">=</span><span class="n">author1</span><span class="p">)</span>
+    <span class="n">book2</span> <span class="o">=</span> <span class="k">await</span> <span class="n">Book</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="n">title</span><span class="o">=</span><span class="s2">&quot;Book 2&quot;</span><span class="p">,</span> <span class="n">author</span><span class="o">=</span><span class="n">author2</span><span class="p">)</span>
+
+    <span class="c1"># Create two tasks that might deadlock</span>
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">update_task1</span><span class="p">():</span>
+        <span class="k">async</span> <span class="k">with</span> <span class="n">db</span><span class="o">.</span><span class="n">transaction</span><span class="p">():</span>
+            <span class="c1"># Update author1</span>
+            <span class="k">await</span> <span class="n">Author</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="n">author1</span><span class="o">.</span><span class="n">id</span><span class="p">)</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;Updated 1&quot;</span><span class="p">)</span>
+            <span class="c1"># Try to update book2</span>
+            <span class="k">await</span> <span class="n">Book</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="n">book2</span><span class="o">.</span><span class="n">id</span><span class="p">)</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">title</span><span class="o">=</span><span class="s2">&quot;Updated Book 2&quot;</span><span class="p">)</span>
+
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">update_task2</span><span class="p">():</span>
+        <span class="k">async</span> <span class="k">with</span> <span class="n">db</span><span class="o">.</span><span class="n">transaction</span><span class="p">():</span>
+            <span class="c1"># Update author2</span>
+            <span class="k">await</span> <span class="n">Author</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="n">author2</span><span class="o">.</span><span class="n">id</span><span class="p">)</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;Updated 2&quot;</span><span class="p">)</span>
+            <span class="c1"># Try to update book1</span>
+            <span class="k">await</span> <span class="n">Book</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="n">book1</span><span class="o">.</span><span class="n">id</span><span class="p">)</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">title</span><span class="o">=</span><span class="s2">&quot;Updated Book 1&quot;</span><span class="p">)</span>
+
+    <span class="c1"># Run tasks concurrently</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="k">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">gather</span><span class="p">(</span><span class="n">update_task1</span><span class="p">(),</span> <span class="n">update_task2</span><span class="p">())</span>
+    <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Transaction failed: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+        <span class="c1"># Get database-specific deadlock information</span>
+        <span class="k">if</span> <span class="s2">&quot;postgresql&quot;</span> <span class="ow">in</span> <span class="n">db</span><span class="o">.</span><span class="n">connection_string</span><span class="p">:</span>
+            <span class="n">locks</span> <span class="o">=</span> <span class="k">await</span> <span class="n">db</span><span class="o">.</span><span class="n">connection</span><span class="o">.</span><span class="n">fetch_all</span><span class="p">(</span><span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">                SELECT </span>
+<span class="s2">                    blocked_locks.pid AS blocked_pid,</span>
+<span class="s2">                    blocking_locks.pid AS blocking_pid,</span>
+<span class="s2">                    blocked_activity.query AS blocked_query,</span>
+<span class="s2">                    blocking_activity.query AS blocking_query</span>
+<span class="s2">                FROM pg_catalog.pg_locks blocked_locks</span>
+<span class="s2">                JOIN pg_catalog.pg_stat_activity blocked_activity </span>
+<span class="s2">                    ON blocked_activity.pid = blocked_locks.pid</span>
+<span class="s2">                JOIN pg_catalog.pg_locks blocking_locks </span>
+<span class="s2">                    ON blocking_locks.locktype = blocked_locks.locktype</span>
+<span class="s2">                    AND blocking_locks.DATABASE IS NOT DISTINCT FROM blocked_locks.DATABASE</span>
+<span class="s2">                    AND blocking_locks.relation IS NOT DISTINCT FROM blocked_locks.relation</span>
+<span class="s2">                    AND blocking_locks.page IS NOT DISTINCT FROM blocked_locks.page</span>
+<span class="s2">                    AND blocking_locks.tuple IS NOT DISTINCT FROM blocked_locks.tuple</span>
+<span class="s2">                    AND blocking_locks.virtualxid IS NOT DISTINCT FROM blocked_locks.virtualxid</span>
+<span class="s2">                    AND blocking_locks.transactionid IS NOT DISTINCT FROM blocked_locks.transactionid</span>
+<span class="s2">                    AND blocking_locks.classid IS NOT DISTINCT FROM blocked_locks.classid</span>
+<span class="s2">                    AND blocking_locks.objid IS NOT DISTINCT FROM blocked_locks.objid</span>
+<span class="s2">                    AND blocking_locks.objsubid IS NOT DISTINCT FROM blocked_locks.objsubid</span>
+<span class="s2">                    AND blocking_locks.pid != blocked_locks.pid</span>
+<span class="s2">                JOIN pg_catalog.pg_stat_activity blocking_activity </span>
+<span class="s2">                    ON blocking_activity.pid = blocking_locks.pid</span>
+<span class="s2">                WHERE NOT blocked_locks.GRANTED</span>
+<span class="s2">            &quot;&quot;&quot;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">locks</span><span class="p">:</span>
+                <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Deadlock details:&quot;</span><span class="p">)</span>
+                <span class="k">for</span> <span class="n">lock</span> <span class="ow">in</span> <span class="n">locks</span><span class="p">:</span>
+                    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Blocked PID </span><span class="si">{</span><span class="n">lock</span><span class="p">[</span><span class="s1">&#39;blocked_pid&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2"> by PID </span><span class="si">{</span><span class="n">lock</span><span class="p">[</span><span class="s1">&#39;blocking_pid&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+                    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Blocked query: </span><span class="si">{</span><span class="n">lock</span><span class="p">[</span><span class="s1">&#39;blocked_query&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+                    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Blocking query: </span><span class="si">{</span><span class="n">lock</span><span class="p">[</span><span class="s1">&#39;blocking_query&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</code></pre></div>
+<h2 id="best-practices-for-debugging-ormax-applications">Best Practices for Debugging Ormax Applications<a class="headerlink" href="#best-practices-for-debugging-ormax-applications" title="Permanent link">&para;</a></h2>
+<h3 id="use-structured-logging">Use Structured Logging<a class="headerlink" href="#use-structured-logging" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><span class="kn">import</span> <span class="nn">logging</span>
+<span class="kn">import</span> <span class="nn">json</span>
+
+<span class="c1"># Configure structured logging</span>
+<span class="k">class</span> <span class="nc">JsonFormatter</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">Formatter</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">format</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">record</span><span class="p">):</span>
+        <span class="n">log_data</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s2">&quot;timestamp&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">formatTime</span><span class="p">(</span><span class="n">record</span><span class="p">),</span>
+            <span class="s2">&quot;level&quot;</span><span class="p">:</span> <span class="n">record</span><span class="o">.</span><span class="n">levelname</span><span class="p">,</span>
+            <span class="s2">&quot;message&quot;</span><span class="p">:</span> <span class="n">record</span><span class="o">.</span><span class="n">getMessage</span><span class="p">(),</span>
+            <span class="s2">&quot;logger&quot;</span><span class="p">:</span> <span class="n">record</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
+        <span class="p">}</span>
+        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">record</span><span class="p">,</span> <span class="s2">&quot;query&quot;</span><span class="p">):</span>
+            <span class="n">log_data</span><span class="p">[</span><span class="s2">&quot;query&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">record</span><span class="o">.</span><span class="n">query</span>
+        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">record</span><span class="p">,</span> <span class="s2">&quot;params&quot;</span><span class="p">):</span>
+            <span class="n">log_data</span><span class="p">[</span><span class="s2">&quot;params&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">record</span><span class="o">.</span><span class="n">params</span>
+        <span class="k">return</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">log_data</span><span class="p">)</span>
+
+<span class="c1"># Setup logger</span>
+<span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="s2">&quot;ormax&quot;</span><span class="p">)</span>
+<span class="n">handler</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">StreamHandler</span><span class="p">()</span>
+<span class="n">handler</span><span class="o">.</span><span class="n">setFormatter</span><span class="p">(</span><span class="n">JsonFormatter</span><span class="p">())</span>
+<span class="n">logger</span><span class="o">.</span><span class="n">addHandler</span><span class="p">(</span><span class="n">handler</span><span class="p">)</span>
+<span class="n">logger</span><span class="o">.</span><span class="n">setLevel</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">INFO</span><span class="p">)</span>
+
+<span class="c1"># Log queries with parameters</span>
+<span class="k">def</span> <span class="nf">log_query</span><span class="p">(</span><span class="n">query</span><span class="p">,</span> <span class="n">params</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="n">extra</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;query&quot;</span><span class="p">:</span> <span class="n">query</span><span class="p">}</span>
+    <span class="k">if</span> <span class="n">params</span><span class="p">:</span>
+        <span class="n">extra</span><span class="p">[</span><span class="s2">&quot;params&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">params</span>
+    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Database query executed&quot;</span><span class="p">,</span> <span class="n">extra</span><span class="o">=</span><span class="n">extra</span><span class="p">)</span>
+</code></pre></div>
+<h3 id="implement-debug-endpoints">Implement Debug Endpoints<a class="headerlink" href="#implement-debug-endpoints" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><span class="kn">from</span> <span class="nn">fastapi</span> <span class="kn">import</span> <span class="n">APIRouter</span><span class="p">,</span> <span class="n">Depends</span>
+<span class="kn">from</span> <span class="nn">ormax.utils</span> <span class="kn">import</span> <span class="n">get_system_info</span>
+
+<span class="n">router</span> <span class="o">=</span> <span class="n">APIRouter</span><span class="p">()</span>
+
+<span class="nd">@router</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;/debug/db&quot;</span><span class="p">)</span>
+<span class="k">async</span> <span class="k">def</span> <span class="nf">debug_db</span><span class="p">():</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Get database debug information&quot;&quot;&quot;</span>
+    <span class="c1"># Connection status</span>
+    <span class="n">connection_status</span> <span class="o">=</span> <span class="s2">&quot;connected&quot;</span> <span class="k">if</span> <span class="n">db</span><span class="o">.</span><span class="n">_connected</span> <span class="k">else</span> <span class="s2">&quot;disconnected&quot;</span>
+
+    <span class="c1"># Query statistics</span>
+    <span class="n">query_stats</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s2">&quot;total&quot;</span><span class="p">:</span> <span class="nb">len</span><span class="p">(</span><span class="n">logger</span><span class="o">.</span><span class="n">handlers</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">logs</span><span class="p">),</span>
+        <span class="s2">&quot;slow&quot;</span><span class="p">:</span> <span class="nb">sum</span><span class="p">(</span><span class="mi">1</span> <span class="k">for</span> <span class="n">log</span> <span class="ow">in</span> <span class="n">logger</span><span class="o">.</span><span class="n">handlers</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">logs</span> <span class="k">if</span> <span class="s2">&quot;Slow query&quot;</span> <span class="ow">in</span> <span class="n">log</span><span class="o">.</span><span class="n">getMessage</span><span class="p">())</span>
+    <span class="p">}</span>
+
+    <span class="c1"># System information</span>
+    <span class="n">system_info</span> <span class="o">=</span> <span class="n">get_system_info</span><span class="p">()</span>
+
+    <span class="k">return</span> <span class="p">{</span>
+        <span class="s2">&quot;connection_status&quot;</span><span class="p">:</span> <span class="n">connection_status</span><span class="p">,</span>
+        <span class="s2">&quot;query_stats&quot;</span><span class="p">:</span> <span class="n">query_stats</span><span class="p">,</span>
+        <span class="s2">&quot;system_info&quot;</span><span class="p">:</span> <span class="n">system_info</span><span class="p">,</span>
+        <span class="s2">&quot;timestamp&quot;</span><span class="p">:</span> <span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span><span class="o">.</span><span class="n">isoformat</span><span class="p">()</span>
+    <span class="p">}</span>
+</code></pre></div>
+<h3 id="create-debugging-utilities">Create Debugging Utilities<a class="headerlink" href="#create-debugging-utilities" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">print_model_schema</span><span class="p">(</span><span class="n">model_class</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Print detailed schema information for a model&quot;&quot;&quot;</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Model: </span><span class="si">{</span><span class="n">model_class</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Table: </span><span class="si">{</span><span class="n">model_class</span><span class="o">.</span><span class="n">get_table_name</span><span class="p">()</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Fields:&quot;</span><span class="p">)</span>
+
+    <span class="k">for</span> <span class="n">field_name</span><span class="p">,</span> <span class="n">field</span> <span class="ow">in</span> <span class="n">model_class</span><span class="o">.</span><span class="n">_fields</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+        <span class="n">field_type</span> <span class="o">=</span> <span class="n">field</span><span class="o">.</span><span class="n">get_sql_type</span><span class="p">()</span>
+        <span class="n">constraints</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="k">if</span> <span class="n">field</span><span class="o">.</span><span class="n">primary_key</span><span class="p">:</span>
+            <span class="n">constraints</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;PRIMARY KEY&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">field</span><span class="o">.</span><span class="n">auto_increment</span><span class="p">:</span>
+            <span class="n">constraints</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;AUTOINCREMENT&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">field</span><span class="o">.</span><span class="n">nullable</span><span class="p">:</span>
+            <span class="n">constraints</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;NOT NULL&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">field</span><span class="o">.</span><span class="n">unique</span><span class="p">:</span>
+            <span class="n">constraints</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;UNIQUE&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">field</span><span class="o">.</span><span class="n">default</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">constraints</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;DEFAULT </span><span class="si">{</span><span class="n">field</span><span class="o">.</span><span class="n">get_default_sql</span><span class="p">()</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  </span><span class="si">{</span><span class="n">field_name</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">field_type</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">constraints</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;    </span><span class="si">{</span><span class="s1">&#39; | &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">constraints</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+    <span class="c1"># Relationships</span>
+    <span class="n">relationships</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">manager</span> <span class="ow">in</span> <span class="n">model_class</span><span class="o">.</span><span class="n">_relationships</span><span class="o">.</span><span class="n">get_all_related_managers</span><span class="p">()</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+        <span class="n">relationships</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  </span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2"> -&gt; </span><span class="si">{</span><span class="n">manager</span><span class="o">.</span><span class="n">related_model_class</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+    <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">manager</span> <span class="ow">in</span> <span class="n">model_class</span><span class="o">.</span><span class="n">_relationships</span><span class="o">.</span><span class="n">get_all_reverse_managers</span><span class="p">()</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+        <span class="n">relationships</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  </span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2"> &lt;- </span><span class="si">{</span><span class="n">manager</span><span class="o">.</span><span class="n">related_model_class</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">relationships</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Relationships:&quot;</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">rel</span> <span class="ow">in</span> <span class="n">relationships</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="n">rel</span><span class="p">)</span>
+</code></pre></div>
+<h2 id="troubleshooting-common-debugging-issues">Troubleshooting Common Debugging Issues<a class="headerlink" href="#troubleshooting-common-debugging-issues" title="Permanent link">&para;</a></h2>
+<h3 id="issue-debugger-doesnt-stop-at-breakpoints">Issue: Debugger Doesn't Stop at Breakpoints<a class="headerlink" href="#issue-debugger-doesnt-stop-at-breakpoints" title="Permanent link">&para;</a></h3>
+<p><strong>Symptoms</strong>:
+- Breakpoints are ignored
+- Debugger skips over async code</p>
+<p><strong>Solutions</strong>:
+- Ensure "Asyncio Support" is enabled in your IDE
+- Use <code>asyncio.run()</code> for top-level async code
+- Set breakpoints before async operations
+- Check if code is being executed in a different event loop</p>
+<h3 id="issue-logging-doesnt-show-queries">Issue: Logging Doesn't Show Queries<a class="headerlink" href="#issue-logging-doesnt-show-queries" title="Permanent link">&para;</a></h3>
+<p><strong>Symptoms</strong>:
+- No query logs appear
+- Debug logs are missing</p>
+<p><strong>Solutions</strong>:
+- Verify logger level is set to DEBUG
+- Check if logger is properly configured
+- Ensure you're using the correct logger name ("ormax")
+- Check if logs are being captured by another handler</p>
+<h3 id="issue-memory-profiling-shows-false-positives">Issue: Memory Profiling Shows False Positives<a class="headerlink" href="#issue-memory-profiling-shows-false-positives" title="Permanent link">&para;</a></h3>
+<p><strong>Symptoms</strong>:
+- Memory usage appears to grow but isn't a real leak
+- Profiling shows unexpected allocations</p>
+<p><strong>Solutions</strong>:
+- Run garbage collection before taking snapshots
+- Take multiple snapshots to identify real trends
+- Focus on long-term growth rather than short-term fluctuations
+- Use production-like data volumes for profiling</p>
+<h3 id="issue-transaction-state-is-confusing">Issue: Transaction State is Confusing<a class="headerlink" href="#issue-transaction-state-is-confusing" title="Permanent link">&para;</a></h3>
+<p><strong>Symptoms</strong>:
+- Can't tell if in a transaction
+- Unexpected rollbacks or commits</p>
+<p><strong>Solutions</strong>:
+- Add transaction state logging
+- Create a transaction context inspector
+- Use database-specific transaction monitoring queries
+- Implement transaction nesting counters</p>
+<h2 id="debugging-checklist">Debugging Checklist<a class="headerlink" href="#debugging-checklist" title="Permanent link">&para;</a></h2>
+<p>Use this checklist when debugging Ormax issues:</p>
+<h3 id="initial-diagnosis">Initial Diagnosis<a class="headerlink" href="#initial-diagnosis" title="Permanent link">&para;</a></h3>
+<ul>
+<li>[ ] Reproduce the issue consistently</li>
+<li>[ ] Identify the error type and message</li>
+<li>[ ] Check logs for relevant information</li>
+<li>[ ] Determine if the issue is in the ORM or database</li>
+</ul>
+<h3 id="query-issues">Query Issues<a class="headerlink" href="#query-issues" title="Permanent link">&para;</a></h3>
+<ul>
+<li>[ ] View the actual SQL being executed</li>
+<li>[ ] Check parameter values</li>
+<li>[ ] Verify the query execution plan</li>
+<li>[ ] Test the query directly in the database client</li>
+</ul>
+<h3 id="connection-issues">Connection Issues<a class="headerlink" href="#connection-issues" title="Permanent link">&para;</a></h3>
+<ul>
+<li>[ ] Verify connection string format</li>
+<li>[ ] Test basic connectivity</li>
+<li>[ ] Check connection pool status</li>
+<li>[ ] Review connection timeout settings</li>
+</ul>
+<h3 id="relationship-issues">Relationship Issues<a class="headerlink" href="#relationship-issues" title="Permanent link">&para;</a></h3>
+<ul>
+<li>[ ] Verify relationship definitions</li>
+<li>[ ] Check foreign key values</li>
+<li>[ ] Inspect related objects directly</li>
+<li>[ ] Test relationships with minimal data</li>
+</ul>
+<h3 id="transaction-issues">Transaction Issues<a class="headerlink" href="#transaction-issues" title="Permanent link">&para;</a></h3>
+<ul>
+<li>[ ] Check current transaction state</li>
+<li>[ ] Monitor lock contention</li>
+<li>[ ] Verify transaction boundaries</li>
+<li>[ ] Test with simplified transaction flow</li>
+</ul>
+<h3 id="performance-issues">Performance Issues<a class="headerlink" href="#performance-issues" title="Permanent link">&para;</a></h3>
+<ul>
+<li>[ ] Time the problematic operation</li>
+<li>[ ] Profile the database query</li>
+<li>[ ] Check for N+1 query problems</li>
+<li>[ ] Analyze memory usage patterns</li>
+</ul>
+<h2 id="advanced-debugging-tools">Advanced Debugging Tools<a class="headerlink" href="#advanced-debugging-tools" title="Permanent link">&para;</a></h2>
+<h3 id="database-monitoring-tools">Database Monitoring Tools<a class="headerlink" href="#database-monitoring-tools" title="Permanent link">&para;</a></h3>
+<h4 id="postgresql">PostgreSQL<a class="headerlink" href="#postgresql" title="Permanent link">&para;</a></h4>
+<ul>
+<li><code>pg_stat_statements</code>: Track query execution statistics</li>
+<li><code>pg_locks</code>: Monitor lock contention</li>
+<li><code>pg_blocking_pids</code>: Identify blocking processes</li>
+</ul>
+<h4 id="mysql">MySQL<a class="headerlink" href="#mysql" title="Permanent link">&para;</a></h4>
+<ul>
+<li><code>SHOW PROCESSLIST</code>: View active queries</li>
+<li><code>SHOW ENGINE INNODB STATUS</code>: InnoDB engine status</li>
+<li><code>performance_schema</code>: Detailed performance metrics</li>
+</ul>
+<h4 id="sqlite">SQLite<a class="headerlink" href="#sqlite" title="Permanent link">&para;</a></h4>
+<ul>
+<li><code>PRAGMA stats</code>: Database statistics</li>
+<li><code>PRAGMA table_info</code>: Table schema information</li>
+<li><code>PRAGMA index_list</code>: Index information</li>
+</ul>
+<h3 id="python-debugging-tools">Python Debugging Tools<a class="headerlink" href="#python-debugging-tools" title="Permanent link">&para;</a></h3>
+<h4 id="asyncio-debugging">Asyncio Debugging<a class="headerlink" href="#asyncio-debugging" title="Permanent link">&para;</a></h4>
+<ul>
+<li><code>PYTHONASYNCIODEBUG=1</code>: Enable asyncio debug mode</li>
+<li><code>asyncio.current_task()</code>: Get current task</li>
+<li><code>asyncio.all_tasks()</code>: List all tasks</li>
+</ul>
+<h4 id="memory-profiling">Memory Profiling<a class="headerlink" href="#memory-profiling" title="Permanent link">&para;</a></h4>
+<ul>
+<li><code>tracemalloc</code>: Track memory allocations</li>
+<li><code>objgraph</code>: Visualize object references</li>
+<li><code>memory_profiler</code>: Line-by-line memory usage</li>
+</ul>
+<h4 id="performance-profiling">Performance Profiling<a class="headerlink" href="#performance-profiling" title="Permanent link">&para;</a></h4>
+<ul>
+<li><code>cProfile</code>: CPU profiling</li>
+<li><code>line_profiler</code>: Line-by-line CPU profiling</li>
+<li><code>py-spy</code>: Sampling profiler for running processes</li>
+</ul>
+<h2 id="real-world-debugging-scenarios">Real-World Debugging Scenarios<a class="headerlink" href="#real-world-debugging-scenarios" title="Permanent link">&para;</a></h2>
+<h3 id="scenario-intermittent-unique-constraint-violation">Scenario: Intermittent Unique Constraint Violation<a class="headerlink" href="#scenario-intermittent-unique-constraint-violation" title="Permanent link">&para;</a></h3>
+<p><strong>Problem</strong>: Users occasionally see "UNIQUE constraint failed" errors when creating accounts, but the username appears to be available.</p>
+<p><strong>Debugging Steps</strong>:
+1. Add detailed logging for username checks
+2. Capture timestamp of each operation
+3. Check for concurrent requests
+4. Review transaction isolation level</p>
+<p><strong>Solution</strong>:
+<div class="highlight"><pre><span></span><code><span class="k">async</span> <span class="k">def</span> <span class="nf">create_account</span><span class="p">(</span><span class="n">username</span><span class="p">,</span> <span class="n">email</span><span class="p">,</span> <span class="n">password</span><span class="p">):</span>
+    <span class="c1"># Use SERIALIZABLE isolation to prevent race conditions</span>
+    <span class="k">async</span> <span class="k">with</span> <span class="n">db</span><span class="o">.</span><span class="n">transaction</span><span class="p">(</span><span class="n">isolation_level</span><span class="o">=</span><span class="s2">&quot;SERIALIZABLE&quot;</span><span class="p">):</span>
+        <span class="c1"># Check if username exists</span>
+        <span class="n">exists</span> <span class="o">=</span> <span class="k">await</span> <span class="n">User</span><span class="o">.</span><span class="n">objects</span><span class="p">()</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">username</span><span class="o">=</span><span class="n">username</span><span class="p">)</span><span class="o">.</span><span class="n">exists</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">exists</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Username already taken&quot;</span><span class="p">)</span>
+
+        <span class="c1"># Create account</span>
+        <span class="k">return</span> <span class="k">await</span> <span class="n">User</span><span class="o">.</span><span class="n">create</span><span class="p">(</span>
+            <span class="n">username</span><span class="o">=</span><span class="n">username</span><span class="p">,</span>
+            <span class="n">email</span><span class="o">=</span><span class="n">email</span><span class="p">,</span>
+            <span class="n">password</span><span class="o">=</span><span class="n">password</span>
+        <span class="p">)</span>
+</code></pre></div></p>
+<h3 id="scenario-slow-dashboard-queries">Scenario: Slow Dashboard Queries<a class="headerlink" href="#scenario-slow-dashboard-queries" title="Permanent link">&para;</a></h3>
+<p><strong>Problem</strong>: Dashboard queries that were fast during development are slow in production.</p>
+<p><strong>Debugging Steps</strong>:
+1. Capture EXPLAIN output for production queries
+2. Compare execution plans between dev and prod
+3. Check index usage in production
+4. Profile query execution time</p>
+<p><strong>Solution</strong>:
+<div class="highlight"><pre><span></span><code><span class="k">async</span> <span class="k">def</span> <span class="nf">get_dashboard_data</span><span class="p">():</span>
+    <span class="c1"># Optimized query with explicit indexes</span>
+    <span class="n">books</span> <span class="o">=</span> <span class="k">await</span> <span class="n">Book</span><span class="o">.</span><span class="n">objects</span><span class="p">()</span> \
+        <span class="o">.</span><span class="n">select_related</span><span class="p">(</span><span class="s2">&quot;author&quot;</span><span class="p">)</span> \
+        <span class="o">.</span><span class="n">only</span><span class="p">(</span><span class="s2">&quot;id&quot;</span><span class="p">,</span> <span class="s2">&quot;title&quot;</span><span class="p">,</span> <span class="s2">&quot;pages&quot;</span><span class="p">,</span> <span class="s2">&quot;author_id&quot;</span><span class="p">)</span> \
+        <span class="o">.</span><span class="n">order_by</span><span class="p">(</span><span class="s2">&quot;-published_date&quot;</span><span class="p">)</span> \
+        <span class="o">.</span><span class="n">limit</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span> \
+        <span class="o">.</span><span class="n">all</span><span class="p">()</span>
+
+    <span class="c1"># Batch author loading</span>
+    <span class="n">author_ids</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">book</span><span class="o">.</span><span class="n">author_id</span> <span class="k">for</span> <span class="n">book</span> <span class="ow">in</span> <span class="n">books</span><span class="p">))</span>
+    <span class="n">authors</span> <span class="o">=</span> <span class="k">await</span> <span class="n">Author</span><span class="o">.</span><span class="n">objects</span><span class="p">()</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">id__in</span><span class="o">=</span><span class="n">author_ids</span><span class="p">)</span><span class="o">.</span><span class="n">all</span><span class="p">()</span>
+    <span class="n">author_map</span> <span class="o">=</span> <span class="p">{</span><span class="n">author</span><span class="o">.</span><span class="n">id</span><span class="p">:</span> <span class="n">author</span> <span class="k">for</span> <span class="n">author</span> <span class="ow">in</span> <span class="n">authors</span><span class="p">}</span>
+
+    <span class="c1"># Process results without additional queries</span>
+    <span class="k">for</span> <span class="n">book</span> <span class="ow">in</span> <span class="n">books</span><span class="p">:</span>
+        <span class="n">book</span><span class="o">.</span><span class="n">author</span> <span class="o">=</span> <span class="n">author_map</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">book</span><span class="o">.</span><span class="n">author_id</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="p">{</span>
+        <span class="s2">&quot;books&quot;</span><span class="p">:</span> <span class="n">books</span><span class="p">,</span>
+        <span class="s2">&quot;stats&quot;</span><span class="p">:</span> <span class="k">await</span> <span class="n">calculate_stats</span><span class="p">()</span>
+    <span class="p">}</span>
+</code></pre></div></p>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+  <script>var tabs=__md_get("__tabs");if(Array.isArray(tabs))e:for(var set of document.querySelectorAll(".tabbed-set")){var labels=set.querySelector(".tabbed-labels");for(var tab of tabs)for(var label of labels.getElementsByTagName("label"))if(label.innerText.trim()===tab){var input=document.getElementById(label.htmlFor);input.checked=!0;continue e}}</script>
+
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+    
+      
+      <nav class="md-footer__inner md-grid" aria-label="Footer" >
+        
+          
+          <a href="../testing/" class="md-footer__link md-footer__link--prev" aria-label="Previous: Testing Strategies">
+            <div class="md-footer__button md-icon">
+              
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+            </div>
+            <div class="md-footer__title">
+              <span class="md-footer__direction">
+                Previous
+              </span>
+              <div class="md-ellipsis">
+                Testing Strategies
+              </div>
+            </div>
+          </a>
+        
+        
+      </nav>
+    
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      <script id="__config" type="application/json">{"base": "../..", "features": ["search.suggest", "search.highlight", "content.tabs.link", "navigation.footer", "content.code.copy", "navigation.instant", "navigation.sections", "navigation.expand"], "search": "../../assets/javascripts/workers/search.973d3a69.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.92b07e13.min.js"></script>
+      
+        <script src="../../js/termynal.js"></script>
+      
+        <script src="../../js/custom.js"></script>
+      
+        <script src="../../&lt;script type=&#34;application/ld+json&#34;&gt;
+{
+  &#34;@context&#34;: &#34;https:/schema.org&#34;,
+  &#34;@type&#34;: &#34;SoftwareApplication&#34;,
+  &#34;name&#34;: &#34;Ormax ORM&#34;,
+  &#34;applicationCategory&#34;: &#34;DeveloperLibrary&#34;,
+  &#34;operatingSystem&#34;: &#34;Any&#34;,
+  &#34;url&#34;: &#34;https:/ormax.shayan-heidari.ir/&#34;,
+  &#34;logo&#34;: &#34;https:/raw.githubusercontent.com/shayanheidari01/ormax/master/icon.png&#34;,
+  &#34;author&#34;: {
+    &#34;@type&#34;: &#34;Person&#34;,
+    &#34;name&#34;: &#34;Shayan Heidari&#34;
+  },
+  &#34;description&#34;: &#34;Ormax ORM: A lightweight and async ORM for Python with simple models, transactions, relations, and performance monitoring.&#34;
+}
+&lt;/script&gt;
+"></script>
+      
+    
+  </body>
+</html>
