@@ -1,14 +1,21 @@
-# ormax/exceptions.py
-class DatabaseError(Exception):
-    """Base exception for database errors"""
-    pass
+"""Exception hierarchy for Ormax."""
 
 
-class ValidationError(Exception):
-    """Exception for validation errors"""
-    pass
+class OrmaxError(Exception):
+    """Base exception for all Ormax-specific errors."""
 
 
-class DoesNotExist(Exception):
-    """Exception raised when object does not exist"""
-    pass
+class DatabaseError(OrmaxError):
+    """Raised when a database operation or configuration fails."""
+
+
+class ValidationError(OrmaxError):
+    """Raised when model or field validation fails."""
+
+
+class DoesNotExist(OrmaxError):
+    """Raised when a query expected one object but found none."""
+
+
+class MultipleObjectsReturned(OrmaxError):
+    """Raised when a query expected one object but found multiple rows."""

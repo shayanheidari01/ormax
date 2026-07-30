@@ -1,4 +1,5 @@
 # ormax/fields.py
+import copy
 import re
 import uuid
 from typing import Any, Optional, Union, Callable, List, Type
@@ -11,12 +12,42 @@ from .exceptions import ValidationError
 from .utils import parse_datetime as utils_parse_datetime
 
 
+__all__ = [
+    "Field",
+    "CharField",
+    "TextField",
+    "IntegerField",
+    "BigIntegerField",
+    "SmallIntegerField",
+    "FloatField",
+    "DecimalField",
+    "BooleanField",
+    "DateTimeField",
+    "DateField",
+    "TimeField",
+    "JSONField",
+    "EmailField",
+    "URLField",
+    "UUIDField",
+    "IPAddressField",
+    "SlugField",
+    "PositiveIntegerField",
+    "PositiveSmallIntegerField",
+    "AutoField",
+    "BigAutoField",
+    "SmallAutoField",
+    "BinaryField",
+    "ForeignKeyField",
+]
+
+
 class Field:
     """
     Base field class for all ORM fields
     """
 
     __slots__ = (
+        "name",
         "field_type",
         "primary_key",
         "auto_increment",
@@ -38,6 +69,7 @@ class Field:
         primary_key: bool = False,
         auto_increment: bool = False,
         nullable: bool = True,
+        null: Optional[bool] = None,
         default: Any = None,
         unique: bool = False,
         index: bool = False,
@@ -47,11 +79,13 @@ class Field:
         validators: Optional[List[Callable]] = None,
         db_column: Optional[str] = None,
         db_index: bool = False,
+        name: Optional[str] = None,
     ):
+        self.name = name
         self.field_type = field_type
         self.primary_key = primary_key
         self.auto_increment = auto_increment
-        self.nullable = nullable
+        self.nullable = nullable if null is None else null
         self.default = default
         self.unique = unique
         self.index = index or db_index
@@ -66,19 +100,32 @@ class Field:
         """Get SQL type for this field"""
         return self.field_type
 
+    def get_default(self) -> Any:
+        """Return a fresh Python default value for a model instance."""
+        if callable(self.default):
+            return self.default()
+        return copy.deepcopy(self.default)
+
     def get_default_sql(self) -> str:
-        """Get SQL representation of default value"""
+        """Return a safe SQL literal for non-callable defaults."""
+        if callable(self.default):
+            raise ValidationError("Callable defaults cannot be rendered as SQL literals")
         if self.default is None:
             return "NULL"
-        elif isinstance(self.default, str):
-            return f"'{self.default}'"
-        elif isinstance(self.default, bool):
+        if isinstance(self.default, str):
+            return "'" + self.default.replace("'", "''") + "'"
+        if isinstance(self.default, bool):
             return "TRUE" if self.default else "FALSE"
-        else:
+        if isinstance(self.default, (int, float, Decimal)):
             return str(self.default)
+        raise ValidationError(
+            f"Default for field '{self.name or '<unnamed>'}' cannot be represented in SQL"
+        )
 
     def validate(self, value: Any) -> Any:
         """Validate field value"""
+        if hasattr(value, "resolve_expression"):
+            return value
         if value is None and not self.nullable:
             if not (self.primary_key and self.auto_increment):
                 raise ValidationError("Field cannot be null")
@@ -122,6 +169,23 @@ class Field:
         """
         return None
 
+    def __get__(self, instance: Any, owner: Any = None) -> Any:
+        """Descriptor protocol for proper field access and type checker compatibility"""
+        if instance is None:
+            return self
+        if hasattr(instance, "_data") and self.name:
+            return instance._data.get(self.name)
+        return None
+
+    def __set__(self, instance: Any, value: Any) -> None:
+        """Descriptor protocol for setting field values and type checker compatibility"""
+        if instance is None:
+            return
+        validated_value = self.validate(value)
+        if hasattr(instance, "_data") and self.name:
+            instance._data[self.name] = validated_value
+
+
 
 class CharField(Field):
     """
@@ -130,32 +194,27 @@ class CharField(Field):
     __slots__ = ("max_length", "min_length", "_original_max_length")
 
     def __init__(self, max_length: int = 255, min_length: int = 0, **kwargs):
-        # ذخیره طول اصلی برای استفاده در اعتبارسنجی
         self._original_max_length = max_length
         self.min_length = min_length
-        
-        # برای فیلدهای UNIQUE در MySQL، طول را به 191 محدود می‌کنیم
         adjusted_max_length = max_length
         super().__init__(field_type=f"VARCHAR({adjusted_max_length})", **kwargs)
         self.max_length = adjusted_max_length
 
     def get_sql_type(self, database=None) -> str:
-        """Get SQL type with database-specific optimizations"""
-        # برای فیلدهای UNIQUE در MySQL، طول را به 191 محدود می‌کنیم
-        if database and "mysql" in database.connection_string and self.unique:
+        if database and any(name in database.connection_string for name in ("mysql", "mariadb", "aurora")) and self.unique:
             return f"VARCHAR(191)"
-        # برای سایر پایگاه‌داده‌ها از طول اصلی استفاده می‌کنیم
         return f"VARCHAR({self._original_max_length})"
 
     def validate(self, value: Any) -> Any:
         value = super().validate(value)
+        if hasattr(value, "resolve_expression"):
+            return value
         if value is not None:
             if not isinstance(value, str):
                 try:
                     value = str(value)
                 except Exception:
                     raise ValidationError("Value cannot be converted to string")
-            # برای اعتبارسنجی، از طول اصلی استفاده می‌کنیم
             if len(value) > self._original_max_length:
                 raise ValidationError(
                     f"Value exceeds maximum length of {self._original_max_length}"
@@ -168,42 +227,24 @@ class CharField(Field):
 
 
 class TextField(Field):
-    """
-    Long text field with optional min/max length validation.
-
-    Example:
-        class Article(Model):
-            content = TextField(max_length=5000, min_length=10)
-
-        # Usage
-        article = await Article.create(content="This is a long text...")
-    """
-
     __slots__ = ("max_length", "min_length")
 
-    def __init__(self, max_length: int = None, min_length: int = 0, **kwargs):
-        """
-        :param max_length: Maximum allowed length (None for unlimited)
-        :param min_length: Minimum required length
-        """
+    def __init__(self, max_length: Optional[int] = None, min_length: int = 0, **kwargs):
         super().__init__(field_type="TEXT", **kwargs)
         self.max_length = max_length
         self.min_length = min_length
 
     def validate(self, value: Any) -> Any:
-        """
-        Validate that the value can be stored as text and matches length constraints.
-        """
         value = super().validate(value)
+        if hasattr(value, "resolve_expression"):
+            return value
         if value is not None:
-            # Convert to string if not already
             if not isinstance(value, str):
                 try:
                     value = str(value)
                 except Exception:
                     raise ValidationError("Value cannot be converted to string")
 
-            # Check length constraints
             if self.max_length is not None and len(value) > self.max_length:
                 raise ValidationError(
                     f"Value exceeds maximum length of {self.max_length}"
@@ -217,10 +258,6 @@ class TextField(Field):
 
 
 class IntegerField(Field):
-    """
-    Integer field
-    """
-
     __slots__ = ("min_value", "max_value")
 
     def __init__(
@@ -233,6 +270,8 @@ class IntegerField(Field):
 
     def validate(self, value: Any) -> Any:
         value = super().validate(value)
+        if hasattr(value, "resolve_expression"):
+            return value
         if value is not None:
             try:
                 value = int(value)
@@ -250,10 +289,6 @@ class IntegerField(Field):
 
 
 class BigIntegerField(Field):
-    """
-    Big integer field
-    """
-
     __slots__ = ("min_value", "max_value")
 
     def __init__(
@@ -266,6 +301,8 @@ class BigIntegerField(Field):
 
     def validate(self, value: Any) -> Any:
         value = super().validate(value)
+        if hasattr(value, "resolve_expression"):
+            return value
         if value is not None:
             try:
                 value = int(value)
@@ -283,10 +320,6 @@ class BigIntegerField(Field):
 
 
 class SmallIntegerField(Field):
-    """
-    Small integer field (16-bit)
-    """
-
     __slots__ = ("min_value", "max_value")
 
     def __init__(
@@ -298,6 +331,8 @@ class SmallIntegerField(Field):
 
     def validate(self, value: Any) -> Any:
         value = super().validate(value)
+        if hasattr(value, "resolve_expression"):
+            return value
         if value is not None:
             try:
                 value = int(value)
@@ -315,10 +350,6 @@ class SmallIntegerField(Field):
 
 
 class FloatField(Field):
-    """
-    Floating point number field
-    """
-
     __slots__ = ("min_value", "max_value")
 
     def __init__(
@@ -333,6 +364,8 @@ class FloatField(Field):
 
     def validate(self, value: Any) -> Any:
         value = super().validate(value)
+        if hasattr(value, "resolve_expression"):
+            return value
         if value is not None:
             try:
                 value = float(value)
@@ -348,12 +381,16 @@ class FloatField(Field):
                 )
         return value
 
+    def to_python(self, value: Any) -> Any:
+        if value is not None and not isinstance(value, float):
+            try:
+                return float(value)
+            except (ValueError, TypeError):
+                pass
+        return value
+
 
 class DecimalField(Field):
-    """
-    Decimal field with precision and scale
-    """
-
     __slots__ = ("max_digits", "decimal_places", "min_value", "max_value")
 
     def __init__(
@@ -372,6 +409,8 @@ class DecimalField(Field):
 
     def validate(self, value: Any) -> Any:
         value = super().validate(value)
+        if hasattr(value, "resolve_expression"):
+            return value
         if value is not None:
             try:
                 if not isinstance(value, Decimal):
@@ -379,7 +418,8 @@ class DecimalField(Field):
             except Exception:
                 raise ValidationError("Value must be a decimal number")
             # Check precision
-            if value.as_tuple().exponent < -self.decimal_places:
+            exponent = value.as_tuple().exponent
+            if isinstance(exponent, int) and exponent < -self.decimal_places:
                 raise ValidationError(
                     f"Value has more decimal places than allowed ({self.decimal_places})"
                 )
@@ -403,10 +443,11 @@ class DecimalField(Field):
         return value
 
     def to_database(self, value: Any) -> Any:
-        """Convert Python Decimal to database value"""
+        """Convert Python Decimal to database value without losing precision"""
         if isinstance(value, Decimal):
-            return float(value)  # یا str(value) برای دقت بیشتر
+            return str(value)
         return value
+
 
 
 class BooleanField(Field):
@@ -435,6 +476,11 @@ class BooleanField(Field):
             else:
                 raise ValidationError("Value must be a boolean")
         return value
+
+    def to_python(self, value: Any) -> Any:
+        if value is None or isinstance(value, bool):
+            return value
+        return bool(value)
 
 
 class DateTimeField(Field):
@@ -479,7 +525,10 @@ class DateTimeField(Field):
         """Get SQL type with database-specific optimizations"""
         # Determine appropriate database type based on connection
         if database:
-            if "mysql" in database.connection_string:
+            if any(
+                name in database.connection_string
+                for name in ("mysql", "mariadb", "aurora")
+            ):
                 return "DATETIME"
             elif "sqlite" in database.connection_string:
                 return "TIMESTAMP"
@@ -599,7 +648,7 @@ class DateTimeField(Field):
         if isinstance(value, datetime):
             normalized = self._normalize_datetime(value)
             # For databases that require specific formatting
-            if "mysql" in self._database.connection_string:
+            if hasattr(self, "_database") and self._database and hasattr(self._database, "connection_string") and "mysql" in self._database.connection_string:
                 return normalized.strftime("%Y-%m-%d %H:%M:%S")
             return normalized
             
@@ -645,44 +694,7 @@ class DateTimeField(Field):
         # Call parent implementation (if any)
         return super().pre_save(model_instance, add)
 
-    def __get__(self, instance, owner):
-        """Descriptor protocol for proper field access"""
-        if instance is None:
-            return self
-            
-        value = instance._data.get(self.name)
-        # For auto fields, return current time if value is None
-        if value is None and (self.auto_now or self.auto_now_add):
-            return datetime.now(tz=timezone.utc if self.use_tz else None)
-        return value
 
-    def __set__(self, instance, value):
-        """Descriptor protocol for setting field values"""
-        if instance is None:
-            return
-            
-        # Handle auto fields - they should not be manually set
-        if self.auto_now or self.auto_now_add:
-            if value is not None:
-                raise ValueError(
-                    f"Cannot manually set value for auto_now/auto_now_add field '{self.name}'"
-                )
-            # Auto fields will be handled in pre_save
-            instance._data[self.name] = None
-            return
-            
-        # Validate and store the value
-        validated_value = self.validate(value)
-        instance._data[self.name] = validated_value
-
-    def pre_save(self, model_instance, add: bool) -> Any:
-        """
-        Handle auto_now and auto_now_add before saving.
-        Called by the ORM before saving the model.
-        """
-        if self.auto_now or (self.auto_now_add and add):
-            return datetime.now(tz=timezone.utc if self.use_tz else None)
-        return super().pre_save(model_instance, add)
 
 class DateField(Field):
     """
@@ -733,7 +745,7 @@ class TimeField(Field):
                     parsed = False
                     for fmt in formats:
                         try:
-                            datetime.strptime(value, fmt)
+                            value = datetime.strptime(value, fmt).time()
                             parsed = True
                             break
                         except ValueError:
@@ -778,7 +790,7 @@ class JSONField(Field):
                 import json
 
                 return json.loads(value)
-            except:
+            except (TypeError, ValueError):
                 return value
         return value
 
@@ -873,6 +885,8 @@ class IPAddressField(Field):
     """
     IP Address field (IPv4 and IPv6)
     """
+
+    __slots__ = ("protocol",)
 
     def __init__(self, protocol: str = "both", **kwargs):
         super().__init__(field_type="VARCHAR(39)", **kwargs)  # 39 chars for IPv6
@@ -999,39 +1013,58 @@ SmallAutoField = AutoField  # For consistency
 
 # New Field for Relationships
 class ForeignKeyField(Field):
-    """
-    Foreign Key field for relationships
-    """
+    """Foreign-key field supporting model classes and deferred string targets."""
 
-    __slots__ = ("to", "related_name", "on_delete")
+    __slots__ = ("to", "related_name", "on_delete", "on_update")
+    _VALID_ACTIONS = {"CASCADE", "SET NULL", "RESTRICT", "NO ACTION", "SET DEFAULT"}
 
     def __init__(
         self,
         to: Union[str, Type["ormax.Model"]],
         related_name: Optional[str] = None,
-        on_delete: str = "CASCADE",  # CASCADE, SET_NULL, RESTRICT, etc.
+        on_delete: str = "CASCADE",
+        on_update: Optional[str] = None,
         **kwargs,
     ):
-        # Set nullable to True by default for ForeignKey unless explicitly set
         kwargs.setdefault("nullable", True)
-        super().__init__(field_type="INTEGER", **kwargs)  # Default to INTEGER for FK
-        self.to = to  # Can be a string (model name) or a Model class
+        super().__init__(field_type="INTEGER", **kwargs)
+        self.to = to
         self.related_name = related_name
-        self.on_delete = on_delete
+        self.on_delete = self._normalize_action(on_delete)
+        self.on_update = self._normalize_action(on_update) if on_update else None
+
+    @classmethod
+    def _normalize_action(cls, action: str) -> str:
+        normalized = action.replace("_", " ").strip().upper()
+        if normalized not in cls._VALID_ACTIONS:
+            raise ValidationError(f"Unsupported foreign-key action: {action}")
+        return normalized
+
+    def _resolve_target(self, database=None):
+        if not isinstance(self.to, str):
+            return self.to
+        if self.to == "self":
+            return None
+        if database is not None and hasattr(database, "models"):
+            return database.models.get(self.to)
+        return None
 
     def get_sql_type(self, database=None) -> str:
-        """Get SQL type for this field with database-specific optimizations"""
-        # Determine appropriate type based on database connection
+        """Match the referenced primary-key SQL type whenever resolvable."""
+        target = self._resolve_target(database)
+        if target is not None and hasattr(target, "_fields"):
+            for target_field in target._fields.values():
+                if target_field.primary_key:
+                    return target_field.get_sql_type(database=database)
+
         if database:
-            if "mysql" in database.connection_string:
-                return "BIGINT" if "BIGINT" in self.field_type else "INT"
-            elif "sqlite" in database.connection_string:
+            connection_string = database.connection_string
+            if any(name in connection_string for name in ("mysql", "mariadb", "aurora")):
+                return "INT"
+            if "sqlite" in connection_string or "postgres" in connection_string:
                 return "INTEGER"
-            elif "postgresql" in database.connection_string:
-                return "BIGINT" if "BIGINT" in self.field_type else "INTEGER"
-            elif "mssql" in database.connection_string:
-                return "BIGINT" if "BIGINT" in self.field_type else "INT"
-            elif "oracle" in database.connection_string:
-                return "NUMBER(19)" if "BIGINT" in self.field_type else "NUMBER(10)"
-        # Default fallback
-        return "BIGINT" if "BIGINT" in self.field_type else "INTEGER"
+            if "mssql" in connection_string:
+                return "INT"
+            if "oracle" in connection_string:
+                return "NUMBER(10)"
+        return "INTEGER"

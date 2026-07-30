@@ -6,19 +6,37 @@ This module contains the main classes and logic for interacting with databases,
 defining models, managing relationships, and executing queries.
 """
 import asyncio
+import copy
+import inspect
 import logging
-from typing import Dict, Any, Optional, List, Type, Tuple, Union
+import re
+from typing import Dict, Any, Optional, List, Type, Tuple, Union, Set, cast
 from abc import ABC, abstractmethod
 from contextlib import asynccontextmanager
+from contextvars import ContextVar
 from datetime import datetime, timezone
 import uuid
 import weakref
 
 from .fields import DateTimeField, Field, ForeignKeyField
 from .query import QuerySet
-from .exceptions import DatabaseError, ValidationError, DoesNotExist
+from .exceptions import (
+    DatabaseError,
+    ValidationError,
+    DoesNotExist,
+    MultipleObjectsReturned,
+)
+from .utils import format_placeholders
 
 logger = logging.getLogger(__name__)
+
+
+def _get_running_task():
+    """Return the current asyncio task, or None outside a running loop."""
+    try:
+        return asyncio.current_task()
+    except RuntimeError:
+        return None
 
 # --- Relationship Management ---
 
@@ -170,7 +188,8 @@ class RelatedManager(BaseRelatedManager):
         if not instance._database:
             raise DatabaseError("Model not registered with database")
 
-        fk_value = getattr(instance, self.foreign_key_field.name)
+        fk_name = self.foreign_key_field.name or self.field_name
+        fk_value = instance._data.get(fk_name)
         if fk_value is None:
             return None
 
@@ -192,8 +211,9 @@ class RelatedManager(BaseRelatedManager):
             ValueError: If the related_instance is not of the correct type.
             DatabaseError: If the model is not registered with a database.
         """
+        fk_name = self.foreign_key_field.name or self.field_name
         if related_instance is None:
-            setattr(instance, self.foreign_key_field.name, None)
+            setattr(instance, fk_name, None)
         else:
             if not isinstance(related_instance, self.related_model_class):
                 raise ValueError(
@@ -210,7 +230,7 @@ class RelatedManager(BaseRelatedManager):
             pk_value = getattr(
                 related_instance, related_instance._meta.get("pk_field", "id")
             )
-            setattr(instance, self.foreign_key_field.name, pk_value)
+            setattr(instance, fk_name, pk_value)
 
         # Save the instance if it's not new
         if not instance._is_new:
@@ -289,8 +309,9 @@ class ReverseRelatedManager(BaseRelatedManager):
         Returns:
             The newly created related model instance.
         """
+        fk_name = self.foreign_key_field.name or self.field_name
         pk_value = getattr(instance, instance._meta.get("pk_field", "id"))
-        kwargs[self.foreign_key_field.name] = pk_value
+        kwargs[fk_name] = pk_value
         return await self.related_model_class.create(**kwargs)
 
     async def add(self, instance: "Model", *related_instances: "Model"):
@@ -304,13 +325,14 @@ class ReverseRelatedManager(BaseRelatedManager):
         Raises:
             ValueError: If any related_instance is not of the correct type.
         """
+        fk_name = self.foreign_key_field.name or self.field_name
         pk_value = getattr(instance, instance._meta.get("pk_field", "id"))
         for related_instance in related_instances:
             if not isinstance(related_instance, self.related_model_class):
                 raise ValueError(
                     f"Related instance must be of type {self.related_model_class.__name__}"
                 )
-            setattr(related_instance, self.foreign_key_field.name, pk_value)
+            setattr(related_instance, fk_name, pk_value)
             await related_instance.save()
 
     async def remove(self, instance: "Model", *related_instances: "Model"):
@@ -324,17 +346,18 @@ class ReverseRelatedManager(BaseRelatedManager):
         Raises:
             ValueError: If any related_instance is not of the correct type.
         """
+        fk_name = self.foreign_key_field.name or self.field_name
         for related_instance in related_instances:
             if not isinstance(related_instance, self.related_model_class):
                 raise ValueError(
                     f"Related instance must be of type {self.related_model_class.__name__}"
                 )
 
-            fk_value = getattr(related_instance, self.foreign_key_field.name)
+            fk_value = getattr(related_instance, fk_name)
             pk_value = getattr(instance, instance._meta.get("pk_field", "id"))
 
             if fk_value == pk_value:
-                setattr(related_instance, self.foreign_key_field.name, None)
+                setattr(related_instance, fk_name, None)
                 await related_instance.save()
 
     async def clear(self, instance: "Model"):
@@ -344,55 +367,74 @@ class ReverseRelatedManager(BaseRelatedManager):
         Args:
             instance: The model instance to clear relationships for.
         """
+        fk_name = self.foreign_key_field.name or self.field_name
         qs = self.get_queryset(instance)
-        await qs.update(**{self.foreign_key_field.name: None})
+        await qs.update(**{fk_name: None})
 
 
 # --- Model Definition and Metaclass ---
 
 
 class ModelMeta(type):
-    """
-    Metaclass for Ormax models.
-
-    Handles the setup of fields, metadata, and relationships when a model class is defined.
-    """
+    """Build model metadata, including inherited fields and ``Meta`` options."""
 
     _instances = weakref.WeakKeyDictionary()
+    _relationships: RelationshipManager
+    _fields: Dict[str, Field]
+    _meta: Dict[str, Any]
+    _field_names: Tuple[str, ...]
 
     def __new__(cls, name, bases, attrs):
-        """
-        Create a new model class.
-
-        Args:
-            name: The name of the new class.
-            bases: The base classes.
-            attrs: The class attributes dictionary.
-
-        Returns:
-            The newly created model class.
-        """
         if name == "Model":
             return super().__new__(cls, name, bases, attrs)
 
-        fields = {}
-        meta = attrs.get("_meta", {})
-        field_items = [(k, v) for k, v in attrs.items() if isinstance(v, Field)]
+        fields: Dict[str, Field] = {}
+        meta: Dict[str, Any] = {}
 
-        for key, value in field_items:
-            fields[key] = value
-            attrs.pop(key)
+        for base in bases:
+            for field_name, field in getattr(base, "_fields", {}).items():
+                fields[field_name] = copy.copy(field)
+            meta.update(getattr(base, "_meta", {}))
+
+        own_meta = dict(attrs.get("_meta", {}))
+        meta.update(own_meta)
+        meta_class = attrs.get("Meta")
+        meta_class_values = {}
+        if meta_class is not None:
+            meta_class_values = {
+                key: value
+                for key, value in vars(meta_class).items()
+                if not key.startswith("_")
+            }
+            meta.update(meta_class_values)
+
+        # Abstract status applies only to the class that declares it.
+        if "abstract" not in own_meta and "abstract" not in meta_class_values:
+            meta["abstract"] = False
+
+        for key, value in list(attrs.items()):
+            if isinstance(value, Field):
+                value.name = key
+                fields[key] = value
+                attrs.pop(key)
+
+        has_pk = any(field.primary_key for field in fields.values())
+        if not has_pk and "id" not in fields:
+            from .fields import AutoField
+
+            fields["id"] = AutoField(
+                primary_key=True, auto_increment=True, name="id"
+            )
 
         attrs["_fields"] = fields
         attrs["_meta"] = meta
         attrs["_field_names"] = tuple(fields.keys())
+        attrs.pop("_cached_table_name", None)
 
-        # Create the class
-        new_class = super().__new__(cls, name, bases, attrs)
-
-        # Initialize relationship manager
+        new_class = cast(Type["Model"], super().__new__(cls, name, bases, attrs))
+        for field_name, field in new_class._fields.items():
+            field.name = field_name
         new_class._relationships = RelationshipManager(new_class)
-
         return new_class
 
 
@@ -404,12 +446,29 @@ class Model(metaclass=ModelMeta):
     saving, deleting, and querying model instances.
     """
 
-    _database: "Database" = None
+    _database: Optional["Database"] = None
     _fields: Dict[str, Field] = {}
     _meta: Dict[str, Any] = {}
     _field_names: Tuple[str, ...] = ()
-    _relationships: "RelationshipManager" = None
+    _relationships: Optional["RelationshipManager"] = None
     __slots__ = ("_data", "_original_data", "_is_new", "__dict__")
+
+    @property
+    def pk(self):
+        """Get the primary key value for this model instance."""
+        for field_name, field in self._fields.items():
+            if field.primary_key:
+                return self._data.get(field_name)
+        return self._data.get("id")
+
+    @pk.setter
+    def pk(self, value):
+        """Set the primary key value for this model instance."""
+        for field_name, field in self._fields.items():
+            if field.primary_key:
+                self._data[field_name] = value
+                return
+        self._data["id"] = value
 
     def __init_subclass__(cls, **kwargs):
         """
@@ -418,8 +477,8 @@ class Model(metaclass=ModelMeta):
         super().__init_subclass__(**kwargs)
 
         # Set the name attribute on fields
-        for attr_name, attr_value in cls.__dict__.items():
-            if isinstance(attr_value, Field):
+        if hasattr(cls, "_fields"):
+            for attr_name, attr_value in cls._fields.items():
                 attr_value.name = attr_name
 
     def __init__(self, **kwargs):
@@ -433,11 +492,16 @@ class Model(metaclass=ModelMeta):
         object.__setattr__(self, "_original_data", {})
         object.__setattr__(self, "_is_new", True)
 
+        unknown_fields = set(kwargs) - set(self._fields)
+        if unknown_fields:
+            names = ", ".join(sorted(unknown_fields))
+            raise TypeError(f"Unknown field(s) for {self.__class__.__name__}: {names}")
+
         for field_name, field in self._fields.items():
             if field_name in kwargs:
                 self.__setattr__(field_name, kwargs[field_name])
             elif field.default is not None:
-                self.__setattr__(field_name, field.default)
+                self.__setattr__(field_name, field.get_default())
             else:
                 self.__setattr__(field_name, None)
 
@@ -470,30 +534,18 @@ class Model(metaclass=ModelMeta):
             object.__setattr__(self, name, value)
         elif name in self._fields:
             field = self._fields[name]
-            # Check for ForeignKeyField assignment (general case, not related manager)
+            # Check for ForeignKeyField assignment
             if isinstance(field, ForeignKeyField) and value is not None:
-                # Get the related model class
-                related_model = field.to
-                if isinstance(related_model, str):
-                    if self._database is None:
-                        raise DatabaseError("Model not registered with database")
-                    related_model = self._database.models.get(related_model)
-                    if related_model is None:
-                        raise DatabaseError(f"Related model '{field.to}' not found")
-                # Try to get the primary key value from the related object
-                # Check if value is a model instance first
                 if hasattr(value, "_meta"):
                     try:
                         pk_field_name = value._meta.get("pk_field", "id")
                         pk_value = getattr(value, pk_field_name)
                     except AttributeError:
                         raise ValidationError(
-                            f"Provided object '{value}' does not have a primary key field '{pk_field_name}'"
+                            f"Provided object '{value}' does not have a primary key field"
                         )
                 else:
-                    # If it's not a model instance, assume it's the pk value directly
                     pk_value = value
-                # Validate and set the foreign key value
                 validated_value = field.validate(pk_value)
                 self._data[name] = validated_value
                 return
@@ -506,18 +558,12 @@ class Model(metaclass=ModelMeta):
     def __getattr__(self, name):
         """
         Get an attribute from the model instance.
-
-        Handles access to related managers and fields.
-
-        Args:
-            name: The name of the attribute.
-
-        Returns:
-            The attribute value.
-
-        Raises:
-            AttributeError: If the attribute does not exist.
         """
+        # Check if attribute was prefetched
+        prefetch_key = f"_prefetched_{name}"
+        if prefetch_key in self._data:
+            return self._data[prefetch_key]
+
         # Check for related managers
         if hasattr(self, "_relationships") and self._relationships:
             # Check for forward relationship
@@ -530,7 +576,6 @@ class Model(metaclass=ModelMeta):
             # Check for reverse relationship
             reverse_manager = self._relationships.get_reverse_manager(name)
             if reverse_manager:
-                # Return a queryset-like object for reverse relationships
                 return reverse_manager.get_queryset(self)
 
         if name in self._fields:
@@ -538,6 +583,24 @@ class Model(metaclass=ModelMeta):
         raise AttributeError(
             f"'{self.__class__.__name__}' object has no attribute '{name}'"
         )
+
+
+    async def get_related(self, name: str) -> Optional["Model"]:
+        """Fetch a forward foreign-key relation by field name."""
+        prefetched_key = f"_prefetched_{name}"
+        if prefetched_key in self._data:
+            return self._data[prefetched_key]
+        manager = self._relationships.get_related_manager(name) if self._relationships else None
+        if manager is None:
+            raise AttributeError(f"'{self.__class__.__name__}' has no relation '{name}'")
+        return await manager.get(self)
+
+    async def set_related(self, name: str, value: Optional["Model"]) -> None:
+        """Assign and persist a forward foreign-key relation by field name."""
+        manager = self._relationships.get_related_manager(name) if self._relationships else None
+        if manager is None:
+            raise AttributeError(f"'{self.__class__.__name__}' has no relation '{name}'")
+        await manager.set(self, value)
 
     @classmethod
     def get_table_name(cls) -> str:
@@ -547,8 +610,9 @@ class Model(metaclass=ModelMeta):
         Returns:
             The table name.
         """
-        if hasattr(cls, "_cached_table_name"):
-            return cls._cached_table_name
+        cached = cls.__dict__.get("_cached_table_name")
+        if cached is not None:
+            return cached
         if hasattr(cls, "_meta") and cls._meta.get("table_name"):
             table_name = cls._meta.get("table_name")
         elif hasattr(cls, "table_name"):
@@ -568,16 +632,44 @@ class Model(metaclass=ModelMeta):
         """
         return QuerySet(cls)
 
+    @classmethod
+    async def create_table(cls):
+        """
+        Create table for this model in its registered database.
+        """
+        if cls._database:
+            await cls._database.create_table(cls)
+        else:
+            raise DatabaseError(f"Model '{cls.__name__}' is not registered with any database.")
+
+    def clean(self):
+        """Hook for custom model validation."""
+        pass
+
+    def full_clean(self):
+        """Run field-level and model-level validation."""
+        for field_name, field in self._fields.items():
+            if field_name in self._data:
+                self._data[field_name] = field.validate(self._data[field_name])
+        self.clean()
+
     async def save(self):
         """Save the model instance to the database."""
+        if hasattr(self, "pre_save"):
+            res = self.pre_save()
+            if inspect.isawaitable(res):
+                await res
+
         # Process pre_save for all fields
         for field_name, field in self._fields.items():
             if hasattr(field, 'pre_save'):
                 value = field.pre_save(self, self._is_new)
                 if value is not None:
                     self._data[field_name] = value
-        
-        if self._is_new:
+
+        self.full_clean()
+        is_created = self._is_new
+        if is_created:
             await self._fast_insert()
         else:
             await self._fast_update()
@@ -586,8 +678,15 @@ class Model(metaclass=ModelMeta):
         object.__setattr__(self, "_is_new", False)
         object.__setattr__(self, "_original_data", self._data.copy())
 
+        if hasattr(self, "post_save"):
+            res = self.post_save(created=is_created)
+            if inspect.isawaitable(res):
+                await res
+
     async def _fast_insert(self):
         """Fast insert with correct placeholder handling."""
+        if not self._database:
+            raise DatabaseError("Model not registered with database")
         table_name = self.get_table_name()
         connection = self._database.connection
         
@@ -610,24 +709,18 @@ class Model(metaclass=ModelMeta):
                     continue
                     
             columns.append(field_name)
-            values.append(self._data.get(field_name))
+            values.append(field.to_database(self._data.get(field_name)))
         
-        # Generate query with correct placeholders
+        # Generate query with placeholders
         if columns:
-            if hasattr(connection, "get_placeholder") and callable(connection.get_placeholder):
-                if connection.get_placeholder() == "$":
-                    # PostgreSQL: $1, $2, ...
-                    placeholders = [f"${i+1}" for i in range(len(columns))]
-                else:
-                    # MySQL, SQLite, etc.: ?, %s, ...
-                    placeholders = [connection.get_placeholder() for _ in columns]
-            else:
-                # Default fallback
-                placeholders = ["?" for _ in columns]
+            placeholders = ["?" for _ in columns]
             query = f"INSERT INTO {table_name} ({', '.join(columns)}) VALUES ({', '.join(placeholders)})"
         else:
             query = f"INSERT INTO {table_name} DEFAULT VALUES"
         
+        if hasattr(self._database, "connection_string"):
+            query = format_placeholders(query, self._database.connection_string)
+            
         lastrowid = await connection.execute(query, tuple(values))
         
         # Set primary key if needed
@@ -641,6 +734,8 @@ class Model(metaclass=ModelMeta):
 
     async def _fast_update(self):
         """Fast update with change tracking and correct placeholder handling."""
+        if not self._database:
+            raise DatabaseError("Model not registered with database")
         table_name = self.get_table_name()
         set_clauses = []
         values = []
@@ -653,12 +748,6 @@ class Model(metaclass=ModelMeta):
         if pk_value is None:
             raise DatabaseError("Cannot update model without primary key value")
         
-        # First, identify auto_now fields
-        auto_now_fields = []
-        for field_name, field in self._fields.items():
-            if isinstance(field, DateTimeField) and field.auto_now:
-                auto_now_fields.append(field_name)
-        
         # Build set clauses for fields that have changed
         for field_name, field in self._fields.items():
             if field.primary_key:
@@ -672,48 +761,12 @@ class Model(metaclass=ModelMeta):
             if self._data.get(field_name) == self._original_data.get(field_name):
                 continue
                 
-            # Skip if it's an auto_now field (will be handled separately)
-            if field_name in auto_now_fields:
-                continue
-                
-            values.append(self._data.get(field_name))
-        
-        # Add auto_now fields
-        for field_name in auto_now_fields:
-            field = self._fields[field_name]
-            # Get current time
-            current_time = datetime.now(tz=timezone.utc if field.use_tz else None)
-            values.append(current_time)
+            values.append(field.to_database(self._data.get(field_name)))
+            set_clauses.append(f"{field_name} = ?")
         
         # If no fields to update, return early
         if not values:
             return
-        
-        # Build set clauses for fields that have changed
-        placeholder_index = 0
-        for field_name, field in self._fields.items():
-            if field.primary_key:
-                continue
-                
-            # Skip auto-increment fields
-            if field.auto_increment:
-                continue
-                
-            # Skip if value hasn't changed
-            if self._data.get(field_name) == self._original_data.get(field_name):
-                continue
-                
-            # Skip if it's an auto_now field (will be handled separately)
-            if field_name in auto_now_fields:
-                continue
-                
-            set_clauses.append(f"{field_name} = ?")
-            placeholder_index += 1
-        
-        # Add auto_now fields to set clauses
-        for field_name in auto_now_fields:
-            set_clauses.append(f"{field_name} = ?")
-            placeholder_index += 1
         
         # Build WHERE clause
         where_clause = f"{pk_field} = ?"
@@ -722,6 +775,9 @@ class Model(metaclass=ModelMeta):
         # Build final query
         query = f"UPDATE {table_name} SET {', '.join(set_clauses)} WHERE {where_clause}"
         
+        if hasattr(self._database, "connection_string"):
+            query = format_placeholders(query, self._database.connection_string)
+            
         await connection.execute(query, tuple(values))
         
         # Update instance state
@@ -735,6 +791,11 @@ class Model(metaclass=ModelMeta):
         Raises:
             DatabaseError: If the model is not registered with a database or has no primary key.
         """
+        if hasattr(self, "pre_delete"):
+            res = self.pre_delete()
+            if inspect.isawaitable(res):
+                await res
+
         if not self._database:
             raise DatabaseError("Model not registered with database")
         pk_field = next(
@@ -747,20 +808,19 @@ class Model(metaclass=ModelMeta):
             raise DatabaseError("Cannot delete unsaved instance")
 
         table_name = self.get_table_name()
-        # Generate correct placeholder for WHERE clause
         connection = self._database.connection
-        if hasattr(connection, "get_placeholder") and callable(
-            connection.get_placeholder
-        ):
-            if connection.get_placeholder() == "$":
-                placeholder = "$1"
-            else:
-                placeholder = connection.get_placeholder()
-        else:
-            placeholder = "?"
-        query = f"DELETE FROM {table_name} WHERE {pk_field} = {placeholder}"
+        
+        query = f"DELETE FROM {table_name} WHERE {pk_field} = ?"
+        if hasattr(self._database, "connection_string"):
+            query = format_placeholders(query, self._database.connection_string)
+            
         await connection.execute(query, (pk_value,))
         object.__setattr__(self, "_is_new", True)
+
+        if hasattr(self, "post_delete"):
+            res = self.post_delete()
+            if inspect.isawaitable(res):
+                await res
 
     @classmethod
     async def create(cls, **kwargs) -> "Model":
@@ -776,6 +836,27 @@ class Model(metaclass=ModelMeta):
         instance = cls(**kwargs)
         await instance.save()
         return instance
+
+    @classmethod
+    async def get_or_create(
+        cls, defaults: Optional[Dict[str, Any]] = None, **kwargs
+    ) -> Tuple["Model", bool]:
+        """
+        Get an instance matching kwargs, or create a new one with kwargs and defaults.
+        Returns (instance, created_boolean).
+        """
+        return await cls.objects().get_or_create(defaults=defaults, **kwargs)
+
+    @classmethod
+    async def update_or_create(
+        cls, defaults: Optional[Dict[str, Any]] = None, **kwargs
+    ) -> Tuple["Model", bool]:
+        """
+        Update an instance matching kwargs with defaults, or create a new one.
+        Returns (instance, created_boolean).
+        """
+        return await cls.objects().update_or_create(defaults=defaults, **kwargs)
+
 
     @classmethod
     async def bulk_create(
@@ -810,10 +891,14 @@ class Model(metaclass=ModelMeta):
         """Create a batch of objects efficiently."""
         if not objects:
             return []
-        if isinstance(objects[0], cls):
-            data_list = [obj.to_dict() for obj in objects]
-        else:
-            data_list = objects
+        data_list: List[Dict[str, Any]] = []
+        for obj in objects:
+            if isinstance(obj, Model):
+                data_list.append(obj.to_dict())
+            elif isinstance(obj, dict):
+                data_list.append(obj)
+            else:
+                data_list.append(dict(obj))
         return await cls._bulk_insert_batch(data_list)
 
     @classmethod
@@ -836,7 +921,7 @@ class Model(metaclass=ModelMeta):
                     
                 # Handle default values
                 if field.default is not None:
-                    data[field_name] = field.default
+                    data[field_name] = field.get_default()
                     
                 # Handle auto_now_add and auto_now for DateTimeField
                 if isinstance(field, DateTimeField):
@@ -844,6 +929,8 @@ class Model(metaclass=ModelMeta):
                         data[field_name] = current_time
         
         table_name = cls.get_table_name()
+        if not cls._database:
+            raise DatabaseError("Model not registered with database")
         connection = cls._database.connection
         # Determine fields to insert based on the model definition
         # We assume all instances in the batch have the same structure
@@ -879,10 +966,13 @@ class Model(metaclass=ModelMeta):
             query = f"INSERT INTO {table_name} ({', '.join(fields_to_insert)}) VALUES ({', '.join(placeholders)})"
         else:
             query = f"INSERT INTO {table_name} DEFAULT VALUES"
-        instances = []
+        instances: List["Model"] = []
         for data in data_list:
             # Prepare values for this row
-            values = [data.get(field_name) for field_name in fields_to_insert]
+            values = [
+                cls._fields[field_name].to_database(data.get(field_name))
+                for field_name in fields_to_insert
+            ]
             # Execute the insert
             lastrowid = await connection.execute(query, tuple(values) if values else ())
             # Create instance and set its data
@@ -926,8 +1016,8 @@ class Model(metaclass=ModelMeta):
         return f"<{self.__class__.__name__}: {pk_field}={pk_value}>"
 
 
-# Attach a DoesNotExist exception to the Model class
-Model.DoesNotExist = type("DoesNotExist", (Exception,), {})
+# Attach the public exception type to the base model.
+Model.DoesNotExist = DoesNotExist
 
 
 # --- Database Connection and Management ---
@@ -941,20 +1031,64 @@ class Database:
     and relationship setup.
     """
 
-    def __init__(self, connection_string: str):
+    def __init__(self, connection_string: str, models: Optional[Union[List, Tuple, Set, Any]] = None):
         """
         Initialize the database connection.
 
         Args:
             connection_string: The database connection string.
+            models: Optional model(s), module(s), or directory path(s) to register automatically.
         """
         self.connection_string = connection_string
         self.connection: DatabaseConnection = self._create_connection()
+        self.connection.database = self
         self.models: Dict[str, Type["Model"]] = {}
         self._connected = False
-        self._current_transaction = None
+        self._current_transaction_var: ContextVar[Any] = ContextVar(
+            f"ormax_current_transaction_{id(self)}", default=None
+        )
+        self._transaction_level_var: ContextVar[Any] = ContextVar(
+            f"ormax_transaction_level_{id(self)}", default=0
+        )
+        self._sqlite_transaction_lock = asyncio.Lock()
+        self._sqlite_transaction_owner = None
         self._table_cache = {}
         self._query_cache = {}
+        if models is not None:
+            if isinstance(models, (list, tuple, set)):
+                self.register_model(*models)
+            else:
+                self.register_model(models)
+
+    @property
+    def _current_transaction(self):
+        state = self._current_transaction_var.get()
+        if state is None:
+            return None
+        owner, value = state
+        return value if owner is _get_running_task() else None
+
+    @_current_transaction.setter
+    def _current_transaction(self, value):
+        if value is None:
+            self._current_transaction_var.set(None)
+        else:
+            self._current_transaction_var.set((_get_running_task(), value))
+
+    @property
+    def _transaction_level(self) -> int:
+        state = self._transaction_level_var.get()
+        if isinstance(state, tuple):
+            owner, value = state
+            return value if owner is _get_running_task() else 0
+        return int(state or 0)
+
+    @_transaction_level.setter
+    def _transaction_level(self, value: int):
+        if value <= 0:
+            self._transaction_level_var.set(0)
+        else:
+            self._transaction_level_var.set((_get_running_task(), value))
 
     def _create_connection(self) -> "DatabaseConnection":
         """
@@ -966,7 +1100,7 @@ class Database:
         Raises:
             DatabaseError: If the database type is not supported.
         """
-        if self.connection_string.startswith("mysql://"):
+        if self.connection_string.startswith(("mysql://", "mariadb://")):
             return MySQLConnection(self.connection_string)
         elif self.connection_string.startswith(
             "postgresql://"
@@ -985,6 +1119,11 @@ class Database:
         else:
             raise DatabaseError(f"Unsupported database: {self.connection_string}")
 
+    @property
+    def is_connected(self) -> bool:
+        """Return True if database is connected."""
+        return self._connected
+
     async def __aenter__(self) -> "Database":
         await self.connect()
         return self
@@ -999,6 +1138,8 @@ class Database:
         Raises:
             DatabaseError: If connection fails.
         """
+        if self._connected:
+            return
         await self.connection.connect()
         self._connected = True
         logger.info("Database connected successfully")
@@ -1007,105 +1148,217 @@ class Database:
         """
         Disconnect from the database.
         """
+        if not self._connected:
+            return
         await self.connection.disconnect()
         self._connected = False
         self._table_cache.clear()
         self._query_cache.clear()
         logger.info("Database disconnected")
 
+    async def execute(self, query: str, params: Optional[tuple] = None) -> Any:
+        """Execute a raw SQL query using the active connection."""
+        return await self.connection.execute(query, params)
+
+    async def fetch_one(self, query: str, params: Optional[tuple] = None) -> Optional[Dict]:
+        """Fetch a single row using the active connection."""
+        return await self.connection.fetch_one(query, params)
+
+    async def fetch_all(self, query: str, params: Optional[tuple] = None) -> List[Dict]:
+        """Fetch all rows using the active connection."""
+        return await self.connection.fetch_all(query, params)
+
     @asynccontextmanager
     async def transaction(self):
-        """
-        Context manager for database transactions with savepoint support for nested transactions.
-        Handles different database types correctly and safely with checkpoint support.
-        """
+        """Run operations atomically, using savepoints for nested contexts."""
         if not self._connected:
             raise DatabaseError("Database not connected")
-        
-        # تعیین نوع پایگاه‌داده
-        if "postgresql" in self.connection_string or "postgres" in self.connection_string:
+
+        inherited_state = self._current_transaction_var.get()
+        if (
+            isinstance(inherited_state, tuple)
+            and inherited_state[0] is not _get_running_task()
+        ):
+            raise DatabaseError(
+                "Transaction contexts cannot be shared across asyncio tasks"
+            )
+
+        scheme = self.connection_string.split("://", 1)[0].lower()
+        if scheme in {"postgresql", "postgres"}:
             db_type = "postgresql"
-        elif "mysql" in self.connection_string or "mariadb" in self.connection_string:
+        elif scheme in {"mysql", "mariadb", "aurora"}:
             db_type = "mysql"
-        elif "sqlite" in self.connection_string:
+        elif scheme == "sqlite":
             db_type = "sqlite"
-        elif "mssql" in self.connection_string:
+        elif scheme in {"mssql", "microsoft"}:
             db_type = "mssql"
+        elif scheme == "oracle":
+            db_type = "oracle"
         else:
             db_type = "other"
-        
-        # تولید نام منحصر به فرد برای savepoint
+
         savepoint_name = f"sp_{uuid.uuid4().hex[:12]}"
         is_nested = self._current_transaction is not None
-        transaction_level = 0
-        
+        previous_level = self._transaction_level
+        outer_lock_acquired = False
+        transaction_started = False
+        savepoint_created = False
+
+        if not is_nested and db_type == "sqlite":
+            # SQLite uses one connection, so outer transactions must not overlap.
+            await self._sqlite_transaction_lock.acquire()
+            outer_lock_acquired = True
+            self._sqlite_transaction_owner = _get_running_task()
+
         try:
-            # دریافت سطح فعلی تراکنش
-            transaction_level = getattr(self, '_transaction_level', 0)
-            
             if is_nested:
-                # ایجاد savepoint برای تراکنش تو در تو
-                if db_type in ["postgresql", "mysql", "sqlite"]:
+                if db_type in {"postgresql", "mysql", "sqlite", "oracle"}:
                     await self.connection.execute(f"SAVEPOINT {savepoint_name}")
-                    logger.debug(f"Created savepoint: {savepoint_name} (level: {transaction_level + 1})")
                 elif db_type == "mssql":
                     await self.connection.execute(f"SAVE TRANSACTION {savepoint_name}")
-                    logger.debug(f"Created save transaction: {savepoint_name} (level: {transaction_level + 1})")
                 else:
                     raise DatabaseError(f"Savepoints not supported for {db_type}")
+                savepoint_created = True
+                logger.debug(
+                    "Created savepoint %s at transaction level %s",
+                    savepoint_name,
+                    previous_level + 1,
+                )
             else:
-                # شروع یک تراکنش جدید
-                await self.connection.execute("BEGIN")
+                await self.connection.start_transaction()
+                transaction_started = True
                 logger.info("Started new transaction")
-            
-            # ردیابی سطح تراکنش
-            self._transaction_level = transaction_level + 1
+
+            self._transaction_level = previous_level + 1
             self._current_transaction = self.connection
-            
-            yield self  # اجازه اجرای کد داخل تراکنش
-            
-            # اگر تراکنش تو در تو بود، savepoint را آزاد می‌کنیم
-            if is_nested and savepoint_name:
-                if db_type in ["postgresql", "mysql", "sqlite"]:
+
+            yield self
+
+            if is_nested and savepoint_created:
+                # SQL Server and Oracle do not require/support explicit release.
+                if db_type in {"postgresql", "mysql", "sqlite"}:
                     await self.connection.execute(f"RELEASE SAVEPOINT {savepoint_name}")
-                    logger.debug(f"Released savepoint: {savepoint_name}")
-                # برای MSSQL نیازی به آزاد کردن صریح نیست
-            
-            # فقط در سطح بالایی تراکنش، commit انجام می‌دهیم
-            elif not is_nested:
-                await self.connection.execute("COMMIT")
+                    logger.debug("Released savepoint %s", savepoint_name)
+            elif transaction_started:
+                await self.connection.commit_transaction()
                 logger.info("Committed transaction")
-                
-        except Exception as e:
-            # برگرداندن به سطح مناسب در صورت خطا
-            if is_nested and savepoint_name:
-                if db_type in ["postgresql", "mysql", "sqlite"]:
-                    await self.connection.execute(f"ROLLBACK TO {savepoint_name}")
-                    logger.warning(f"Rolled back to savepoint: {savepoint_name} due to error: {str(e)}")
-                elif db_type == "mssql":
-                    await self.connection.execute(f"ROLLBACK TRANSACTION {savepoint_name}")
-                    logger.warning(f"Rolled back to save transaction: {savepoint_name} due to error: {str(e)}")
-            else:
-                await self.connection.execute("ROLLBACK")
-                logger.error(f"Rolled back entire transaction due to error: {str(e)}")
+
+        except BaseException as error:
+            try:
+                if is_nested and savepoint_created:
+                    if db_type in {"postgresql", "mysql", "sqlite", "oracle"}:
+                        await self.connection.execute(f"ROLLBACK TO {savepoint_name}")
+                    elif db_type == "mssql":
+                        await self.connection.execute(
+                            f"ROLLBACK TRANSACTION {savepoint_name}"
+                        )
+                    logger.warning(
+                        "Rolled back to savepoint %s due to %r",
+                        savepoint_name,
+                        error,
+                    )
+                elif transaction_started:
+                    await self.connection.rollback_transaction()
+                    logger.error("Rolled back transaction due to %r", error)
+            except Exception as rollback_error:
+                # Preserve the original application error while exposing rollback failure.
+                logger.exception("Transaction rollback also failed: %r", rollback_error)
             raise
         finally:
-            # به‌روزرسانی سطح تراکنش
-            self._transaction_level = getattr(self, '_transaction_level', 1) - 1
-            if self._transaction_level <= 0:
-                self._transaction_level = 0
+            self._transaction_level = previous_level
+            if previous_level == 0:
                 self._current_transaction = None
                 logger.debug("Transaction context cleared")
+            if outer_lock_acquired:
+                self._sqlite_transaction_owner = None
+                self._sqlite_transaction_lock.release()
 
-    def register_model(self, model_class: Type["Model"]):
+    def register_model(self, *models):
         """
-        Register a model class with this database.
+        Register one or multiple model classes, modules, package names, or directory paths with this database.
 
-        Args:
-            model_class: The model class to register.
+        Examples:
+            db.register_model(Book)
+            db.register_model(Book, Store, Department)
+            db.register_model([Book, Store])
+            db.register_model("models")
+            db.register_model(my_models_module)
         """
-        self.models[model_class.__name__] = model_class
-        model_class._database = self
+        import inspect
+        import importlib
+        import os
+        import sys
+        import types
+
+        for item in models:
+            if item is None:
+                continue
+
+            # If it's a list, tuple, or set, recurse
+            if isinstance(item, (list, tuple, set)):
+                self.register_model(*item)
+                continue
+
+            # If item is a Model class
+            if inspect.isclass(item) and issubclass(item, Model) and item is not Model:
+                if item._meta.get("abstract", False):
+                    continue
+                self.models[item.__name__] = item
+                item._database = self
+                continue
+
+            # If item is a module object
+            if isinstance(item, types.ModuleType):
+                for name, obj in inspect.getmembers(item, inspect.isclass):
+                    if (
+                        issubclass(obj, Model)
+                        and obj is not Model
+                        and not obj._meta.get("abstract", False)
+                    ):
+                        self.models[obj.__name__] = obj
+                        obj._database = self
+                continue
+
+            # If item is a string (module name or directory name or path)
+            if isinstance(item, str):
+                # Try importing as a Python module/package first
+                try:
+                    mod = importlib.import_module(item)
+                    self.register_model(mod)
+                    continue
+                except ImportError:
+                    pass
+
+                # Try as a directory path or python file
+                abspath = os.path.abspath(item)
+                if os.path.isdir(abspath):
+                    if os.path.dirname(abspath) not in sys.path:
+                        sys.path.insert(0, os.path.dirname(abspath))
+                    dir_name = os.path.basename(abspath)
+                    try:
+                        mod = importlib.import_module(dir_name)
+                        self.register_model(mod)
+                    except Exception:
+                        for filename in os.listdir(abspath):
+                            if filename.endswith(".py") and not filename.startswith("_"):
+                                mod_name = f"{dir_name}.{filename[:-3]}"
+                                try:
+                                    mod = importlib.import_module(mod_name)
+                                    self.register_model(mod)
+                                except Exception:
+                                    pass
+                elif os.path.isfile(abspath) and abspath.endswith(".py"):
+                    dir_path = os.path.dirname(abspath)
+                    if dir_path not in sys.path:
+                        sys.path.insert(0, dir_path)
+                    mod_name = os.path.basename(abspath)[:-3]
+                    try:
+                        mod = importlib.import_module(mod_name)
+                        self.register_model(mod)
+                    except Exception:
+                        pass
+
+        self.setup_relationships()
 
     def setup_relationships(self):
         """
@@ -1122,7 +1375,10 @@ class Database:
                     related_model_class = None
                     if isinstance(field.to, str):
                         # String reference to model
-                        related_model_class = self.models.get(field.to)
+                        if field.to == "self":
+                            related_model_class = model_class
+                        else:
+                            related_model_class = self.models.get(field.to)
                         if not related_model_class:
                             logger.warning(
                                 f"Related model '{field.to}' not found for field '{field_name}' in '{model_name}'"
@@ -1137,18 +1393,20 @@ class Database:
                         related_manager = RelatedManager(
                             model_class, related_model_class, field_name, field
                         )
-                        model_class._relationships.add_related_manager(
-                            field_name, related_manager
-                        )
+                        if model_class._relationships is not None:
+                            model_class._relationships.add_related_manager(
+                                field_name, related_manager
+                            )
 
                         # Create reverse manager
                         reverse_manager = ReverseRelatedManager(
                             related_model_class, model_class, field_name, field
                         )
                         reverse_name = field.related_name or f"{model_name.lower()}_set"
-                        related_model_class._relationships.add_reverse_manager(
-                            reverse_name, reverse_manager
-                        )
+                        if related_model_class._relationships is not None:
+                            related_model_class._relationships.add_reverse_manager(
+                                reverse_name, reverse_manager
+                            )
 
     async def create_tables(self):
         """
@@ -1181,6 +1439,58 @@ class Database:
             if tasks:
                 await asyncio.gather(*tasks)
 
+        # Create explicitly requested non-unique indexes after tables exist.
+        index_tasks = [self._create_indexes(model) for model in self.models.values()]
+        if index_tasks:
+            await asyncio.gather(*index_tasks)
+
+    async def _create_indexes(self, model_class: Type["Model"]):
+        """Create indexes declared with ``index=True`` or ``db_index=True``."""
+        table_name = self._get_cached_table_name(model_class)
+        scheme = self.connection_string.split("://", 1)[0].lower()
+
+        for field_name, field in model_class._fields.items():
+            if not field.index or field.primary_key or field.unique:
+                continue
+
+            safe_table = re.sub(r"[^A-Za-z0-9_]", "_", table_name)
+            safe_field = re.sub(r"[^A-Za-z0-9_]", "_", field_name)
+            index_name = f"idx_{safe_table}_{safe_field}"
+
+            if scheme in {"sqlite", "postgresql", "postgres"}:
+                query = (
+                    f"CREATE INDEX IF NOT EXISTS {index_name} "
+                    f"ON {table_name} ({field_name})"
+                )
+            elif scheme in {"mssql", "microsoft"}:
+                query = (
+                    "IF NOT EXISTS (SELECT 1 FROM sys.indexes "
+                    f"WHERE name = '{index_name}' "
+                    f"AND object_id = OBJECT_ID('{table_name}')) "
+                    f"CREATE INDEX {index_name} ON {table_name} ({field_name})"
+                )
+            elif scheme == "oracle":
+                query = (
+                    "BEGIN EXECUTE IMMEDIATE 'CREATE INDEX "
+                    f"{index_name} ON {table_name} ({field_name})'; "
+                    "EXCEPTION WHEN OTHERS THEN IF SQLCODE != -955 THEN RAISE; "
+                    "END IF; END;"
+                )
+            else:
+                query = f"CREATE INDEX {index_name} ON {table_name} ({field_name})"
+
+            try:
+                await self.connection.execute(query)
+            except Exception as error:
+                # MySQL/MariaDB do not consistently support IF NOT EXISTS here.
+                message = str(error).lower()
+                if scheme in {"mysql", "mariadb", "aurora"} and any(
+                    token in message
+                    for token in ("duplicate key name", "already exists", "duplicate")
+                ):
+                    continue
+                raise
+
     async def _create_table_without_foreign_keys(self, model_class: Type["Model"]):
         """
         Create table without foreign keys.
@@ -1209,16 +1519,21 @@ class Database:
                 if field.auto_increment:
                     if "sqlite" in self.connection_string:
                         field_sql += " AUTOINCREMENT"
-                    elif (
-                        "mysql" in self.connection_string
-                        or "mariadb" in self.connection_string
+                    elif any(
+                        name in self.connection_string
+                        for name in ("mysql", "mariadb", "aurora")
                     ):
                         field_sql += " AUTO_INCREMENT"
-                    elif "mssql" in self.connection_string:
+                    elif any(
+                        name in self.connection_string
+                        for name in ("mssql", "microsoft")
+                    ):
                         field_sql += " IDENTITY(1,1)"
+                    elif "oracle" in self.connection_string:
+                        field_sql += " GENERATED BY DEFAULT AS IDENTITY"
             if not field.nullable:
                 field_sql += " NOT NULL"
-            if field.default is not None and not field.primary_key:
+            if field.default is not None and not callable(field.default) and not field.primary_key:
                 field_sql += f" DEFAULT {field.get_default_sql()}"
             if field.unique:
                 field_sql += " UNIQUE"
@@ -1229,8 +1544,11 @@ class Database:
             for field_name, field in model_class._fields.items():
                 if isinstance(field, ForeignKeyField):
                     ref_model = field.to
-                    if isinstance(ref_model, str) and ref_model in self.models:
-                        ref_model = self.models[ref_model]
+                    if isinstance(ref_model, str):
+                        if ref_model == "self":
+                            ref_model = model_class
+                        elif ref_model in self.models:
+                            ref_model = self.models[ref_model]
                     elif not isinstance(ref_model, str):
                         # If ref_model is a class, get it from models
                         ref_model_name = ref_model.__name__
@@ -1246,10 +1564,11 @@ class Database:
                     
                     # Get the primary key field name of the referenced model
                     ref_pk_field = "id"
-                    for name, f in ref_model._fields.items():
-                        if f.primary_key:
-                            ref_pk_field = name
-                            break
+                    if hasattr(ref_model, "_fields"):
+                        for name, f in ref_model._fields.items():
+                            if f.primary_key:
+                                ref_pk_field = name
+                                break
                     
                     constraint_name = f"fk_{table_name}_{field_name}"
                     
@@ -1271,9 +1590,24 @@ class Database:
                     fields_sql_parts.append(fk_constraint)
         
         # Create table without foreign keys (or with them for SQLite)
-        create_query = (
-            f"CREATE TABLE IF NOT EXISTS {table_name} ({', '.join(fields_sql_parts)})"
-        )
+        columns_sql = ", ".join(fields_sql_parts)
+        scheme = self.connection_string.split("://", 1)[0].lower()
+        if scheme in {"mssql", "microsoft"}:
+            create_query = (
+                f"IF OBJECT_ID(N'{table_name}', N'U') IS NULL "
+                f"CREATE TABLE {table_name} ({columns_sql})"
+            )
+        elif scheme == "oracle":
+            escaped_ddl = f"CREATE TABLE {table_name} ({columns_sql})".replace(
+                "'", "''"
+            )
+            create_query = (
+                f"BEGIN EXECUTE IMMEDIATE '{escaped_ddl}'; "
+                "EXCEPTION WHEN OTHERS THEN IF SQLCODE != -955 THEN RAISE; "
+                "END IF; END;"
+            )
+        else:
+            create_query = f"CREATE TABLE IF NOT EXISTS {table_name} ({columns_sql})"
         await self.connection.execute(create_query)
         logger.info(f"Table {table_name} created without foreign keys (or with them for SQLite)")
 
@@ -1288,8 +1622,11 @@ class Database:
         for field_name, field in model_class._fields.items():
             if isinstance(field, ForeignKeyField):
                 ref_model = field.to
-                if isinstance(ref_model, str) and ref_model in self.models:
-                    ref_model = self.models[ref_model]
+                if isinstance(ref_model, str):
+                    if ref_model == "self":
+                        ref_model = model_class
+                    elif ref_model in self.models:
+                        ref_model = self.models[ref_model]
                 elif not isinstance(ref_model, str):
                     # If ref_model is a class, get it from models
                     ref_model_name = ref_model.__name__
@@ -1305,10 +1642,11 @@ class Database:
                 
                 # Get the primary key field name of the referenced model
                 ref_pk_field = "id"
-                for name, f in ref_model._fields.items():
-                    if f.primary_key:
-                        ref_pk_field = name
-                        break
+                if hasattr(ref_model, "_fields"):
+                    for name, f in ref_model._fields.items():
+                        if f.primary_key:
+                            ref_pk_field = name
+                            break
                 
                 constraint_name = f"fk_{table_name}_{field_name}"
                 
@@ -1319,7 +1657,11 @@ class Database:
                 
                 # Determine correct ON UPDATE action
                 on_update_clause = ""
-                if hasattr(field, 'on_update') and field.on_update:
+                if (
+                    hasattr(field, "on_update")
+                    and field.on_update
+                    and not self.connection_string.startswith("oracle://")
+                ):
                     on_update_clause = f"ON UPDATE {field.on_update}"
                 
                 # Add foreign key constraint using ALTER TABLE
@@ -1330,9 +1672,32 @@ class Database:
                 )
                 try:
                     await self.connection.execute(alter_query)
-                    logger.info(f"Foreign key constraint {constraint_name} added to {table_name}")
-                except Exception as e:
-                    logger.error(f"Failed to add foreign key constraint {constraint_name}: {e}")
+                    logger.info(
+                        "Foreign key constraint %s added to %s",
+                        constraint_name,
+                        table_name,
+                    )
+                except Exception as error:
+                    message = str(error).lower()
+                    duplicate_markers = (
+                        "already exists",
+                        "duplicate",
+                        "already an object named",
+                        "ora-02264",
+                        "name is already used",
+                    )
+                    if any(marker in message for marker in duplicate_markers):
+                        logger.debug(
+                            "Foreign key constraint %s already exists on %s",
+                            constraint_name,
+                            table_name,
+                        )
+                        continue
+                    logger.error(
+                        "Failed to add foreign key constraint %s: %s",
+                        constraint_name,
+                        error,
+                    )
                     raise
         
         logger.info(f"Foreign keys added to table {table_name}")
@@ -1372,140 +1737,50 @@ class Database:
     async def drop_table_by_name(
         self, table_name: str, cascade: bool = True, if_exists: bool = True
     ):
-        """
-        Drop a table by name.
+        """Drop a table using backend-compatible conditional syntax."""
+        scheme = self.connection_string.split("://", 1)[0].lower()
 
-        Args:
-            table_name: The name of the table to drop.
-            cascade: Whether to drop dependent objects.
-            if_exists: Whether to ignore errors if table doesn't exist.
-        """
-        query_parts = ["DROP TABLE"]
-        if if_exists:
-            query_parts.append("IF EXISTS")
-        query_parts.append(table_name)
-        # Handle database-specific CASCADE
-        if (
-            cascade
-            and "sqlite" not in self.connection_string
-            and "oracle" not in self.connection_string
-        ):
-            query_parts.append("CASCADE")
-        elif cascade and "oracle" in self.connection_string:
-            # Oracle uses different syntax
-            query_parts[-1] = f"{table_name} CASCADE CONSTRAINTS"
-        query = " ".join(query_parts)
+        if scheme == "oracle":
+            suffix = " CASCADE CONSTRAINTS" if cascade else ""
+            ddl = f"DROP TABLE {table_name}{suffix}".replace("'", "''")
+            if if_exists:
+                query = (
+                    f"BEGIN EXECUTE IMMEDIATE '{ddl}'; "
+                    "EXCEPTION WHEN OTHERS THEN IF SQLCODE != -942 THEN RAISE; "
+                    "END IF; END;"
+                )
+            else:
+                query = ddl
+        elif scheme in {"mssql", "microsoft"}:
+            ddl = f"DROP TABLE {table_name}"
+            query = (
+                f"IF OBJECT_ID(N'{table_name}', N'U') IS NOT NULL {ddl}"
+                if if_exists
+                else ddl
+            )
+        else:
+            query_parts = ["DROP TABLE"]
+            if if_exists:
+                query_parts.append("IF EXISTS")
+            query_parts.append(table_name)
+            if cascade and scheme in {"postgresql", "postgres"}:
+                query_parts.append("CASCADE")
+            query = " ".join(query_parts)
+
         try:
             await self.connection.execute(query)
-            logger.info(f"Table {table_name} dropped successfully")
-        except Exception as e:
-            logger.error(f"Failed to drop table {table_name}: {e}")
-            raise DatabaseError(f"Failed to drop table {table_name}: {e}")
+            logger.info("Table %s dropped successfully", table_name)
+        except Exception as error:
+            logger.error("Failed to drop table %s: %s", table_name, error)
+            raise DatabaseError(f"Failed to drop table {table_name}: {error}") from error
 
     async def create_table(self, model_class: Type["Model"]):
-        """
-        Create table for a specific model with optimizations.
-        Handles foreign keys separately to avoid dependency issues in PostgreSQL.
-        """
-        table_name = self._get_cached_table_name(model_class)
-        fields_sql_parts = []
-        foreign_key_constraints = []
-        
-        for field_name, field in model_class._fields.items():
-            # Handle auto-increment primary key for PostgreSQL
-            if (
-                field.primary_key
-                and field.auto_increment
-                and (
-                    self.connection_string.startswith("postgresql://")
-                    or self.connection_string.startswith("postgres://")
-                )
-            ):
-                # Use SERIAL for better PostgreSQL compatibility
-                fields_sql_parts.append(f"{field_name} SERIAL PRIMARY KEY")
-                continue
-            # Fallback for other fields and databases
-            field_sql = f"{field_name} {field.get_sql_type(database=self)}"
-            if field.primary_key:
-                field_sql += " PRIMARY KEY"
-                if field.auto_increment:
-                    if "sqlite" in self.connection_string:
-                        field_sql += " AUTOINCREMENT"
-                    elif (
-                        "mysql" in self.connection_string
-                        or "mariadb" in self.connection_string
-                    ):
-                        field_sql += " AUTO_INCREMENT"
-                    elif "mssql" in self.connection_string:
-                        field_sql += " IDENTITY(1,1)"
-                    # Oracle auto-increment handled separately
-            if not field.nullable:
-                field_sql += " NOT NULL"
-            if field.default is not None and not field.primary_key:
-                field_sql += f" DEFAULT {field.get_default_sql()}"
-            if field.unique:
-                field_sql += " UNIQUE"
-            fields_sql_parts.append(field_sql)
-        
-        # First, create the table without foreign keys
-        create_query = (
-            f"CREATE TABLE IF NOT EXISTS {table_name} ({', '.join(fields_sql_parts)})"
-        )
-        await self.connection.execute(create_query)
-        logger.info(f"Table {table_name} created without foreign keys")
-        
-        # Then, add foreign key constraints
-        for field_name, field in model_class._fields.items():
-            if isinstance(field, ForeignKeyField):
-                ref_model = field.to
-                if isinstance(ref_model, str) and ref_model in self.models:
-                    ref_model = self.models[ref_model]
-                elif not isinstance(ref_model, str):
-                    # If ref_model is a class, get it from models
-                    ref_model_name = ref_model.__name__
-                    if ref_model_name in self.models:
-                        ref_model = self.models[ref_model_name]
-                
-                # Get the table name of the referenced model
-                ref_table = (
-                    ref_model.get_table_name()
-                    if hasattr(ref_model, "get_table_name")
-                    else field.to
-                )
-                
-                # Get the primary key field name of the referenced model
-                ref_pk_field = "id"
-                for name, f in ref_model._fields.items():
-                    if f.primary_key:
-                        ref_pk_field = name
-                        break
-                
-                constraint_name = f"fk_{table_name}_{field_name}"
-                
-                # Determine correct ON DELETE action
-                on_delete_clause = ""
-                if hasattr(field, 'on_delete') and field.on_delete:
-                    on_delete_clause = f"ON DELETE {field.on_delete}"
-                
-                # Determine correct ON UPDATE action
-                on_update_clause = ""
-                if hasattr(field, 'on_update') and field.on_update:
-                    on_update_clause = f"ON UPDATE {field.on_update}"
-                
-                # Add foreign key constraint using ALTER TABLE
-                alter_query = (
-                    f"ALTER TABLE {table_name} ADD CONSTRAINT {constraint_name} "
-                    f"FOREIGN KEY ({field_name}) REFERENCES {ref_table}({ref_pk_field}) "
-                    f"{on_delete_clause} {on_update_clause}"
-                )
-                try:
-                    await self.connection.execute(alter_query)
-                    logger.info(f"Foreign key constraint {constraint_name} added to {table_name}")
-                except Exception as e:
-                    logger.error(f"Failed to add foreign key constraint {constraint_name}: {e}")
-                    raise
-        
-        logger.info(f"Table {table_name} created/verified with foreign keys")
+        """Create one model table, its foreign keys, and declared indexes."""
+        self.setup_relationships()
+        await self._create_table_without_foreign_keys(model_class)
+        if not self.connection_string.startswith("sqlite://"):
+            await self._add_foreign_keys_to_table(model_class)
+        await self._create_indexes(model_class)
 
     def _get_cached_table_name(self, model_class: Type["Model"]) -> str:
         """
@@ -1539,8 +1814,66 @@ class DatabaseConnection(ABC):
             connection_string: The database connection string.
         """
         self.connection_string = connection_string
+        self.database: Optional["Database"] = None
         self.pool = None
-        self._placeholder = None
+        self._placeholder: str = "?"
+        self._active_connection: ContextVar[Any] = ContextVar(
+            f"ormax_active_connection_{id(self)}", default=None
+        )
+
+    def _get_active_connection(self):
+        state = self._active_connection.get()
+        if state is None:
+            return None
+        owner, connection = state
+        return connection if owner is _get_running_task() else None
+
+    def _set_active_connection(self, connection) -> None:
+        if connection is None:
+            self._active_connection.set(None)
+        else:
+            self._active_connection.set((_get_running_task(), connection))
+
+    async def _acquire_connection(self):
+        """Acquire a pooled connection across driver-specific pool APIs."""
+        if self.pool is None:
+            raise DatabaseError("Database not connected")
+        acquired = self.pool.acquire()
+        if inspect.isawaitable(acquired):
+            return await acquired
+        if hasattr(acquired, "__aenter__"):
+            return await acquired.__aenter__()
+        return acquired
+
+    @asynccontextmanager
+    async def connection_context(self):
+        """Yield this task's pinned transaction connection or a pooled connection."""
+        active = self._get_active_connection()
+        if active is not None:
+            yield active
+            return
+        if self.pool is None:
+            raise DatabaseError("Database not connected")
+        async with self.pool.acquire() as connection:
+            yield connection
+
+    async def _release_active_connection(self) -> None:
+        connection = self._get_active_connection()
+        self._set_active_connection(None)
+        if connection is None or self.pool is None:
+            return
+        result = self.pool.release(connection)
+        if inspect.isawaitable(result):
+            await result
+
+    async def start_transaction(self) -> None:
+        await self.execute("BEGIN")
+
+    async def commit_transaction(self) -> None:
+        await self.execute("COMMIT")
+
+    async def rollback_transaction(self) -> None:
+        await self.execute("ROLLBACK")
 
     @abstractmethod
     async def connect(self):
@@ -1553,7 +1886,7 @@ class DatabaseConnection(ABC):
         pass
 
     @abstractmethod
-    async def execute(self, query: str, params: tuple = None) -> Any:
+    async def execute(self, query: str, params: Optional[tuple] = None) -> Any:
         """
         Execute a query.
 
@@ -1567,7 +1900,7 @@ class DatabaseConnection(ABC):
         pass
 
     @abstractmethod
-    async def fetch_one(self, query: str, params: tuple = None) -> Optional[Dict]:
+    async def fetch_one(self, query: str, params: Optional[tuple] = None) -> Optional[Dict]:
         """
         Fetch a single row.
 
@@ -1581,7 +1914,7 @@ class DatabaseConnection(ABC):
         pass
 
     @abstractmethod
-    async def fetch_all(self, query: str, params: tuple = None) -> List[Dict]:
+    async def fetch_all(self, query: str, params: Optional[tuple] = None) -> List[Dict]:
         """
         Fetch all rows.
 
@@ -1610,13 +1943,13 @@ class MySQLConnection(DatabaseConnection):
     
     def __init__(self, connection_string: str):
         super().__init__(connection_string)
-        self.aiomysql = None
+        self.aiomysql: Any = None
         self.pool = None
         self._placeholder = "%s"
     
     async def connect(self):
         try:
-            import aiomysql
+            import aiomysql  # type: ignore
             self.aiomysql = aiomysql
             import urllib.parse
             parsed = urllib.parse.urlparse(self.connection_string)
@@ -1641,11 +1974,42 @@ class MySQLConnection(DatabaseConnection):
         if self.pool:
             self.pool.close()
             await self.pool.wait_closed()
-    
-    async def execute(self, query: str, params: tuple = None) -> Any:
+
+    async def start_transaction(self) -> None:
         if not self.pool:
             raise DatabaseError("Database not connected")
-        async with self.pool.acquire() as conn:
+        if self._get_active_connection() is not None:
+            raise DatabaseError("Transaction already active")
+        connection = await self._acquire_connection()
+        self._set_active_connection(connection)
+        try:
+            await connection.begin()
+        except Exception:
+            await self._release_active_connection()
+            raise
+
+    async def commit_transaction(self) -> None:
+        connection = self._get_active_connection()
+        if connection is None:
+            raise DatabaseError("No active transaction")
+        try:
+            await connection.commit()
+        finally:
+            await self._release_active_connection()
+
+    async def rollback_transaction(self) -> None:
+        connection = self._get_active_connection()
+        if connection is None:
+            raise DatabaseError("No active transaction")
+        try:
+            await connection.rollback()
+        finally:
+            await self._release_active_connection()
+    
+    async def execute(self, query: str, params: Optional[tuple] = None) -> Any:
+        if not self.pool:
+            raise DatabaseError("Database not connected")
+        async with self.connection_context() as conn:
             async with conn.cursor() as cur:
                 # Convert ? placeholders to %s for MySQL
                 if params and "?" in query:
@@ -1660,10 +2024,10 @@ class MySQLConnection(DatabaseConnection):
                     return cur.lastrowid
                 return cur.rowcount
     
-    async def fetch_one(self, query: str, params: tuple = None) -> Optional[Dict]:
-        if not self.pool:
+    async def fetch_one(self, query: str, params: Optional[tuple] = None) -> Optional[Dict]:
+        if not self.pool or self.aiomysql is None:
             raise DatabaseError("Database not connected")
-        async with self.pool.acquire() as conn:
+        async with self.connection_context() as conn:
             async with conn.cursor(self.aiomysql.DictCursor) as cur:
                 # Convert ? placeholders to %s for MySQL
                 if params and "?" in query:
@@ -1677,10 +2041,10 @@ class MySQLConnection(DatabaseConnection):
                 result = await cur.fetchone()
                 return result
     
-    async def fetch_all(self, query: str, params: tuple = None) -> List[Dict]:
-        if not self.pool:
+    async def fetch_all(self, query: str, params: Optional[tuple] = None) -> List[Dict]:
+        if not self.pool or self.aiomysql is None:
             raise DatabaseError("Database not connected")
-        async with self.pool.acquire() as conn:
+        async with self.connection_context() as conn:
             async with conn.cursor(self.aiomysql.DictCursor) as cur:
                 # Convert ? placeholders to %s for MySQL
                 if params and "?" in query:
@@ -1703,12 +2067,12 @@ class PostgreSQLConnection(DatabaseConnection):
     
     def __init__(self, connection_string: str):
         super().__init__(connection_string)
-        self.asyncpg = None
+        self.asyncpg: Any = None
         self._placeholder = "$"
     
     async def connect(self):
         try:
-            import asyncpg
+            import asyncpg  # type: ignore
             self.asyncpg = asyncpg
             self.pool = await asyncpg.create_pool(
                 self.connection_string, 
@@ -1724,6 +2088,37 @@ class PostgreSQLConnection(DatabaseConnection):
     async def disconnect(self):
         if self.pool:
             await self.pool.close()
+
+    async def start_transaction(self) -> None:
+        if not self.pool:
+            raise DatabaseError("Database not connected")
+        if self._get_active_connection() is not None:
+            raise DatabaseError("Transaction already active")
+        connection = await self._acquire_connection()
+        self._set_active_connection(connection)
+        try:
+            await connection.execute("BEGIN")
+        except Exception:
+            await self._release_active_connection()
+            raise
+
+    async def commit_transaction(self) -> None:
+        connection = self._get_active_connection()
+        if connection is None:
+            raise DatabaseError("No active transaction")
+        try:
+            await connection.execute("COMMIT")
+        finally:
+            await self._release_active_connection()
+
+    async def rollback_transaction(self) -> None:
+        connection = self._get_active_connection()
+        if connection is None:
+            raise DatabaseError("No active transaction")
+        try:
+            await connection.execute("ROLLBACK")
+        finally:
+            await self._release_active_connection()
     
     def _convert_placeholders(self, query: str, params: tuple) -> Tuple[str, tuple]:
         """Convert ? placeholders to $1, $2, ... for PostgreSQL."""
@@ -1741,10 +2136,10 @@ class PostgreSQLConnection(DatabaseConnection):
             
         return new_query, params
     
-    async def execute(self, query: str, params: tuple = None) -> Any:
+    async def execute(self, query: str, params: Optional[tuple] = None) -> Any:
         if not self.pool:
             raise DatabaseError("Database not connected")
-        async with self.pool.acquire() as conn:
+        async with self.connection_context() as conn:
             # Convert placeholders for PostgreSQL
             if params:
                 query, params = self._convert_placeholders(query, params)
@@ -1769,10 +2164,10 @@ class PostgreSQLConnection(DatabaseConnection):
                     return None
             return result
     
-    async def fetch_one(self, query: str, params: tuple = None) -> Optional[Dict]:
+    async def fetch_one(self, query: str, params: Optional[tuple] = None) -> Optional[Dict]:
         if not self.pool:
             raise DatabaseError("Database not connected")
-        async with self.pool.acquire() as conn:
+        async with self.connection_context() as conn:
             # Convert placeholders for PostgreSQL
             if params:
                 query, params = self._convert_placeholders(query, params)
@@ -1782,10 +2177,10 @@ class PostgreSQLConnection(DatabaseConnection):
                 result = await conn.fetchrow(query)
             return dict(result) if result else None
     
-    async def fetch_all(self, query: str, params: tuple = None) -> List[Dict]:
+    async def fetch_all(self, query: str, params: Optional[tuple] = None) -> List[Dict]:
         if not self.pool:
             raise DatabaseError("Database not connected")
-        async with self.pool.acquire() as conn:
+        async with self.connection_context() as conn:
             # Convert placeholders for PostgreSQL
             if params:
                 query, params = self._convert_placeholders(query, params)
@@ -1809,23 +2204,50 @@ class SQLiteConnection(DatabaseConnection):
         self._placeholder = "?"
         self._prepared_statements = {}
 
+    @asynccontextmanager
+    async def _operation_context(self):
+        """Serialize SQLite access and reject inherited cross-task transactions."""
+        db_obj = self.database
+        if db_obj is None:
+            yield
+            return
+
+        current_task = _get_running_task()
+        raw_state = db_obj._current_transaction_var.get()
+        if (
+            isinstance(raw_state, tuple)
+            and raw_state[0] is not current_task
+            and db_obj._sqlite_transaction_owner is raw_state[0]
+        ):
+            raise DatabaseError(
+                "SQLite transaction contexts cannot be used from a child asyncio task"
+            )
+
+        if db_obj._sqlite_transaction_owner is current_task:
+            yield
+            return
+
+        async with db_obj._sqlite_transaction_lock:
+            yield
+
     async def connect(self):
         try:
-            import aiosqlite
+            try:
+                import aiosqlite  # type: ignore
+            except ImportError:
+                from . import _sqlite_fallback as aiosqlite
+
             self.aiosqlite = aiosqlite
-            import urllib.parse
-            parsed = urllib.parse.urlparse(self.connection_string)
-            db_path = parsed.path.lstrip("/")
+            from .utils import parse_sqlite_path
+            db_path = parse_sqlite_path(self.connection_string)
             self._connection = await aiosqlite.connect(db_path)
             # فعال‌سازی FOREIGN KEY در SQLite
             await self._connection.execute("PRAGMA foreign_keys = ON")
             await self._connection.execute("PRAGMA journal_mode = WAL")
             await self._connection.execute("PRAGMA synchronous = NORMAL")
 
-        except ImportError:
-            raise DatabaseError("aiosqlite is not installed")
         except Exception as e:
-            raise DatabaseError(f"Failed to connect to SQLite: {e}")
+            raise DatabaseError(f"Failed to connect to SQLite: {e}") from e
 
     async def disconnect(self):
         if self._connection:
@@ -1833,36 +2255,62 @@ class SQLiteConnection(DatabaseConnection):
             self._connection = None
             self._prepared_statements.clear()
 
-    async def execute(self, query: str, params: tuple = None) -> Any:
+    async def execute(self, query: str, params: Optional[tuple] = None) -> Any:
         if not self._connection:
             raise DatabaseError("Database not connected")
-        try:
+        async with self._operation_context():
+            db_obj = self.database
+            in_tx = db_obj._transaction_level > 0 if db_obj else False
+            try:
+                cursor = await self._connection.execute(query, params or ())
+                command = query.lstrip().split(None, 1)[0].upper() if query.strip() else ""
+                transaction_command = command in {
+                    "BEGIN",
+                    "COMMIT",
+                    "ROLLBACK",
+                    "SAVEPOINT",
+                    "RELEASE",
+                }
+                if not in_tx and not transaction_command:
+                    await self._connection.commit()
+                if command == "INSERT":
+                    return cursor.lastrowid
+                return getattr(cursor, "rowcount", 0)
+            except Exception as error:
+                if not in_tx:
+                    try:
+                        await self._connection.rollback()
+                    except Exception:
+                        pass
+                if isinstance(error, DatabaseError):
+                    raise
+                raise DatabaseError(f"Database error: {error}") from error
+
+    async def fetch_one(
+        self, query: str, params: Optional[tuple] = None
+    ) -> Optional[Dict]:
+        if not self._connection:
+            raise DatabaseError("Database not connected")
+        async with self._operation_context():
             cursor = await self._connection.execute(query, params or ())
-            await self._connection.commit()
-            return cursor.lastrowid
-        except Exception as e:
-            await self._connection.rollback()
-            raise
+            row = await cursor.fetchone()
+            if row is None:
+                return None
+            column_names = [description[0] for description in cursor.description]
+            return dict(zip(column_names, row))
 
-    async def fetch_one(self, query: str, params: tuple = None) -> Optional[Dict]:
+    async def fetch_all(
+        self, query: str, params: Optional[tuple] = None
+    ) -> List[Dict]:
         if not self._connection:
             raise DatabaseError("Database not connected")
-        cursor = await self._connection.execute(query, params or ())
-        row = await cursor.fetchone()
-        if row is None:
-            return None
-        column_names = [description[0] for description in cursor.description]
-        return dict(zip(column_names, row))
-
-    async def fetch_all(self, query: str, params: tuple = None) -> List[Dict]:
-        if not self._connection:
-            raise DatabaseError("Database not connected")
-        cursor = await self._connection.execute(query, params or ())
-        rows = await cursor.fetchall()
-        if not rows:
-            return []
-        column_names = [description[0] for description in cursor.description]
-        return [dict(zip(column_names, row)) for row in rows]
+        async with self._operation_context():
+            cursor = await self._connection.execute(query, params or ())
+            rows = await cursor.fetchall()
+            if not rows:
+                return []
+            column_names = [description[0] for description in cursor.description]
+            return [dict(zip(column_names, row)) for row in rows]
 
     def get_placeholder(self) -> str:
         return self._placeholder
@@ -1878,14 +2326,14 @@ class MSSQLConnection(DatabaseConnection):
 
     async def connect(self):
         try:
-            import aioodbc
+            import aioodbc  # type: ignore
             self.aioodbc = aioodbc
             
             if self.connection_string.startswith('mssql://'):
                 self.connection_string = self.connection_string[len('mssql://'):].strip()
             
             elif self.connection_string.startswith('microsoft://'):
-                self.connection_string = self.connection_string[len('mssql://'):].strip()
+                self.connection_string = self.connection_string[len('microsoft://'):].strip()
 
             # ایجاد pool
             self.pool = await aioodbc.create_pool(
@@ -1904,10 +2352,42 @@ class MSSQLConnection(DatabaseConnection):
             self.pool.close()
             await self.pool.wait_closed()
 
-    async def execute(self, query: str, params: tuple = None) -> Any:
+    async def start_transaction(self) -> None:
         if not self.pool:
             raise DatabaseError("Database not connected")
-        async with self.pool.acquire() as conn:
+        if self._get_active_connection() is not None:
+            raise DatabaseError("Transaction already active")
+        connection = await self._acquire_connection()
+        self._set_active_connection(connection)
+        try:
+            async with connection.cursor() as cursor:
+                await cursor.execute("BEGIN TRANSACTION")
+        except Exception:
+            await self._release_active_connection()
+            raise
+
+    async def commit_transaction(self) -> None:
+        connection = self._get_active_connection()
+        if connection is None:
+            raise DatabaseError("No active transaction")
+        try:
+            await connection.commit()
+        finally:
+            await self._release_active_connection()
+
+    async def rollback_transaction(self) -> None:
+        connection = self._get_active_connection()
+        if connection is None:
+            raise DatabaseError("No active transaction")
+        try:
+            await connection.rollback()
+        finally:
+            await self._release_active_connection()
+
+    async def execute(self, query: str, params: Optional[tuple] = None) -> Any:
+        if not self.pool:
+            raise DatabaseError("Database not connected")
+        async with self.connection_context() as conn:
             async with conn.cursor() as cur:
                 await cur.execute(query, params or ())
                 if query.strip().upper().startswith("INSERT"):
@@ -1918,12 +2398,12 @@ class MSSQLConnection(DatabaseConnection):
                         return row[0] if row else None
                     except:
                         return None
-                return None
+                return cur.rowcount
 
-    async def fetch_one(self, query: str, params: tuple = None) -> Optional[Dict]:
+    async def fetch_one(self, query: str, params: Optional[tuple] = None) -> Optional[Dict]:
         if not self.pool:
             raise DatabaseError("Database not connected")
-        async with self.pool.acquire() as conn:
+        async with self.connection_context() as conn:
             async with conn.cursor() as cur:
                 await cur.execute(query, params or ())
                 row = await cur.fetchone()
@@ -1933,10 +2413,10 @@ class MSSQLConnection(DatabaseConnection):
                 columns = [column[0] for column in cur.description]
                 return dict(zip(columns, row))
 
-    async def fetch_all(self, query: str, params: tuple = None) -> List[Dict]:
+    async def fetch_all(self, query: str, params: Optional[tuple] = None) -> List[Dict]:
         if not self.pool:
             raise DatabaseError("Database not connected")
-        async with self.pool.acquire() as conn:
+        async with self.connection_context() as conn:
             async with conn.cursor() as cur:
                 await cur.execute(query, params or ())
                 rows = await cur.fetchall()
@@ -1951,75 +2431,120 @@ class MSSQLConnection(DatabaseConnection):
 
 
 class OracleConnection(DatabaseConnection):
-    """Oracle database connection implementation."""
+    """Oracle Database adapter using the official python-oracledb async API."""
 
     def __init__(self, connection_string: str):
         super().__init__(connection_string)
-        self.async_oracledb = None
+        self.oracledb = None
         self._placeholder = ":{}"
         self._param_counter = 0
 
     async def connect(self):
         try:
-            import async_oracledb
+            import oracledb  # type: ignore
 
-            self.async_oracledb = async_oracledb
-            # Parse Oracle connection string
+            self.oracledb = oracledb
             import urllib.parse
 
             parsed = urllib.parse.urlparse(self.connection_string)
-            # Oracle connection format: oracle://user:password@host:port/service_name
-            self.pool = await async_oracledb.create_pool(
+            dsn = f"{parsed.hostname}:{parsed.port or 1521}/{parsed.path.lstrip('/')}"
+            # create_pool_async() is intentionally synchronous and returns an async pool.
+            self.pool = oracledb.create_pool_async(
                 user=parsed.username,
                 password=parsed.password,
-                dsn=f"{parsed.hostname}:{parsed.port or 1521}/{parsed.path.lstrip('/')}",
-                min=5,
+                dsn=dsn,
+                min=1,
                 max=20,
                 increment=1,
             )
-        except ImportError:
-            raise DatabaseError("async_oracledb is not installed")
-        except Exception as e:
-            raise DatabaseError(f"Failed to connect to Oracle: {e}")
+        except ImportError as error:
+            raise DatabaseError(
+                "oracledb is not installed; install ormax[oracle]"
+            ) from error
+        except Exception as error:
+            raise DatabaseError(f"Failed to connect to Oracle: {error}") from error
 
     async def disconnect(self):
         if self.pool:
             await self.pool.close()
+            self.pool = None
 
-    async def execute(self, query: str, params: tuple = None) -> Any:
+    async def start_transaction(self) -> None:
         if not self.pool:
             raise DatabaseError("Database not connected")
-        async with self.pool.acquire() as conn:
-            async with conn.cursor() as cur:
-                await cur.execute(query, params or ())
-                if query.strip().upper().startswith("INSERT"):
-                    # Oracle doesn't have simple lastrowid, return None
+        if self._get_active_connection() is not None:
+            raise DatabaseError("Transaction already active")
+        connection = await self._acquire_connection()
+        self._set_active_connection(connection)
+        # Oracle begins a local transaction with the first DML statement.
+
+    async def commit_transaction(self) -> None:
+        connection = self._get_active_connection()
+        if connection is None:
+            raise DatabaseError("No active transaction")
+        try:
+            await connection.commit()
+        finally:
+            await self._release_active_connection()
+
+    async def rollback_transaction(self) -> None:
+        connection = self._get_active_connection()
+        if connection is None:
+            raise DatabaseError("No active transaction")
+        try:
+            await connection.rollback()
+        finally:
+            await self._release_active_connection()
+
+    def _convert_placeholders(
+        self, query: str, params: Optional[tuple]
+    ) -> Tuple[str, tuple]:
+        values = tuple(params or ())
+        converted = query
+        for index in range(1, len(values) + 1):
+            converted = converted.replace("?", f":{index}", 1)
+        return converted, values
+
+    async def execute(self, query: str, params: Optional[tuple] = None) -> Any:
+        if not self.pool:
+            raise DatabaseError("Database not connected")
+        query, values = self._convert_placeholders(query, params)
+        async with self.connection_context() as conn:
+            with conn.cursor() as cur:
+                await cur.execute(query, values)
+                if self._get_active_connection() is None:
+                    await conn.commit()
+                if query.lstrip().upper().startswith("INSERT"):
                     return None
-                return None
+                return cur.rowcount
 
-    async def fetch_one(self, query: str, params: tuple = None) -> Optional[Dict]:
+    async def fetch_one(
+        self, query: str, params: Optional[tuple] = None
+    ) -> Optional[Dict]:
         if not self.pool:
             raise DatabaseError("Database not connected")
-        async with self.pool.acquire() as conn:
-            async with conn.cursor() as cur:
-                await cur.execute(query, params or ())
+        query, values = self._convert_placeholders(query, params)
+        async with self.connection_context() as conn:
+            with conn.cursor() as cur:
+                await cur.execute(query, values)
                 row = await cur.fetchone()
                 if row is None:
                     return None
-                # Get column names
                 columns = [column[0] for column in cur.description]
                 return dict(zip(columns, row))
 
-    async def fetch_all(self, query: str, params: tuple = None) -> List[Dict]:
+    async def fetch_all(
+        self, query: str, params: Optional[tuple] = None
+    ) -> List[Dict]:
         if not self.pool:
             raise DatabaseError("Database not connected")
-        async with self.pool.acquire() as conn:
-            async with conn.cursor() as cur:
-                await cur.execute(query, params or ())
+        query, values = self._convert_placeholders(query, params)
+        async with self.connection_context() as conn:
+            with conn.cursor() as cur:
+                await cur.execute(query, values)
                 rows = await cur.fetchall()
                 if not rows:
                     return []
-                # Get column names
                 columns = [column[0] for column in cur.description]
                 return [dict(zip(columns, row)) for row in rows]
 
@@ -2038,7 +2563,7 @@ class AuroraConnection(MySQLConnection):
         # Aurora is compatible with MySQL, so use MySQL connection
         # But with Aurora-specific optimizations
         try:
-            import aiomysql
+            import aiomysql  # type: ignore
 
             self.aiomysql = aiomysql
             import urllib.parse

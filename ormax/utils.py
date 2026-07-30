@@ -121,7 +121,7 @@ def singularize(word: str) -> str:
     """Simple singularization of English words"""
     if word.endswith("ies"):
         return word[:-3] + "y"
-    elif word.endswith("ses"):
+    elif word.endswith(("xes", "shes", "ches", "zes", "ses")):
         return word[:-2]
     elif word.endswith("s") and not word.endswith("ss"):
         return word[:-1]
@@ -392,13 +392,14 @@ def truncate_string(s: str, max_length: int, suffix: str = "...") -> str:
     return s[: max_length - len(suffix)] + suffix
 
 
-def humanize_bytes(bytes_value: int) -> str:
+def humanize_bytes(bytes_value: Union[int, float]) -> str:
     """Convert bytes to human readable format"""
+    val: float = float(bytes_value)
     for unit in ["B", "KB", "MB", "GB", "TB"]:
-        if bytes_value < 1024.0:
-            return f"{bytes_value:.1f} {unit}"
-        bytes_value /= 1024.0
-    return f"{bytes_value:.1f} PB"
+        if val < 1024.0:
+            return f"{val:.1f} {unit}"
+        val /= 1024.0
+    return f"{val:.1f} PB"
 
 
 def humanize_number(num: Union[int, float]) -> str:
@@ -468,7 +469,7 @@ def is_model_instance(obj) -> bool:
     return hasattr(obj, "_data") and hasattr(obj, "_fields")
 
 
-def model_to_dict(model_instance, exclude_fields: List[str] = None) -> Dict[str, Any]:
+def model_to_dict(model_instance, exclude_fields: Optional[List[str]] = None) -> Dict[str, Any]:
     """Convert model instance to dictionary"""
     if not is_model_instance(model_instance):
         raise ValueError("Object is not a model instance")
@@ -485,32 +486,27 @@ def dict_to_model(model_class, data: Dict) -> "ormax.Model":
     return model_class(**data)
 
 
-def batch_process_async(
+async def batch_process_async(
     items: List[T],
     process_func: Callable[[T], Any],
     batch_size: int = 100,
     max_concurrent: int = 10,
 ) -> List[Any]:
     """Process items in batches with concurrency control"""
+    results = []
+    semaphore = asyncio.Semaphore(max_concurrent)
 
-    async def process_batch(batch):
-        tasks = [process_func(item) for item in batch]
-        semaphore = asyncio.Semaphore(max_concurrent)
+    async def limited_process(item):
+        async with semaphore:
+            res = process_func(item)
+            if inspect.iscoroutine(res) or asyncio.iscoroutine(res):
+                return await res
+            return res
 
-        async def limited_task(task):
-            async with semaphore:
-                return await task
-
-        return await asyncio.gather(*[limited_task(task) for task in tasks])
-
-    async def run_batches():
-        results = []
-        for batch in chunk_list(items, batch_size):
-            batch_results = await process_batch(batch)
-            results.extend(batch_results)
-        return results
-
-    return asyncio.run(run_batches())
+    for batch in chunk_list(items, batch_size):
+        batch_results = await asyncio.gather(*[limited_process(item) for item in batch])
+        results.extend(batch_results)
+    return results
 
 
 def create_database_url(
@@ -537,18 +533,72 @@ def create_database_url(
     return url
 
 
+def parse_sqlite_path(connection_string: str) -> str:
+    """
+    Parse a SQLite connection string cross-platform to extract the actual database path.
+    Preserves absolute paths on MacOS/Linux/Unix while supporting memory, Windows paths, and relative paths.
+    """
+    prefix = "sqlite://"
+    if connection_string.startswith(prefix):
+        raw_path = connection_string[len(prefix):]
+    else:
+        raw_path = connection_string
+
+    if not raw_path or raw_path in (":memory:", "/:memory:", "///:memory:"):
+        return ":memory:"
+    
+    if raw_path.startswith("/:memory:"):
+        return ":memory:"
+
+    known_roots = ("Users/", "home/", "tmp/", "var/", "etc/", "opt/", "root/", "usr/", "private/")
+
+    # Handle //// (4 slashes) or /// (3 slashes) or // (2 slashes) or / (1 slash)
+    if raw_path.startswith("///"):
+        path_after = raw_path[3:]
+        if len(path_after) >= 2 and path_after[1] == ":":
+            return path_after
+        if path_after.startswith("/"):
+            return path_after
+        if any(path_after.startswith(r) for r in known_roots):
+            return "/" + path_after
+        return path_after
+    elif raw_path.startswith("//"):
+        path_after = raw_path[2:]
+        if len(path_after) >= 2 and path_after[1] == ":":
+            return path_after
+        if path_after.startswith("/"):
+            return path_after
+        if any(path_after.startswith(r) for r in known_roots):
+            return "/" + path_after
+        return path_after
+    elif raw_path.startswith("/"):
+        path_after = raw_path[1:]
+        if len(path_after) >= 2 and path_after[1] == ":":
+            return path_after
+        if any(path_after.startswith(r) for r in known_roots):
+            return "/" + path_after
+        return path_after
+
+    return raw_path
+
+
 def parse_database_url(url: str) -> Dict[str, Any]:
     """Parse database connection URL"""
     import urllib.parse
 
     parsed = urllib.parse.urlparse(url)
+    if parsed.scheme.lower() == "sqlite":
+        db_path = parse_sqlite_path(url)
+    else:
+        db_path = parsed.path.lstrip("/")
+
     result = {
         "scheme": parsed.scheme,
         "username": parsed.username,
         "password": parsed.password,
         "host": parsed.hostname,
         "port": parsed.port,
-        "database": parsed.path.lstrip("/"),
+        "database": db_path,
         "query_params": dict(urllib.parse.parse_qsl(parsed.query)),
     }
     return result
@@ -570,6 +620,22 @@ def get_database_type_from_url(url: str) -> str:
     return scheme_mapping.get(scheme, scheme)
 
 
+def format_placeholders(query: str, connection_string: str) -> str:
+    """Format placeholders correctly based on database type (e.g., PostgreSQL uses $1, $2, etc.)"""
+    if "postgresql" in connection_string:
+        parts = query.split("?")
+        if len(parts) == 1:
+            return query
+            
+        result = []
+        for i in range(len(parts) - 1):
+            result.append(parts[i])
+            result.append(f"${i + 1}")
+        result.append(parts[-1])
+        return "".join(result)
+    return query
+
+
 def escape_sql_identifier(identifier: str) -> str:
     """Escape SQL identifier to prevent injection"""
     # Remove dangerous characters
@@ -581,11 +647,15 @@ def escape_sql_identifier(identifier: str) -> str:
 def format_sql_query(query: str, params: Tuple) -> str:
     """Format SQL query with parameters for logging"""
     try:
-        # Simple parameter substitution for logging purposes
+        if not params:
+            return query
         formatted_query = query
         for param in params:
-            if isinstance(param, str):
-                formatted_query = formatted_query.replace("?", f"'{param}'", 1)
+            if param is None:
+                formatted_query = formatted_query.replace("?", "NULL", 1)
+            elif isinstance(param, str):
+                escaped = param.replace("'", "''")
+                formatted_query = formatted_query.replace("?", f"'{escaped}'", 1)
             else:
                 formatted_query = formatted_query.replace("?", str(param), 1)
         return formatted_query
@@ -825,6 +895,7 @@ __all__ = [
     "batch_process_async",
     "create_database_url",
     "parse_database_url",
+    "parse_sqlite_path",
     "get_database_type_from_url",
     "escape_sql_identifier",
     "format_sql_query",

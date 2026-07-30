@@ -1,10 +1,10 @@
 include README.md
 include LICENSE
-include requirements.txt
+include CHANGELOG.md
+include CONTRIBUTING.md
+include ormax/py.typed
 recursive-include ormax *.py
-recursive-exclude ormax __pycache__
-recursive-exclude ormax *.pyc
-global-exclude *.pyc
-global-exclude *.pyo
-global-exclude *~
+recursive-exclude * __pycache__
+global-exclude *.py[cod]
 global-exclude .DS_Store
+global-exclude *~

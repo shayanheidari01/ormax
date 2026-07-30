@@ -1,19 +1,16 @@
-# pyproject.toml
 [build-system]
-requires = ["setuptools>=45", "wheel"]
+requires = ["setuptools>=68", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [tool.black]
 line-length = 88
-target-version = ['py37', 'py38', 'py39', 'py310', 'py311']
-include = '\.pyi?$'
+target-version = ["py39", "py310", "py311", "py312", "py313"]
 extend-exclude = '''
 /(
-  # directories
   \.eggs
   | \.git
-  | \.hg
   | \.mypy_cache
+  | \.pytest_cache
   | \.tox
   | \.venv
   | build
@@ -22,7 +19,15 @@ extend-exclude = '''
 '''
 
 [tool.mypy]
-python_version = "3.7"
+python_version = "3.9"
 warn_return_any = true
 warn_unused_configs = true
-disallow_untyped_defs = true
+check_untyped_defs = true
+no_implicit_optional = true
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = ["test_*.py"]
+python_classes = ["Test*"]
+python_functions = ["test_*"]
+asyncio_mode = "strict"
